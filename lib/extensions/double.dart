@@ -1,6 +1,11 @@
 import 'dart:math' as m;
 
+import 'package:ikarus/design.dart';
+
 extension DoubleExtension on double {
+  @pragma('vm:prefer-inline')
+  double curve(Curve curve) => curve.transform(this);
+
   @pragma('vm:prefer-inline')
   double clampd([double lowerBound = 0, double upperBound = 1]) =>
       clamp(lowerBound, upperBound) as double;

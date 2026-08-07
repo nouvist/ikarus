@@ -5,6 +5,6 @@ class Scaffold extends SingleChildStatelessWidget {
 
   @override
   Widget buildWithChild(BuildContext context, Widget? child) {
-    return Container(color: Colors.bg, child: child!);
+    return Container(color: Colors.bg0, child: child!);
   }
 }

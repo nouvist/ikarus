@@ -6,10 +6,4 @@
 import 'frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-
-            
-
-            Future<void>  launch() => RustLib.instance.api.crateLaunch();
-
-            
-            
+Future<void> launch() => RustLib.instance.api.crateLaunch();

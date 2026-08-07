@@ -8,31 +8,21 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'ast.freezed.dart';
 
-            
+@freezed
+sealed class Assignment with _$Assignment {
+  const Assignment._();
 
-            
-
-            @freezed
-                sealed class Assignment with _$Assignment  {
-                    const Assignment._();
-
-                     const factory Assignment.declare({   required String name ,  required Value value , }) = Assignment_Declare;
-
-                    
-
-                    
-                }
+  const factory Assignment.declare({
+    required String name,
+    required Value value,
+  }) = Assignment_Declare;
+}
 
 @freezed
-                sealed class Value with _$Value  {
-                    const Value._();
+sealed class Value with _$Value {
+  const Value._();
 
-                     const factory Value.number(  double field0,) = Value_Number;
- const factory Value.string(  String field0,) = Value_String;
- const factory Value.boolean(  bool field0,) = Value_Boolean;
-
-                    
-
-                    
-                }
-            
+  const factory Value.number(double field0) = Value_Number;
+  const factory Value.string(String field0) = Value_String;
+  const factory Value.boolean(bool field0) = Value_Boolean;
+}
