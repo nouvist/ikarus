@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Root extends StatelessWidget {
@@ -24,12 +26,15 @@ class Root extends StatelessWidget {
   Widget _buildInherited(BuildContext context, Widget? child) {
     return Directionality(
       textDirection: .ltr,
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          _Titlebar(),
-          Expanded(child: _Splash(child: child!)),
-        ],
+      child: DefaultTextStyle(
+        style: Typography.body,
+        child: Column(
+          crossAxisAlignment: .stretch,
+          children: [
+            _Titlebar(),
+            Expanded(child: _Splash(child: child!)),
+          ],
+        ),
       ),
     );
   }
@@ -62,11 +67,16 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    Timer(const .new(seconds: 3), _handleTimer);
+    final timer = switch (kReleaseMode) {
+      true => Future.delayed(.new(seconds: 3)),
+      false => Future.delayed(.zero),
+    };
+
+    timer.then(_handleTimer);
     _animation.addStatusListener(_handleAnimation);
   }
 
-  void _handleTimer() {
+  void _handleTimer(_) {
     if (!mounted) return;
     _animation.animateTo(1);
   }
@@ -133,17 +143,20 @@ class _Titlebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
+    return Container(
+      height: 48,
       color: Colors.bg0,
-      child: DragToMoveArea(
-        child: Row(
-          children: [
-            Expanded(child: SizedBox(height: 48)),
-            _Chrome(.minimize),
-            _Chrome(.maximize),
-            _Chrome(.close),
-          ],
-        ),
+      child: Row(
+        children: [
+          Expanded(
+            child: DragToMoveArea(
+              child: SizedBox(width: .infinity, height: .infinity),
+            ),
+          ),
+          _Chrome(.minimize),
+          _Chrome(.maximize),
+          _Chrome(.close),
+        ],
       ),
     );
   }
@@ -161,6 +174,7 @@ class _Chrome extends StatefulWidget {
 }
 
 class _ChromeState extends State<_Chrome> with WindowListener {
+  final _isHover = BehaviorSubject.seeded(false);
   bool _isMaximized = false;
 
   @override
@@ -200,21 +214,36 @@ class _ChromeState extends State<_Chrome> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _handleTap,
-      behavior: .opaque,
-      child: SizedBox(
-        width: 46,
-        height: 32,
-        child: Center(
-          child: SvgPicture.asset(switch (widget.type) {
-            .close => 'assets/chrome/close.svg',
-            .maximize => switch (_isMaximized) {
-              true => 'assets/chrome/restore.svg',
-              false => 'assets/chrome/maximize.svg',
-            },
-            .minimize => 'assets/chrome/minimize.svg',
-          }),
+    return MouseRegion(
+      onEnter: (event) => _isHover.add(true),
+      onExit: (event) => _isHover.add(false),
+      child: GestureDetector(
+        onTap: _handleTap,
+        behavior: .opaque,
+        child: StreamBuilder(
+          stream: _isHover,
+          builder: (context, child) => Container(
+            width: 46,
+            decoration: BoxDecoration(
+              color: switch (_isHover.value) {
+                true => switch (widget.type == .close) {
+                  true => Color(0xffc42b1c),
+                  false => Color(0x0fffffff),
+                },
+                false => Color(0x00000000),
+              },
+            ),
+            child: Center(
+              child: SvgPicture.asset(switch (widget.type) {
+                .close => 'assets/chrome/close.svg',
+                .maximize => switch (_isMaximized) {
+                  true => 'assets/chrome/restore.svg',
+                  false => 'assets/chrome/maximize.svg',
+                },
+                .minimize => 'assets/chrome/minimize.svg',
+              }),
+            ),
+          ),
         ),
       ),
     );

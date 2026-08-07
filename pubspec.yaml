@@ -75,6 +75,7 @@ flutter:
     - assets/fonts/
     - assets/images/
     - assets/chrome/
+    - assets/paths/
   fonts:
     - family: JetBrainsMono
       fonts:
