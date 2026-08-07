@@ -40,6 +40,7 @@ dependencies:
   rxdart: ^0.28.0
   flutter_svg: ^2.3.0
   nested: ^1.0.0
+  window_manager: ^0.5.2
 
 
 dev_dependencies:
@@ -72,6 +73,7 @@ flutter:
   assets:
     - assets/fonts/
     - assets/images/
+    - assets/chrome/
   fonts:
     - family: JetBrainsMono
       fonts:
