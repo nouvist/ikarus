@@ -9,6 +9,7 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 anyhow = "1.0.104"
 flutter_rust_bridge = "=2.12.0"
+rig = "0.41.0"
 thirtyfour = "0.37.4"
 thiserror = "2.0.19"
 tokio = "1.53.1"
