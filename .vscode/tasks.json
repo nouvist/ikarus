@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "FRB",
+			"type": "shell",
+			"command": "flutter_rust_bridge_codegen generate",
+			"problemMatcher": []
+		}
+	]
+}

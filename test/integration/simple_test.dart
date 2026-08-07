@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ikarus/crux.dart';
 import 'package:ikarus/main.dart';
-import 'package:ikarus/src/rust/frb_generated.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
