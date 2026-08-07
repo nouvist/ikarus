@@ -21,6 +21,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Root(
+      titlebar: Titlebar(),
       home: Scaffold(
         child: Padding(
           padding: .only(left: 8, right: 8, bottom: 8),
@@ -90,6 +91,7 @@ class Vpl extends StatelessWidget {
       ),
       VplScopeEnd(nested: 1),
       VplScopeEnd(),
+      VplNewBlock()
     ];
 
     final keyed = children

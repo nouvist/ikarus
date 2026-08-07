@@ -64,3 +64,43 @@ class VplBlock extends StatelessWidget {
     );
   }
 }
+
+class VplNewBlock extends StatelessWidget {
+  final int nested;
+
+  const VplNewBlock({super.key, this.nested = 0});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: .only(bottom: 1, left: nested * 33),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Padding(
+            padding: const .only(left: 68),
+            child: IntrinsicWidth(
+              child: Container(
+                height: 48,
+                padding: .only(right: 16),
+                decoration: BoxDecoration(
+                  borderRadius: .horizontal(right: .circular(6)),
+                  color: Colors.bg1,
+                ),
+                child: Center(child: Text('Tambah Balok')),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            top: 0,
+            child: SvgPicture.asset(
+              colorFilter: .mode(Colors.bg1, .srcIn),
+              'assets/paths/VplBoth.svg',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

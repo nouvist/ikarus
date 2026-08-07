@@ -8,9 +8,10 @@ import 'package:rxdart/rxdart.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Root extends StatelessWidget {
+  final Widget? titlebar;
   final Widget home;
 
-  const Root({super.key, required this.home});
+  const Root({super.key, this.titlebar, required this.home});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class Root extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .stretch,
           children: [
-            _Titlebar(),
+            ?titlebar,
             Expanded(child: _Splash(child: child!)),
           ],
         ),
@@ -137,119 +138,6 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
     );
   }
 }
-
-class _Titlebar extends StatelessWidget {
-  const _Titlebar();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 48,
-      color: Colors.bg0,
-      child: Row(
-        children: [
-          Expanded(
-            child: DragToMoveArea(
-              child: SizedBox(width: .infinity, height: .infinity),
-            ),
-          ),
-          _Chrome(.minimize),
-          _Chrome(.maximize),
-          _Chrome(.close),
-        ],
-      ),
-    );
-  }
-}
-
-enum _ChromeType { close, maximize, minimize }
-
-class _Chrome extends StatefulWidget {
-  final _ChromeType type;
-
-  const _Chrome(this.type);
-
-  @override
-  State<_Chrome> createState() => _ChromeState();
-}
-
-class _ChromeState extends State<_Chrome> with WindowListener {
-  final _isHover = BehaviorSubject.seeded(false);
-  bool _isMaximized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WindowManager.instance.addListener(this);
-  }
-
-  @override
-  void dispose() {
-    WindowManager.instance.removeListener(this);
-    super.dispose();
-  }
-
-  @override
-  void onWindowMaximize() {
-    if (widget.type != .maximize) return;
-    setState(() => _isMaximized = true);
-  }
-
-  @override
-  void onWindowUnmaximize() {
-    if (widget.type != .maximize) return;
-    setState(() => _isMaximized = false);
-  }
-
-  Future<void> _handleTap() {
-    return switch (widget.type) {
-      .close => WindowManager.instance.close(),
-      .maximize => switch (_isMaximized) {
-        true => WindowManager.instance.unmaximize(),
-        false => WindowManager.instance.maximize(),
-      },
-      .minimize => WindowManager.instance.minimize(),
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (event) => _isHover.add(true),
-      onExit: (event) => _isHover.add(false),
-      child: GestureDetector(
-        onTap: _handleTap,
-        behavior: .opaque,
-        child: StreamBuilder(
-          stream: _isHover,
-          builder: (context, child) => Container(
-            width: 46,
-            decoration: BoxDecoration(
-              color: switch (_isHover.value) {
-                true => switch (widget.type == .close) {
-                  true => Color(0xffc42b1c),
-                  false => Color(0x0fffffff),
-                },
-                false => Color(0x00000000),
-              },
-            ),
-            child: Center(
-              child: SvgPicture.asset(switch (widget.type) {
-                .close => 'assets/chrome/close.svg',
-                .maximize => switch (_isMaximized) {
-                  true => 'assets/chrome/restore.svg',
-                  false => 'assets/chrome/maximize.svg',
-                },
-                .minimize => 'assets/chrome/minimize.svg',
-              }),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _PageRoute<T> extends PageRoute<T> {
   @override
   final barrierColor = null;
