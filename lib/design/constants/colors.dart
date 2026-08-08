@@ -12,4 +12,10 @@ abstract final class Colors {
   static const cIdent = Color(0xffb43d88);
   static const cValue = Color(0xffc14208);
   static const cCall = Color(0xff695ed2);
+
+  static const fg0 = Color(0xffffffff);
+  static const fg1 = Color(0xffdddddd);
+  static const fg2 = Color(0xff999999);
+
+  static const a0 = Color(0xff81ddf9);
 }

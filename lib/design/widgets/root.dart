@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Root extends StatelessWidget {
@@ -28,13 +27,18 @@ class Root extends StatelessWidget {
     return Directionality(
       textDirection: .ltr,
       child: DefaultTextStyle(
-        style: Typography.body,
-        child: Column(
-          crossAxisAlignment: .stretch,
-          children: [
-            ?titlebar,
-            Expanded(child: _Splash(child: child!)),
-          ],
+        style: Typography.body.copyWith(color: Colors.fg0),
+        child: IconTheme(
+          data: .new(color: Colors.fg0),
+          child: _Splash(
+            child: Column(
+              crossAxisAlignment: .stretch,
+              children: [
+                ?titlebar,
+                Expanded(child: child!),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -138,6 +142,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
     );
   }
 }
+
 class _PageRoute<T> extends PageRoute<T> {
   @override
   final barrierColor = null;

@@ -21,34 +21,84 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Root(
-      titlebar: Titlebar(),
+      titlebar: Titlebar(
+        menus: [
+          TitlebarMenu(child: Text('Baru')),
+          TitlebarMenu(child: Text('Buka')),
+          TitlebarMenu(child: Text('Simpan')),
+          TitlebarMenu(child: Text('Pengaturan')),
+        ],
+      ),
       home: Scaffold(
         child: Padding(
           padding: .only(left: 8, right: 8, bottom: 8),
-          child: Row(
+          child: Column(
             spacing: 8,
             crossAxisAlignment: .stretch,
             children: [
+              _buildToolbar(context),
               Expanded(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: .all(color: Colors.border),
-                    borderRadius: .circular(8),
-                  ),
-                  child: Vpl(),
-                ),
-              ),
-              Expanded(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: .all(color: Colors.border),
-                    borderRadius: .circular(8),
-                  ),
+                child: Row(
+                  spacing: 8,
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    Expanded(child: _buildVpl(context)),
+                    Expanded(child: _buildChat(context)),
+                  ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildChat(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: .all(color: Colors.border),
+        borderRadius: .circular(8),
+      ),
+      child: Column(
+        children: [
+          Expanded(child: ListView(children: [])),
+          Padding(
+            padding: .all(8),
+            child: Row(
+              spacing: 8,
+              children: [
+                Expanded(child: Input()),
+                Button(child: Icon(Icons.send)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVpl(BuildContext context) {
+    return Container(
+      clipBehavior: .antiAlias,
+      decoration: BoxDecoration(
+        border: .all(color: Colors.border),
+        borderRadius: .circular(8),
+      ),
+      child: Vpl(),
+    );
+  }
+
+  Widget _buildToolbar(BuildContext context) {
+    return Container(
+      padding: .all(8),
+      decoration: BoxDecoration(
+        border: .all(color: Colors.border),
+        borderRadius: .circular(8),
+      ),
+      child: Row(
+        spacing: 2,
+        children: [Icon(Icons.play_arrow), Icon(Icons.pause), Icon(Icons.stop)],
       ),
     );
   }
@@ -80,10 +130,7 @@ class Vpl extends StatelessWidget {
         nested: 1,
         child: Center(child: Text('Fungsi 3')),
       ),
-      VplScopeStart(
-        nested: 1,
-        child: Center(child: Text('Jika bersarang 1')),
-      ),
+      VplScopeStart(nested: 1, child: Center(child: Text('Jika bersarang 1'))),
       VplBlock(
         type: .call,
         nested: 2,
@@ -91,7 +138,7 @@ class Vpl extends StatelessWidget {
       ),
       VplScopeEnd(nested: 1),
       VplScopeEnd(),
-      VplNewBlock()
+      VplNewBlock(),
     ];
 
     final keyed = children

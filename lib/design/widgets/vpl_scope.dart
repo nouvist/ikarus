@@ -54,7 +54,7 @@ class VplScopeEnd extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          SizedBox(height: 48),
+          Gap(48),
           Positioned(
             left: 0,
             bottom: -18,

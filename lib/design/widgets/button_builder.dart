@@ -2,12 +2,20 @@ import 'package:ikarus/design.dart';
 import 'package:rxdart/subjects.dart';
 
 typedef ButtonContainerBuilder =
-    Widget Function(
-      BuildContext context,
-      bool isHover,
-      bool isTap,
-      Widget? child,
-    );
+    Widget Function(BuildContext context, ButtonState state, Widget? child);
+
+enum ButtonState {
+  rest,
+  hover,
+  tap;
+
+  @pragma('vm:prefer-inline')
+  bool get isRest => this == .rest;
+  @pragma('vm:prefer-inline')
+  bool get isHover => this == .hover;
+  @pragma('vm:prefer-inline')
+  bool get isTap => this == .tap;
+}
 
 class ButtonBuilder extends StatefulWidget {
   final VoidCallback? onTap;
@@ -28,35 +36,33 @@ class ButtonBuilder extends StatefulWidget {
 }
 
 class _ButtonBuilderState extends State<ButtonBuilder> {
-  final _state = BehaviorSubject.seeded((isHover: false, isTap: false));
+  final _state = BehaviorSubject<ButtonState>.seeded(.rest);
+  var _lastHover = false;
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       hitTestBehavior: widget.behavior,
       onEnter: (event) {
-        _state.add((isHover: true, isTap: _state.value.isTap));
+        _lastHover = true;
+        _state.add(.hover);
       },
       onExit: (event) {
-        _state.add((isHover: false, isTap: _state.value.isTap));
+        _lastHover = false;
+        _state.add(.rest);
       },
       child: GestureDetector(
         onTap: widget.onTap,
         behavior: widget.behavior,
-        onTapDown: (details) {
-          _state.add((isTap: true, isHover: _state.value.isTap));
-        },
-        onTapUp: (details) {
-          _state.add((isTap: false, isHover: _state.value.isTap));
-        },
+        onTapDown: (details) => _state.add(.tap),
+        onTapUp: (details) => _state.add(switch (_lastHover) {
+          true => .hover,
+          false => .rest,
+        }),
         child: StreamBuilder(
           stream: _state,
-          builder: (context, snapshot) => widget.builder(
-            context,
-            _state.value.isHover,
-            _state.value.isTap,
-            widget.child,
-          ),
+          builder: (context, snapshot) =>
+              widget.builder(context, _state.value, widget.child),
         ),
       ),
     );

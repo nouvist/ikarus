@@ -3,7 +3,9 @@ import 'package:ikarus/design.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Titlebar extends StatelessWidget {
-  const Titlebar({super.key});
+  final List<Widget>? menus;
+
+  const Titlebar({super.key, this.menus});
 
   @override
   Widget build(BuildContext context) {
@@ -11,17 +13,60 @@ class Titlebar extends StatelessWidget {
       height: 48,
       color: Colors.bg0,
       child: Row(
+        crossAxisAlignment: .stretch,
         children: [
-          Expanded(
-            child: DragToMoveArea(
-              child: SizedBox(width: .infinity, height: .infinity),
+          Gap(16),
+          IkarusLogo(type: .square, width: 24),
+          if (menus case final it?) ...[
+            Gap(16),
+            Row(
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
+              spacing: 4,
+              children: it,
             ),
-          ),
+          ],
+          Expanded(child: DragToMoveArea(child: SizedBox())),
           _Chrome(.minimize),
           _Chrome(.maximize),
           _Chrome(.close),
         ],
       ),
+    );
+  }
+}
+
+class TitlebarMenu extends StatelessWidget {
+  final VoidCallback? onTap;
+  final Widget child;
+
+  const TitlebarMenu({super.key, this.onTap, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ButtonBuilder(
+      onTap: onTap,
+      builder: (context, state, child) => Container(
+        height: 32,
+        alignment: .center,
+        padding: .symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          borderRadius: .circular(4),
+          color: switch (state) {
+            .rest => null,
+            .hover => Colors.fg0.withAlpha(16),
+            .tap => Colors.fg0.withAlpha(24),
+          },
+        ),
+        child: Foreground(
+          color: switch (state) {
+            .hover => Colors.fg0,
+            _ => Colors.fg1,
+          },
+          child: child!,
+        ),
+      ),
+      child: child,
     );
   }
 }
@@ -80,15 +125,15 @@ class _ChromeState extends State<_Chrome> with WindowListener {
     return ButtonBuilder(
       onTap: _handleTap,
       behavior: .opaque,
-      builder: (context, isHover, isTap, child) => Container(
+      builder: (context, state, child) => Container(
         width: 46,
         decoration: BoxDecoration(
-          color: switch (isHover) {
-            true => switch (widget.type == .close) {
+          color: switch (state) {
+            .hover => switch (widget.type == .close) {
               true => Color(0xffc42b1c),
               false => Colors.bg1,
             },
-            false => Color(0x00000000),
+            _ => Color(0x00000000),
           },
         ),
         child: child,
