@@ -6,14 +6,14 @@ enum VplBlockCutout { both, start }
 enum VplBlockType { start, assignment, call, ident, value }
 
 class VplBlock extends StatelessWidget {
-  final int nested;
+  final int? nested;
   final VplBlockCutout cutout;
   final VplBlockType type;
   final Widget child;
 
   const VplBlock({
     super.key,
-    this.nested = 0,
+    this.nested,
     required this.type,
     this.cutout = .both,
     required this.child,
@@ -30,7 +30,10 @@ class VplBlock extends StatelessWidget {
     };
 
     return Padding(
-      padding: .only(bottom: 1, left: nested * 33),
+      padding: .only(
+        left: (nested ?? VplNested.maybeOf(context) ?? 0) * 33,
+        bottom: 1,
+      ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -66,14 +69,17 @@ class VplBlock extends StatelessWidget {
 }
 
 class VplNewBlock extends StatelessWidget {
-  final int nested;
+  final int? nested;
 
-  const VplNewBlock({super.key, this.nested = 0});
+  const VplNewBlock({super.key, this.nested});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: .only(bottom: 1, left: nested * 33),
+      padding: .only(
+        left: (nested ?? VplNested.maybeOf(context) ?? 0) * 33,
+        bottom: 1,
+      ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [

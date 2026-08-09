@@ -87,52 +87,80 @@ class DocumentScreen extends StatelessWidget {
   }
 }
 
-class _Vpl extends StatelessWidget {
+class _Vpl extends StatefulWidget {
   const _Vpl();
 
   @override
-  Widget build(BuildContext context) {
-    final children = [
-      VplBlock(
-        cutout: .start,
-        type: .start,
-        child: Center(child: Text('Mulai')),
-      ),
-      VplBlock(
-        type: .call,
-        child: Center(child: Text('Fungsi 1')),
-      ),
-      VplScopeStart(child: Center(child: Text('Jika 1'))),
-      VplBlock(
-        type: .call,
-        nested: 1,
-        child: Center(child: Text('Fungsi 2')),
-      ),
-      VplBlock(
-        type: .call,
-        nested: 1,
-        child: Center(child: Text('Fungsi 3')),
-      ),
-      VplScopeStart(nested: 1, child: Center(child: Text('Jika bersarang 1'))),
-      VplBlock(
-        type: .call,
-        nested: 2,
-        child: Center(child: Text('Fungsi 4')),
-      ),
-      VplScopeEnd(nested: 1),
-      VplScopeEnd(),
-      VplNewBlock(),
-    ];
+  State<_Vpl> createState() => _VplState();
+}
 
-    final keyed = children
-        .map((child) => KeyedSubtree(key: UniqueKey(), child: child))
-        .toList();
+class _VplState extends State<_Vpl> {
+  final _children = <Widget>[
+    VplBlock(
+      cutout: .start,
+      type: .start,
+      child: Center(child: Text('Mulai')),
+    ),
+    VplBlock(
+      type: .call,
+      child: Center(child: Text('Fungsi 1')),
+    ),
+    VplScopeStart(child: Center(child: Text('Jika 1'))),
+    VplBlock(
+      type: .call,
+      child: Center(child: Text('Fungsi 2')),
+    ),
+    VplBlock(
+      type: .call,
+      child: Center(child: Text('Fungsi 3')),
+    ),
+    VplScopeStart(child: Center(child: Text('Jika bersarang 1'))),
+    VplBlock(
+      type: .call,
+      child: Center(child: Text('Fungsi 4')),
+    ),
+    VplScopeEnd(),
+    VplScopeEnd(),
+  ];
+
+  void _handleReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) newIndex -= 1;
+      final item = _children.removeAt(oldIndex);
+      _children.insert(newIndex, item);
+    });
+  }
+
+  List<Widget> _buildNested() {
+    var nested = 0;
+    final children = <Widget>[];
+    for (var i = 0; i < _children.length; i++) {
+      final child = _children[i];
+      if (child is VplScopeEnd) nested -= 1;
+
+      children.add(
+        ReorderableDragStartListener(
+          index: i,
+          key: ValueKey(child),
+          child: VplNested(value: nested, child: child),
+        ),
+      );
+
+      if (child is VplScopeStart) nested += 1;
+    }
+
+    return children;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final children = _buildNested();
 
     return ReorderableList(
-      itemCount: keyed.length,
+      itemCount: children.length,
       padding: .all(8),
-      onReorderItem: (oldIndex, newIndex) {},
-      itemBuilder: (context, index) => keyed[index],
+      onReorderItem: _handleReorder,
+      itemBuilder: (context, index) => children[index],
     );
   }
 }

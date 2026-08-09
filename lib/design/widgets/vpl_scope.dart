@@ -2,15 +2,18 @@ import 'package:flutter_svg/svg.dart';
 import 'package:ikarus/design.dart';
 
 class VplScopeStart extends StatelessWidget {
-  final int nested;
+  final int? nested;
   final Widget child;
 
-  const VplScopeStart({super.key, this.nested = 0, required this.child});
+  const VplScopeStart({super.key, this.nested, required this.child});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: .only(bottom: 1, left: nested * 33),
+      padding: .only(
+        left: (nested ?? VplNested.maybeOf(context) ?? 0) * 33,
+        bottom: 1,
+      ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -43,27 +46,32 @@ class VplScopeStart extends StatelessWidget {
 }
 
 class VplScopeEnd extends StatelessWidget {
-  final int nested;
+  final int? nested;
 
-  const VplScopeEnd({super.key, this.nested = 0});
+  const VplScopeEnd({super.key, this.nested});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: .only(bottom: 1, left: nested * 33),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Gap(48),
-          Positioned(
-            left: 0,
-            bottom: -18,
-            child: SvgPicture.asset(
-              colorFilter: .mode(Colors.cScope, .srcIn),
-              'assets/paths/VplScopeEnd.svg',
+      padding: .only(
+        left: (nested ?? VplNested.maybeOf(context) ?? 0) * 33,
+        bottom: 1,
+      ),
+      child: SizedBox(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Gap(48),
+            Positioned(
+              left: 0,
+              bottom: -18,
+              child: SvgPicture.asset(
+                colorFilter: .mode(Colors.cScope, .srcIn),
+                'assets/paths/VplScopeEnd.svg',
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
