@@ -8,14 +8,26 @@ export 'package:flutter/material.dart' show Icons;
 
 export 'package:ikarus/design/widgets/root.dart';
 export 'package:ikarus/design/widgets/foreground.dart';
+export 'package:ikarus/design/widgets/restart.dart';
+export 'package:ikarus/design/widgets/inherited.dart';
 export 'package:ikarus/design/widgets/titlebar.dart';
 export 'package:ikarus/design/widgets/scaffold.dart';
 export 'package:ikarus/design/widgets/ikarus_logo.dart';
 export 'package:ikarus/design/widgets/istn_logo.dart';
 export 'package:ikarus/design/widgets/nouvist_logo.dart';
+
+// vpl
 export 'package:ikarus/design/widgets/vpl_block.dart';
 export 'package:ikarus/design/widgets/vpl_scope.dart';
 
+// input
 export 'package:ikarus/design/widgets/button_builder.dart';
 export 'package:ikarus/design/widgets/input.dart';
 export 'package:ikarus/design/widgets/button.dart';
+
+export 'package:ikarus/design/widgets/context_menu.dart';
+
+@pragma('vm:prefer-inline')
+Future<void> yieldNow(Function()? callback) {
+  return Future.delayed(.zero, callback);
+}

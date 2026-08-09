@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
@@ -72,12 +71,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    final timer = switch (kReleaseMode) {
-      true => Future.delayed(.new(seconds: 3)),
-      false => Future.delayed(.zero),
-    };
-
-    timer.then(_handleTimer);
+    Future.delayed(.new(seconds: 5)).then(_handleTimer);
     _animation.addStatusListener(_handleAnimation);
   }
 
@@ -100,6 +94,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
         children: [
           Positioned.fill(child: widget.child),
           Positioned.fill(child: _buildSplash()),
+          Positioned(right: 0, top: 0, child: TitlebarChrome()),
         ],
       ),
     };
@@ -132,7 +127,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
               child: SvgPicture.asset(
                 height: 64,
                 alignment: .center,
-                colorFilter: .mode(Colors.border, .srcIn),
+                colorFilter: .mode(Colors.fg2, .srcIn),
                 'assets/images/SplashText.svg',
               ),
             ),

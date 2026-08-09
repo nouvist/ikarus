@@ -27,10 +27,24 @@ class Titlebar extends StatelessWidget {
             ),
           ],
           Expanded(child: DragToMoveArea(child: SizedBox())),
-          _Chrome(.minimize),
-          _Chrome(.maximize),
-          _Chrome(.close),
+          TitlebarChrome(),
         ],
+      ),
+    );
+  }
+}
+
+class TitlebarChrome extends StatelessWidget {
+  const TitlebarChrome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicWidth(
+      child: SizedBox(
+        height: 48,
+        child: Row(
+          children: [_Chrome(.minimize), _Chrome(.maximize), _Chrome(.close)],
+        ),
       ),
     );
   }
@@ -54,8 +68,8 @@ class TitlebarMenu extends StatelessWidget {
           borderRadius: .circular(4),
           color: switch (state) {
             .rest => null,
-            .hover => Colors.fg0.withAlpha(16),
-            .tap => Colors.fg0.withAlpha(24),
+            .hover => Colors.ov1,
+            .tap => Colors.ov2,
           },
         ),
         child: Foreground(
@@ -131,7 +145,7 @@ class _ChromeState extends State<_Chrome> with WindowListener {
           color: switch (state) {
             .hover => switch (widget.type == .close) {
               true => Color(0xffc42b1c),
-              false => Colors.bg1,
+              false => Colors.ov1,
             },
             _ => Color(0x00000000),
           },

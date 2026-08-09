@@ -1,4 +1,4 @@
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/foundation.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:window_manager/window_manager.dart';
@@ -8,11 +8,15 @@ Future<void> main() async {
   await RustLib.init();
   await WindowManager.instance.ensureInitialized();
   await WindowManager.instance.waitUntilReadyToShow(
-    .new(title: "Ikarus", titleBarStyle: .hidden),
+    .new(
+      title: "Ikarus",
+      titleBarStyle: .hidden,
+      minimumSize: .new(720, 640),
+    ),
   );
   WindowManager.instance.show();
   WindowManager.instance.focus();
-  runApp(const App());
+  runApp(RestartProvider(child: const App()));
 }
 
 class App extends StatelessWidget {
@@ -23,10 +27,17 @@ class App extends StatelessWidget {
     return Root(
       titlebar: Titlebar(
         menus: [
-          TitlebarMenu(child: Text('Baru')),
-          TitlebarMenu(child: Text('Buka')),
-          TitlebarMenu(child: Text('Simpan')),
+          // TitlebarMenu(child: Text('Baru')),
+          // TitlebarMenu(child: Text('Buka')),
+          // TitlebarMenu(child: Text('Simpan')),
           TitlebarMenu(child: Text('Pengaturan')),
+          TitlebarMenu(child: Text('Tentang')),
+          if (kDebugMode) ...[
+            TitlebarMenu(
+              onTap: () => RestartProvider.of(context).restart(),
+              child: Text('Restart'),
+            ),
+          ],
         ],
       ),
       home: Scaffold(
@@ -57,12 +68,14 @@ class App extends StatelessWidget {
   Widget _buildChat(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        border: .all(color: Colors.border),
+        border: .all(color: Colors.bro),
         borderRadius: .circular(8),
       ),
       child: Column(
         children: [
-          Expanded(child: ListView(children: [])),
+          Expanded(
+            child: ListView(padding: .all(8), children: []),
+          ),
           Padding(
             padding: .all(8),
             child: Row(
@@ -82,7 +95,7 @@ class App extends StatelessWidget {
     return Container(
       clipBehavior: .antiAlias,
       decoration: BoxDecoration(
-        border: .all(color: Colors.border),
+        border: .all(color: Colors.bro),
         borderRadius: .circular(8),
       ),
       child: Vpl(),
@@ -93,7 +106,7 @@ class App extends StatelessWidget {
     return Container(
       padding: .all(8),
       decoration: BoxDecoration(
-        border: .all(color: Colors.border),
+        border: .all(color: Colors.bro),
         borderRadius: .circular(8),
       ),
       child: Row(

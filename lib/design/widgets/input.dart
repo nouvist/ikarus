@@ -1,4 +1,6 @@
+import 'package:flutter/services.dart';
 import 'package:ikarus/design.dart';
+import 'package:ikarus/extensions.dart';
 
 class Input extends StatefulWidget {
   const Input({super.key});
@@ -12,6 +14,7 @@ class _InputState extends State<Input>
   final _controller = TextEditingController();
   final _focus = FocusNode();
   late final _gesture = TextSelectionGestureDetectorBuilder(delegate: this);
+  var _position = Offset.zero;
 
   @override
   GlobalKey<EditableTextState> get editableTextKey => _key;
@@ -22,8 +25,39 @@ class _InputState extends State<Input>
   @override
   bool get selectionEnabled => true;
 
-  void _handleTapOutside(PointerDownEvent event) {
+  void _handleHover(PointerHoverEvent event) {
+    _position = event.position;
+  }
+
+  void _handleTapOutside(PointerUpEvent event) {
     _focus.unfocus();
+  }
+
+  Widget _buildContextMenu(BuildContext context, EditableTextState state) {
+    return Focus(
+      parentNode: _focus,
+      child: _gesture.buildGestureDetector(
+        child: ContextMenu(
+          position:
+              _position -
+              context.findAncestorElement<Overlay>()!.calculateWidgetOffset()!,
+          children: [
+            ContextMenuItem(
+              onTap: () => state.cutSelection(.toolbar),
+              child: Text('Potong'),
+            ),
+            ContextMenuItem(
+              onTap: () => state.copySelection(.toolbar),
+              child: Text('Salin'),
+            ),
+            ContextMenuItem(
+              onTap: () => state.pasteText(.toolbar),
+              child: Text('Tempel'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -31,9 +65,9 @@ class _InputState extends State<Input>
     return ConstrainedBox(
       constraints: .new(maxHeight: 48),
       child: _gesture.buildGestureDetector(
-        behavior: .opaque,
         child: MouseRegion(
           cursor: SystemMouseCursors.text,
+          onHover: _handleHover,
           child: ListenableBuilder(
             listenable: _focus,
             builder: (context, child) => DecoratedBox(
@@ -41,10 +75,7 @@ class _InputState extends State<Input>
                 border: Border(
                   bottom: switch (_focus.hasFocus) {
                     true => BorderSide(color: Colors.a0, width: 3),
-                    false => BorderSide(
-                      color: Colors.border,
-                      width: 2,
-                    ),
+                    false => BorderSide(color: Colors.bro, width: 2),
                   },
                 ),
                 borderRadius: .circular(8),
@@ -53,7 +84,7 @@ class _InputState extends State<Input>
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                border: .all(color: Colors.border),
+                border: .all(color: Colors.bro),
                 borderRadius: .circular(8),
               ),
               child: Padding(
@@ -67,7 +98,8 @@ class _InputState extends State<Input>
                     cursorColor: Colors.fg0,
                     backgroundCursorColor: Colors.fg0,
                     selectionColor: Colors.bg2,
-                    onTapOutside: _handleTapOutside,
+                    contextMenuBuilder: _buildContextMenu,
+                    onTapUpOutside: _handleTapOutside,
                   ),
                 ),
               ),

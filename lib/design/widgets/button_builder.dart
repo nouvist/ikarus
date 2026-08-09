@@ -19,6 +19,9 @@ enum ButtonState {
 
 class ButtonBuilder extends StatefulWidget {
   final VoidCallback? onTap;
+  final VoidCallback? onTapUp;
+  final VoidCallback? onTapDown;
+  final VoidCallback? onDoubleTap;
   final HitTestBehavior? behavior;
   final ButtonContainerBuilder builder;
   final Widget? child;
@@ -26,6 +29,9 @@ class ButtonBuilder extends StatefulWidget {
   const ButtonBuilder({
     super.key,
     this.onTap,
+    this.onTapUp,
+    this.onTapDown,
+    this.onDoubleTap,
     this.behavior,
     required this.builder,
     this.child,
@@ -52,13 +58,20 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
         _state.add(.rest);
       },
       child: GestureDetector(
-        onTap: widget.onTap,
         behavior: widget.behavior,
-        onTapDown: (details) => _state.add(.tap),
-        onTapUp: (details) => _state.add(switch (_lastHover) {
-          true => .hover,
-          false => .rest,
-        }),
+        onTap: widget.onTap,
+        onDoubleTap: widget.onDoubleTap,
+        onTapUp: (details) {
+          widget.onTapUp?.call();
+          _state.add(switch (_lastHover) {
+            true => .hover,
+            false => .rest,
+          });
+        },
+        onTapDown: (details) {
+          widget.onTapDown?.call();
+          _state.add(.tap);
+        },
         child: StreamBuilder(
           stream: _state,
           builder: (context, snapshot) =>

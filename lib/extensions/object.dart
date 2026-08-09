@@ -3,7 +3,7 @@ extension ObjectExtension on Object {
   T cast<T>() => this as T;
 
   @pragma('vm:prefer-inline')
-  T? tryCast<T>() => switch (this == T) {
+  T? tryCast<T>() => switch (this is T) {
     true => this as T,
     false => null,
   };
@@ -14,7 +14,7 @@ extension NullableObjectExtension on Object? {
   T cast<T>() => this as T;
 
   @pragma('vm:prefer-inline')
-  T? tryCast<T>() => switch (this == T) {
+  T? tryCast<T>() => switch (this is T) {
     true => this as T,
     false => null,
   };

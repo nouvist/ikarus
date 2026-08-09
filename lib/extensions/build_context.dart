@@ -23,4 +23,15 @@ extension BuildContextExtension on BuildContext {
   Offset? calculateWidgetOffset([RenderObject? ancestor]) {
     return findRenderBox()?.localToGlobal(.zero, ancestor: ancestor);
   }
+
+  Element? findAncestorElement<W extends Widget>() {
+    var result = null as Element?;
+    visitAncestorElements((element) {
+      if (element.widget is! Overlay) return true;
+      result = element;
+      return false;
+    });
+
+    return result;
+  }
 }
