@@ -28,6 +28,6 @@ export 'package:ikarus/design/widgets/button.dart';
 export 'package:ikarus/design/widgets/context_menu.dart';
 
 @pragma('vm:prefer-inline')
-Future<void> yieldNow(Function()? callback) {
+Future<void> yieldNow([Function()? callback]) {
   return Future.delayed(.zero, callback);
 }

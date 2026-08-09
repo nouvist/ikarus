@@ -1,35 +1,46 @@
 import 'package:flutter/foundation.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
+import 'package:ikarus/screens.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await RustLib.init();
   await WindowManager.instance.ensureInitialized();
   await WindowManager.instance.waitUntilReadyToShow(
-    .new(
-      title: "Ikarus",
-      titleBarStyle: .hidden,
-      minimumSize: .new(720, 640),
-    ),
+    .new(title: "Ikarus", titleBarStyle: .hidden, minimumSize: .new(720, 640)),
   );
   WindowManager.instance.show();
   WindowManager.instance.focus();
-  runApp(RestartProvider(child: const App()));
+
+  runApp(
+    Nested(
+      children: [RestartProvider()],
+      child: App(
+        waitFor: Future.wait([
+          Future.delayed(.new(seconds: 5)),
+          RustLib.init(),
+        ]),
+      ),
+    ),
+  );
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+  final Future<void>? waitFor;
+
+  const App({super.key, this.waitFor});
 
   @override
   Widget build(BuildContext context) {
     return Root(
+      waitFor: waitFor,
       titlebar: Titlebar(
         menus: [
           // TitlebarMenu(child: Text('Baru')),
           // TitlebarMenu(child: Text('Buka')),
           // TitlebarMenu(child: Text('Simpan')),
+          TitlebarMenu(onTap: () => launch(), child: Text('Nyoba')),
           TitlebarMenu(child: Text('Pengaturan')),
           TitlebarMenu(child: Text('Tentang')),
           if (kDebugMode) ...[
@@ -40,129 +51,7 @@ class App extends StatelessWidget {
           ],
         ],
       ),
-      home: Scaffold(
-        child: Padding(
-          padding: .only(left: 8, right: 8, bottom: 8),
-          child: Column(
-            spacing: 8,
-            crossAxisAlignment: .stretch,
-            children: [
-              _buildToolbar(context),
-              Expanded(
-                child: Row(
-                  spacing: 8,
-                  crossAxisAlignment: .stretch,
-                  children: [
-                    Expanded(child: _buildVpl(context)),
-                    Expanded(child: _buildChat(context)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChat(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: .all(color: Colors.bro),
-        borderRadius: .circular(8),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(padding: .all(8), children: []),
-          ),
-          Padding(
-            padding: .all(8),
-            child: Row(
-              spacing: 8,
-              children: [
-                Expanded(child: Input()),
-                Button(child: Icon(Icons.send)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVpl(BuildContext context) {
-    return Container(
-      clipBehavior: .antiAlias,
-      decoration: BoxDecoration(
-        border: .all(color: Colors.bro),
-        borderRadius: .circular(8),
-      ),
-      child: Vpl(),
-    );
-  }
-
-  Widget _buildToolbar(BuildContext context) {
-    return Container(
-      padding: .all(8),
-      decoration: BoxDecoration(
-        border: .all(color: Colors.bro),
-        borderRadius: .circular(8),
-      ),
-      child: Row(
-        spacing: 2,
-        children: [Icon(Icons.play_arrow), Icon(Icons.pause), Icon(Icons.stop)],
-      ),
-    );
-  }
-}
-
-class Vpl extends StatelessWidget {
-  const Vpl({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final children = [
-      VplBlock(
-        cutout: .start,
-        type: .start,
-        child: Center(child: Text('Mulai')),
-      ),
-      VplBlock(
-        type: .call,
-        child: Center(child: Text('Fungsi 1')),
-      ),
-      VplScopeStart(child: Center(child: Text('Jika 1'))),
-      VplBlock(
-        type: .call,
-        nested: 1,
-        child: Center(child: Text('Fungsi 2')),
-      ),
-      VplBlock(
-        type: .call,
-        nested: 1,
-        child: Center(child: Text('Fungsi 3')),
-      ),
-      VplScopeStart(nested: 1, child: Center(child: Text('Jika bersarang 1'))),
-      VplBlock(
-        type: .call,
-        nested: 2,
-        child: Center(child: Text('Fungsi 4')),
-      ),
-      VplScopeEnd(nested: 1),
-      VplScopeEnd(),
-      VplNewBlock(),
-    ];
-
-    final keyed = children
-        .map((child) => KeyedSubtree(key: UniqueKey(), child: child))
-        .toList();
-
-    return ReorderableList(
-      itemCount: keyed.length,
-      padding: .all(8),
-      onReorderItem: (oldIndex, newIndex) {},
-      itemBuilder: (context, index) => keyed[index],
+      home: DocumentScreen(),
     );
   }
 }

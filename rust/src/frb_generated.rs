@@ -134,18 +134,72 @@ impl SseDecode for String {
     }
 }
 
-impl SseDecode for crate::vpl::ast::Assignment {
+impl SseDecode for bool {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u8().unwrap() != 0
+    }
+}
+
+impl SseDecode for crate::vpl::dto::DtoCondition {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::vpl::dto::DtoCondition::Not,
+            1 => crate::vpl::dto::DtoCondition::Equal,
+            2 => crate::vpl::dto::DtoCondition::LessThan,
+            3 => crate::vpl::dto::DtoCondition::LessThenOrEqual,
+            4 => crate::vpl::dto::DtoCondition::GreaterThen,
+            5 => crate::vpl::dto::DtoCondition::GreaterThenOrEqual,
+            _ => unreachable!("Invalid variant for DtoCondition: {}", inner),
+        };
+    }
+}
+
+impl SseDecode for crate::vpl::dto::DtoScope {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_field0 = <Vec<crate::vpl::dto::DtoStatement>>::sse_decode(deserializer);
+        return crate::vpl::dto::DtoScope(var_field0);
+    }
+}
+
+impl SseDecode for crate::vpl::dto::DtoStatement {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut tag_ = <i32>::sse_decode(deserializer);
         match tag_ {
             0 => {
-                let mut var_name = <String>::sse_decode(deserializer);
-                let mut var_value = <crate::vpl::ast::Value>::sse_decode(deserializer);
-                return crate::vpl::ast::Assignment::Declare {
-                    name: var_name,
+                let mut var_identifier = <String>::sse_decode(deserializer);
+                let mut var_value = <crate::vpl::dto::DtoValue>::sse_decode(deserializer);
+                return crate::vpl::dto::DtoStatement::Assignment {
+                    identifier: var_identifier,
                     value: var_value,
                 };
+            }
+            1 => {
+                let mut var_left = <crate::vpl::dto::DtoVariable>::sse_decode(deserializer);
+                let mut var_right = <crate::vpl::dto::DtoVariable>::sse_decode(deserializer);
+                let mut var_condition = <crate::vpl::dto::DtoCondition>::sse_decode(deserializer);
+                return crate::vpl::dto::DtoStatement::If {
+                    left: var_left,
+                    right: var_right,
+                    condition: var_condition,
+                };
+            }
+            2 => {
+                let mut var_left = <crate::vpl::dto::DtoVariable>::sse_decode(deserializer);
+                let mut var_right = <crate::vpl::dto::DtoVariable>::sse_decode(deserializer);
+                let mut var_condition = <crate::vpl::dto::DtoCondition>::sse_decode(deserializer);
+                return crate::vpl::dto::DtoStatement::For {
+                    left: var_left,
+                    right: var_right,
+                    condition: var_condition,
+                };
+            }
+            3 => {
+                return crate::vpl::dto::DtoStatement::End;
             }
             _ => {
                 unimplemented!("");
@@ -154,10 +208,53 @@ impl SseDecode for crate::vpl::ast::Assignment {
     }
 }
 
-impl SseDecode for bool {
+impl SseDecode for crate::vpl::dto::DtoValue {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_u8().unwrap() != 0
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                return crate::vpl::dto::DtoValue::Undefined;
+            }
+            1 => {
+                let mut var_field0 = <f64>::sse_decode(deserializer);
+                return crate::vpl::dto::DtoValue::Number(var_field0);
+            }
+            2 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::vpl::dto::DtoValue::String(var_field0);
+            }
+            3 => {
+                let mut var_field0 = <bool>::sse_decode(deserializer);
+                return crate::vpl::dto::DtoValue::Boolean(var_field0);
+            }
+            4 => {
+                return crate::vpl::dto::DtoValue::Element;
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseDecode for crate::vpl::dto::DtoVariable {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::vpl::dto::DtoVariable::Identifier(var_field0);
+            }
+            1 => {
+                let mut var_field0 = <crate::vpl::dto::DtoValue>::sse_decode(deserializer);
+                return crate::vpl::dto::DtoVariable::Value(var_field0);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
     }
 }
 
@@ -165,6 +262,25 @@ impl SseDecode for f64 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         deserializer.cursor.read_f64::<NativeEndian>().unwrap()
+    }
+}
+
+impl SseDecode for i32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_i32::<NativeEndian>().unwrap()
+    }
+}
+
+impl SseDecode for Vec<crate::vpl::dto::DtoStatement> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::vpl::dto::DtoStatement>::sse_decode(deserializer));
+        }
+        return ans_;
     }
 }
 
@@ -190,37 +306,6 @@ impl SseDecode for u8 {
 impl SseDecode for () {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {}
-}
-
-impl SseDecode for crate::vpl::ast::Value {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut tag_ = <i32>::sse_decode(deserializer);
-        match tag_ {
-            0 => {
-                let mut var_field0 = <f64>::sse_decode(deserializer);
-                return crate::vpl::ast::Value::Number(var_field0);
-            }
-            1 => {
-                let mut var_field0 = <String>::sse_decode(deserializer);
-                return crate::vpl::ast::Value::String(var_field0);
-            }
-            2 => {
-                let mut var_field0 = <bool>::sse_decode(deserializer);
-                return crate::vpl::ast::Value::Boolean(var_field0);
-            }
-            _ => {
-                unimplemented!("");
-            }
-        }
-    }
-}
-
-impl SseDecode for i32 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        deserializer.cursor.read_i32::<NativeEndian>().unwrap()
-    }
 }
 
 fn pde_ffi_dispatcher_primary_impl(
@@ -253,41 +338,122 @@ fn pde_ffi_dispatcher_sync_impl(
 // Section: rust2dart
 
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::vpl::ast::Assignment {
+impl flutter_rust_bridge::IntoDart for crate::vpl::dto::DtoCondition {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
-            crate::vpl::ast::Assignment::Declare { name, value } => [
-                0.into_dart(),
-                name.into_into_dart().into_dart(),
-                value.into_into_dart().into_dart(),
-            ]
-            .into_dart(),
-            _ => {
-                unimplemented!("");
-            }
+            Self::Not => 0.into_dart(),
+            Self::Equal => 1.into_dart(),
+            Self::LessThan => 2.into_dart(),
+            Self::LessThenOrEqual => 3.into_dart(),
+            Self::GreaterThen => 4.into_dart(),
+            Self::GreaterThenOrEqual => 5.into_dart(),
+            _ => unreachable!(),
         }
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::vpl::ast::Assignment {}
-impl flutter_rust_bridge::IntoIntoDart<crate::vpl::ast::Assignment>
-    for crate::vpl::ast::Assignment
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::vpl::dto::DtoCondition {}
+impl flutter_rust_bridge::IntoIntoDart<crate::vpl::dto::DtoCondition>
+    for crate::vpl::dto::DtoCondition
 {
-    fn into_into_dart(self) -> crate::vpl::ast::Assignment {
+    fn into_into_dart(self) -> crate::vpl::dto::DtoCondition {
         self
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::vpl::ast::Value {
+impl flutter_rust_bridge::IntoDart for crate::vpl::dto::DtoScope {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [self.0.into_into_dart().into_dart()].into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::vpl::dto::DtoScope {}
+impl flutter_rust_bridge::IntoIntoDart<crate::vpl::dto::DtoScope> for crate::vpl::dto::DtoScope {
+    fn into_into_dart(self) -> crate::vpl::dto::DtoScope {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::vpl::dto::DtoStatement {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
-            crate::vpl::ast::Value::Number(field0) => {
-                [0.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            crate::vpl::dto::DtoStatement::Assignment { identifier, value } => [
+                0.into_dart(),
+                identifier.into_into_dart().into_dart(),
+                value.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::vpl::dto::DtoStatement::If {
+                left,
+                right,
+                condition,
+            } => [
+                1.into_dart(),
+                left.into_into_dart().into_dart(),
+                right.into_into_dart().into_dart(),
+                condition.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::vpl::dto::DtoStatement::For {
+                left,
+                right,
+                condition,
+            } => [
+                2.into_dart(),
+                left.into_into_dart().into_dart(),
+                right.into_into_dart().into_dart(),
+                condition.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::vpl::dto::DtoStatement::End => [3.into_dart()].into_dart(),
+            _ => {
+                unimplemented!("");
             }
-            crate::vpl::ast::Value::String(field0) => {
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::vpl::dto::DtoStatement {}
+impl flutter_rust_bridge::IntoIntoDart<crate::vpl::dto::DtoStatement>
+    for crate::vpl::dto::DtoStatement
+{
+    fn into_into_dart(self) -> crate::vpl::dto::DtoStatement {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::vpl::dto::DtoValue {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            crate::vpl::dto::DtoValue::Undefined => [0.into_dart()].into_dart(),
+            crate::vpl::dto::DtoValue::Number(field0) => {
                 [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
-            crate::vpl::ast::Value::Boolean(field0) => {
+            crate::vpl::dto::DtoValue::String(field0) => {
                 [2.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::vpl::dto::DtoValue::Boolean(field0) => {
+                [3.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::vpl::dto::DtoValue::Element => [4.into_dart()].into_dart(),
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::vpl::dto::DtoValue {}
+impl flutter_rust_bridge::IntoIntoDart<crate::vpl::dto::DtoValue> for crate::vpl::dto::DtoValue {
+    fn into_into_dart(self) -> crate::vpl::dto::DtoValue {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::vpl::dto::DtoVariable {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            crate::vpl::dto::DtoVariable::Identifier(field0) => {
+                [0.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::vpl::dto::DtoVariable::Value(field0) => {
+                [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
             _ => {
                 unimplemented!("");
@@ -295,9 +461,11 @@ impl flutter_rust_bridge::IntoDart for crate::vpl::ast::Value {
         }
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::vpl::ast::Value {}
-impl flutter_rust_bridge::IntoIntoDart<crate::vpl::ast::Value> for crate::vpl::ast::Value {
-    fn into_into_dart(self) -> crate::vpl::ast::Value {
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::vpl::dto::DtoVariable {}
+impl flutter_rust_bridge::IntoIntoDart<crate::vpl::dto::DtoVariable>
+    for crate::vpl::dto::DtoVariable
+{
+    fn into_into_dart(self) -> crate::vpl::dto::DtoVariable {
         self
     }
 }
@@ -316,14 +484,71 @@ impl SseEncode for String {
     }
 }
 
-impl SseEncode for crate::vpl::ast::Assignment {
+impl SseEncode for bool {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_u8(self as _).unwrap();
+    }
+}
+
+impl SseEncode for crate::vpl::dto::DtoCondition {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::vpl::dto::DtoCondition::Not => 0,
+                crate::vpl::dto::DtoCondition::Equal => 1,
+                crate::vpl::dto::DtoCondition::LessThan => 2,
+                crate::vpl::dto::DtoCondition::LessThenOrEqual => 3,
+                crate::vpl::dto::DtoCondition::GreaterThen => 4,
+                crate::vpl::dto::DtoCondition::GreaterThenOrEqual => 5,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
+    }
+}
+
+impl SseEncode for crate::vpl::dto::DtoScope {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<crate::vpl::dto::DtoStatement>>::sse_encode(self.0, serializer);
+    }
+}
+
+impl SseEncode for crate::vpl::dto::DtoStatement {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         match self {
-            crate::vpl::ast::Assignment::Declare { name, value } => {
+            crate::vpl::dto::DtoStatement::Assignment { identifier, value } => {
                 <i32>::sse_encode(0, serializer);
-                <String>::sse_encode(name, serializer);
-                <crate::vpl::ast::Value>::sse_encode(value, serializer);
+                <String>::sse_encode(identifier, serializer);
+                <crate::vpl::dto::DtoValue>::sse_encode(value, serializer);
+            }
+            crate::vpl::dto::DtoStatement::If {
+                left,
+                right,
+                condition,
+            } => {
+                <i32>::sse_encode(1, serializer);
+                <crate::vpl::dto::DtoVariable>::sse_encode(left, serializer);
+                <crate::vpl::dto::DtoVariable>::sse_encode(right, serializer);
+                <crate::vpl::dto::DtoCondition>::sse_encode(condition, serializer);
+            }
+            crate::vpl::dto::DtoStatement::For {
+                left,
+                right,
+                condition,
+            } => {
+                <i32>::sse_encode(2, serializer);
+                <crate::vpl::dto::DtoVariable>::sse_encode(left, serializer);
+                <crate::vpl::dto::DtoVariable>::sse_encode(right, serializer);
+                <crate::vpl::dto::DtoCondition>::sse_encode(condition, serializer);
+            }
+            crate::vpl::dto::DtoStatement::End => {
+                <i32>::sse_encode(3, serializer);
             }
             _ => {
                 unimplemented!("");
@@ -332,10 +557,51 @@ impl SseEncode for crate::vpl::ast::Assignment {
     }
 }
 
-impl SseEncode for bool {
+impl SseEncode for crate::vpl::dto::DtoValue {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_u8(self as _).unwrap();
+        match self {
+            crate::vpl::dto::DtoValue::Undefined => {
+                <i32>::sse_encode(0, serializer);
+            }
+            crate::vpl::dto::DtoValue::Number(field0) => {
+                <i32>::sse_encode(1, serializer);
+                <f64>::sse_encode(field0, serializer);
+            }
+            crate::vpl::dto::DtoValue::String(field0) => {
+                <i32>::sse_encode(2, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::vpl::dto::DtoValue::Boolean(field0) => {
+                <i32>::sse_encode(3, serializer);
+                <bool>::sse_encode(field0, serializer);
+            }
+            crate::vpl::dto::DtoValue::Element => {
+                <i32>::sse_encode(4, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseEncode for crate::vpl::dto::DtoVariable {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            crate::vpl::dto::DtoVariable::Identifier(field0) => {
+                <i32>::sse_encode(0, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::vpl::dto::DtoVariable::Value(field0) => {
+                <i32>::sse_encode(1, serializer);
+                <crate::vpl::dto::DtoValue>::sse_encode(field0, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
     }
 }
 
@@ -343,6 +609,23 @@ impl SseEncode for f64 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         serializer.cursor.write_f64::<NativeEndian>(self).unwrap();
+    }
+}
+
+impl SseEncode for i32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_i32::<NativeEndian>(self).unwrap();
+    }
+}
+
+impl SseEncode for Vec<crate::vpl::dto::DtoStatement> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::vpl::dto::DtoStatement>::sse_encode(item, serializer);
+        }
     }
 }
 
@@ -366,36 +649,6 @@ impl SseEncode for u8 {
 impl SseEncode for () {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {}
-}
-
-impl SseEncode for crate::vpl::ast::Value {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        match self {
-            crate::vpl::ast::Value::Number(field0) => {
-                <i32>::sse_encode(0, serializer);
-                <f64>::sse_encode(field0, serializer);
-            }
-            crate::vpl::ast::Value::String(field0) => {
-                <i32>::sse_encode(1, serializer);
-                <String>::sse_encode(field0, serializer);
-            }
-            crate::vpl::ast::Value::Boolean(field0) => {
-                <i32>::sse_encode(2, serializer);
-                <bool>::sse_encode(field0, serializer);
-            }
-            _ => {
-                unimplemented!("");
-            }
-        }
-    }
-}
-
-impl SseEncode for i32 {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        serializer.cursor.write_i32::<NativeEndian>(self).unwrap();
-    }
 }
 
 #[cfg(not(target_family = "wasm"))]

@@ -10,7 +10,7 @@ import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
 import 'lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
-import 'vpl/ast.dart';
+import 'vpl/dto.dart';
 
 /// Main entrypoint of the Rust API
 class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
@@ -159,35 +159,114 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  Assignment dco_decode_assignment(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    switch (raw[0]) {
-      case 0:
-        return Assignment_Declare(
-          name: dco_decode_String(raw[1]),
-          value: dco_decode_box_autoadd_value(raw[2]),
-        );
-      default:
-        throw Exception("unreachable");
-    }
-  }
-
-  @protected
   bool dco_decode_bool(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as bool;
   }
 
   @protected
-  Value dco_decode_box_autoadd_value(dynamic raw) {
+  DtoValue dco_decode_box_autoadd_dto_value(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return dco_decode_value(raw);
+    return dco_decode_dto_value(raw);
+  }
+
+  @protected
+  DtoVariable dco_decode_box_autoadd_dto_variable(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_dto_variable(raw);
+  }
+
+  @protected
+  DtoCondition dco_decode_dto_condition(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return DtoCondition.values[raw as int];
+  }
+
+  @protected
+  DtoScope dco_decode_dto_scope(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return DtoScope(field0: dco_decode_list_dto_statement(arr[0]));
+  }
+
+  @protected
+  DtoStatement dco_decode_dto_statement(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return DtoStatement_Assignment(
+          identifier: dco_decode_String(raw[1]),
+          value: dco_decode_box_autoadd_dto_value(raw[2]),
+        );
+      case 1:
+        return DtoStatement_If(
+          left: dco_decode_box_autoadd_dto_variable(raw[1]),
+          right: dco_decode_box_autoadd_dto_variable(raw[2]),
+          condition: dco_decode_dto_condition(raw[3]),
+        );
+      case 2:
+        return DtoStatement_For(
+          left: dco_decode_box_autoadd_dto_variable(raw[1]),
+          right: dco_decode_box_autoadd_dto_variable(raw[2]),
+          condition: dco_decode_dto_condition(raw[3]),
+        );
+      case 3:
+        return DtoStatement_End();
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  @protected
+  DtoValue dco_decode_dto_value(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return DtoValue_Undefined();
+      case 1:
+        return DtoValue_Number(dco_decode_f_64(raw[1]));
+      case 2:
+        return DtoValue_String(dco_decode_String(raw[1]));
+      case 3:
+        return DtoValue_Boolean(dco_decode_bool(raw[1]));
+      case 4:
+        return DtoValue_Element();
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  @protected
+  DtoVariable dco_decode_dto_variable(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return DtoVariable_Identifier(dco_decode_String(raw[1]));
+      case 1:
+        return DtoVariable_Value(dco_decode_box_autoadd_dto_value(raw[1]));
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   @protected
   double dco_decode_f_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
+  }
+
+  @protected
+  int dco_decode_i_32(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as int;
+  }
+
+  @protected
+  List<DtoStatement> dco_decode_list_dto_statement(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_dto_statement).toList();
   }
 
   @protected
@@ -209,21 +288,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  Value dco_decode_value(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    switch (raw[0]) {
-      case 0:
-        return Value_Number(dco_decode_f_64(raw[1]));
-      case 1:
-        return Value_String(dco_decode_String(raw[1]));
-      case 2:
-        return Value_Boolean(dco_decode_bool(raw[1]));
-      default:
-        throw Exception("unreachable");
-    }
-  }
-
-  @protected
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_String(deserializer);
@@ -238,36 +302,142 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  Assignment sse_decode_assignment(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-
-    var tag_ = sse_decode_i_32(deserializer);
-    switch (tag_) {
-      case 0:
-        var var_name = sse_decode_String(deserializer);
-        var var_value = sse_decode_box_autoadd_value(deserializer);
-        return Assignment_Declare(name: var_name, value: var_value);
-      default:
-        throw UnimplementedError('');
-    }
-  }
-
-  @protected
   bool sse_decode_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8() != 0;
   }
 
   @protected
-  Value sse_decode_box_autoadd_value(SseDeserializer deserializer) {
+  DtoValue sse_decode_box_autoadd_dto_value(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    return (sse_decode_value(deserializer));
+    return (sse_decode_dto_value(deserializer));
+  }
+
+  @protected
+  DtoVariable sse_decode_box_autoadd_dto_variable(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_dto_variable(deserializer));
+  }
+
+  @protected
+  DtoCondition sse_decode_dto_condition(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return DtoCondition.values[inner];
+  }
+
+  @protected
+  DtoScope sse_decode_dto_scope(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_field0 = sse_decode_list_dto_statement(deserializer);
+    return DtoScope(field0: var_field0);
+  }
+
+  @protected
+  DtoStatement sse_decode_dto_statement(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        var var_identifier = sse_decode_String(deserializer);
+        var var_value = sse_decode_box_autoadd_dto_value(deserializer);
+        return DtoStatement_Assignment(
+          identifier: var_identifier,
+          value: var_value,
+        );
+      case 1:
+        var var_left = sse_decode_box_autoadd_dto_variable(deserializer);
+        var var_right = sse_decode_box_autoadd_dto_variable(deserializer);
+        var var_condition = sse_decode_dto_condition(deserializer);
+        return DtoStatement_If(
+          left: var_left,
+          right: var_right,
+          condition: var_condition,
+        );
+      case 2:
+        var var_left = sse_decode_box_autoadd_dto_variable(deserializer);
+        var var_right = sse_decode_box_autoadd_dto_variable(deserializer);
+        var var_condition = sse_decode_dto_condition(deserializer);
+        return DtoStatement_For(
+          left: var_left,
+          right: var_right,
+          condition: var_condition,
+        );
+      case 3:
+        return DtoStatement_End();
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
+  DtoValue sse_decode_dto_value(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        return DtoValue_Undefined();
+      case 1:
+        var var_field0 = sse_decode_f_64(deserializer);
+        return DtoValue_Number(var_field0);
+      case 2:
+        var var_field0 = sse_decode_String(deserializer);
+        return DtoValue_String(var_field0);
+      case 3:
+        var var_field0 = sse_decode_bool(deserializer);
+        return DtoValue_Boolean(var_field0);
+      case 4:
+        return DtoValue_Element();
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
+  DtoVariable sse_decode_dto_variable(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        var var_field0 = sse_decode_String(deserializer);
+        return DtoVariable_Identifier(var_field0);
+      case 1:
+        var var_field0 = sse_decode_box_autoadd_dto_value(deserializer);
+        return DtoVariable_Value(var_field0);
+      default:
+        throw UnimplementedError('');
+    }
   }
 
   @protected
   double sse_decode_f_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getFloat64();
+  }
+
+  @protected
+  int sse_decode_i_32(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getInt32();
+  }
+
+  @protected
+  List<DtoStatement> sse_decode_list_dto_statement(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <DtoStatement>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_dto_statement(deserializer));
+    }
+    return ans_;
   }
 
   @protected
@@ -289,32 +459,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  Value sse_decode_value(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-
-    var tag_ = sse_decode_i_32(deserializer);
-    switch (tag_) {
-      case 0:
-        var var_field0 = sse_decode_f_64(deserializer);
-        return Value_Number(var_field0);
-      case 1:
-        var var_field0 = sse_decode_String(deserializer);
-        return Value_String(var_field0);
-      case 2:
-        var var_field0 = sse_decode_bool(deserializer);
-        return Value_Boolean(var_field0);
-      default:
-        throw UnimplementedError('');
-    }
-  }
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    return deserializer.buffer.getInt32();
-  }
-
-  @protected
   void sse_encode_AnyhowException(
     AnyhowException self,
     SseSerializer serializer,
@@ -330,32 +474,130 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_assignment(Assignment self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    switch (self) {
-      case Assignment_Declare(name: final name, value: final value):
-        sse_encode_i_32(0, serializer);
-        sse_encode_String(name, serializer);
-        sse_encode_box_autoadd_value(value, serializer);
-    }
-  }
-
-  @protected
   void sse_encode_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self ? 1 : 0);
   }
 
   @protected
-  void sse_encode_box_autoadd_value(Value self, SseSerializer serializer) {
+  void sse_encode_box_autoadd_dto_value(
+    DtoValue self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_value(self, serializer);
+    sse_encode_dto_value(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_dto_variable(
+    DtoVariable self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_dto_variable(self, serializer);
+  }
+
+  @protected
+  void sse_encode_dto_condition(DtoCondition self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_dto_scope(DtoScope self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_list_dto_statement(self.field0, serializer);
+  }
+
+  @protected
+  void sse_encode_dto_statement(DtoStatement self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case DtoStatement_Assignment(
+        identifier: final identifier,
+        value: final value,
+      ):
+        sse_encode_i_32(0, serializer);
+        sse_encode_String(identifier, serializer);
+        sse_encode_box_autoadd_dto_value(value, serializer);
+      case DtoStatement_If(
+        left: final left,
+        right: final right,
+        condition: final condition,
+      ):
+        sse_encode_i_32(1, serializer);
+        sse_encode_box_autoadd_dto_variable(left, serializer);
+        sse_encode_box_autoadd_dto_variable(right, serializer);
+        sse_encode_dto_condition(condition, serializer);
+      case DtoStatement_For(
+        left: final left,
+        right: final right,
+        condition: final condition,
+      ):
+        sse_encode_i_32(2, serializer);
+        sse_encode_box_autoadd_dto_variable(left, serializer);
+        sse_encode_box_autoadd_dto_variable(right, serializer);
+        sse_encode_dto_condition(condition, serializer);
+      case DtoStatement_End():
+        sse_encode_i_32(3, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_dto_value(DtoValue self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case DtoValue_Undefined():
+        sse_encode_i_32(0, serializer);
+      case DtoValue_Number(field0: final field0):
+        sse_encode_i_32(1, serializer);
+        sse_encode_f_64(field0, serializer);
+      case DtoValue_String(field0: final field0):
+        sse_encode_i_32(2, serializer);
+        sse_encode_String(field0, serializer);
+      case DtoValue_Boolean(field0: final field0):
+        sse_encode_i_32(3, serializer);
+        sse_encode_bool(field0, serializer);
+      case DtoValue_Element():
+        sse_encode_i_32(4, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_dto_variable(DtoVariable self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case DtoVariable_Identifier(field0: final field0):
+        sse_encode_i_32(0, serializer);
+        sse_encode_String(field0, serializer);
+      case DtoVariable_Value(field0: final field0):
+        sse_encode_i_32(1, serializer);
+        sse_encode_box_autoadd_dto_value(field0, serializer);
+    }
   }
 
   @protected
   void sse_encode_f_64(double self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putFloat64(self);
+  }
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putInt32(self);
+  }
+
+  @protected
+  void sse_encode_list_dto_statement(
+    List<DtoStatement> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_dto_statement(item, serializer);
+    }
   }
 
   @protected
@@ -377,27 +619,5 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_unit(void self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
-  }
-
-  @protected
-  void sse_encode_value(Value self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    switch (self) {
-      case Value_Number(field0: final field0):
-        sse_encode_i_32(0, serializer);
-        sse_encode_f_64(field0, serializer);
-      case Value_String(field0: final field0):
-        sse_encode_i_32(1, serializer);
-        sse_encode_String(field0, serializer);
-      case Value_Boolean(field0: final field0):
-        sse_encode_i_32(2, serializer);
-        sse_encode_bool(field0, serializer);
-    }
-  }
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    serializer.buffer.putInt32(self);
   }
 }

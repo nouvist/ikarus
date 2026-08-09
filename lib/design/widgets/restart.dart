@@ -1,9 +1,7 @@
 import 'package:ikarus/design.dart';
 
-class RestartProvider extends StatefulWidget {
-  final Widget child;
-
-  const RestartProvider({super.key, required this.child});
+class RestartProvider extends SingleChildStatefulWidget {
+  const RestartProvider({super.key, super.child});
 
   @pragma('vm:prefer-inline')
   static RestartProviderState? maybeOf(BuildContext context) {
@@ -23,7 +21,7 @@ abstract class RestartProviderState {
   void restart();
 }
 
-class _RestartProviderState extends State<RestartProvider>
+class _RestartProviderState extends SingleChildState<RestartProvider>
     implements RestartProviderState {
   var _key = UniqueKey();
 
@@ -35,10 +33,10 @@ class _RestartProviderState extends State<RestartProvider>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildWithChild(BuildContext context, Widget? child) {
     return Inherited<RestartProviderState>(
       value: this,
-      child: KeyedSubtree(key: _key, child: widget.child),
+      child: KeyedSubtree(key: _key, child: child!),
     );
   }
 }

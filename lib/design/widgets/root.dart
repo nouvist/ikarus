@@ -6,10 +6,11 @@ import 'package:ikarus/extensions.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Root extends StatelessWidget {
+  final Future<void>? waitFor;
   final Widget? titlebar;
   final Widget home;
 
-  const Root({super.key, this.titlebar, required this.home});
+  const Root({super.key, this.waitFor, this.titlebar, required this.home});
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,7 @@ class Root extends StatelessWidget {
         child: IconTheme(
           data: .new(color: Colors.fg0),
           child: _Splash(
+            waitFor: waitFor ?? yieldNow(),
             child: Column(
               crossAxisAlignment: .stretch,
               children: [
@@ -52,8 +54,11 @@ class Root extends StatelessWidget {
 }
 
 class _Splash extends StatefulWidget {
+  final Future<void> waitFor;
   final Widget child;
-  const _Splash({required this.child});
+
+  const _Splash({required this.waitFor, required this.child});
+
 
   @override
   State<_Splash> createState() => _SplashState();
@@ -71,7 +76,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    Future.delayed(.new(seconds: 5)).then(_handleTimer);
+    widget.waitFor.then(_handleTimer);
     _animation.addStatusListener(_handleAnimation);
   }
 

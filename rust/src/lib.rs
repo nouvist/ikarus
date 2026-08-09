@@ -6,12 +6,12 @@ use thirtyfour::{DesiredCapabilities, WebDriver};
 mod frb_generated;
 
 pub mod vpl {
-    pub mod ast;
+    pub mod dto;
 }
 
 #[frb]
 pub async fn launch() -> anyhow::Result<()> {
-    let driver = WebDriver::managed(DesiredCapabilities::firefox())
+    let driver = WebDriver::managed(DesiredCapabilities::chrome())
         .await
         .unwrap();
     driver.goto("https://github.com").await?;

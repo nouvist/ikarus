@@ -11,7 +11,7 @@ import 'dart:convert';
 import 'frb_generated.dart';
 import 'lib.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_web.dart';
-import 'vpl/ast.dart';
+import 'vpl/dto.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   RustLibApiImplPlatform({
@@ -28,16 +28,37 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
-  Assignment dco_decode_assignment(dynamic raw);
-
-  @protected
   bool dco_decode_bool(dynamic raw);
 
   @protected
-  Value dco_decode_box_autoadd_value(dynamic raw);
+  DtoValue dco_decode_box_autoadd_dto_value(dynamic raw);
+
+  @protected
+  DtoVariable dco_decode_box_autoadd_dto_variable(dynamic raw);
+
+  @protected
+  DtoCondition dco_decode_dto_condition(dynamic raw);
+
+  @protected
+  DtoScope dco_decode_dto_scope(dynamic raw);
+
+  @protected
+  DtoStatement dco_decode_dto_statement(dynamic raw);
+
+  @protected
+  DtoValue dco_decode_dto_value(dynamic raw);
+
+  @protected
+  DtoVariable dco_decode_dto_variable(dynamic raw);
 
   @protected
   double dco_decode_f_64(dynamic raw);
+
+  @protected
+  int dco_decode_i_32(dynamic raw);
+
+  @protected
+  List<DtoStatement> dco_decode_list_dto_statement(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
@@ -49,25 +70,45 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void dco_decode_unit(dynamic raw);
 
   @protected
-  Value dco_decode_value(dynamic raw);
-
-  @protected
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
 
   @protected
   String sse_decode_String(SseDeserializer deserializer);
 
   @protected
-  Assignment sse_decode_assignment(SseDeserializer deserializer);
-
-  @protected
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
-  Value sse_decode_box_autoadd_value(SseDeserializer deserializer);
+  DtoValue sse_decode_box_autoadd_dto_value(SseDeserializer deserializer);
+
+  @protected
+  DtoVariable sse_decode_box_autoadd_dto_variable(SseDeserializer deserializer);
+
+  @protected
+  DtoCondition sse_decode_dto_condition(SseDeserializer deserializer);
+
+  @protected
+  DtoScope sse_decode_dto_scope(SseDeserializer deserializer);
+
+  @protected
+  DtoStatement sse_decode_dto_statement(SseDeserializer deserializer);
+
+  @protected
+  DtoValue sse_decode_dto_value(SseDeserializer deserializer);
+
+  @protected
+  DtoVariable sse_decode_dto_variable(SseDeserializer deserializer);
 
   @protected
   double sse_decode_f_64(SseDeserializer deserializer);
+
+  @protected
+  int sse_decode_i_32(SseDeserializer deserializer);
+
+  @protected
+  List<DtoStatement> sse_decode_list_dto_statement(
+    SseDeserializer deserializer,
+  );
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -79,12 +120,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_decode_unit(SseDeserializer deserializer);
 
   @protected
-  Value sse_decode_value(SseDeserializer deserializer);
-
-  @protected
-  int sse_decode_i_32(SseDeserializer deserializer);
-
-  @protected
   void sse_encode_AnyhowException(
     AnyhowException self,
     SseSerializer serializer,
@@ -94,16 +129,46 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_String(String self, SseSerializer serializer);
 
   @protected
-  void sse_encode_assignment(Assignment self, SseSerializer serializer);
-
-  @protected
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
-  void sse_encode_box_autoadd_value(Value self, SseSerializer serializer);
+  void sse_encode_box_autoadd_dto_value(
+    DtoValue self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_box_autoadd_dto_variable(
+    DtoVariable self,
+    SseSerializer serializer,
+  );
+
+  @protected
+  void sse_encode_dto_condition(DtoCondition self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_dto_scope(DtoScope self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_dto_statement(DtoStatement self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_dto_value(DtoValue self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_dto_variable(DtoVariable self, SseSerializer serializer);
 
   @protected
   void sse_encode_f_64(double self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_i_32(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_dto_statement(
+    List<DtoStatement> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_prim_u_8_strict(
@@ -116,12 +181,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_unit(void self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_value(Value self, SseSerializer serializer);
-
-  @protected
-  void sse_encode_i_32(int self, SseSerializer serializer);
 }
 
 // Section: wire_class
