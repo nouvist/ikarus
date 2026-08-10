@@ -2,17 +2,25 @@ import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
 
 class ContextMenu extends StatefulWidget {
+  final OverlayPortalController? controller;
   final Offset? position;
-  final List<ContextMenuItem> children;
+  final List<ContextMenuItem> menus;
+  final Widget? child;
 
-  const ContextMenu({super.key, this.position, required this.children});
+  const ContextMenu({
+    super.key,
+    this.controller,
+    this.position,
+    this.menus = const [],
+    this.child,
+  });
 
   @override
   State<ContextMenu> createState() => _ContextMenuState();
 }
 
 class _ContextMenuState extends State<ContextMenu> {
-  final _controller = OverlayPortalController();
+  late final _controller = widget.controller ?? OverlayPortalController();
   late var _left = widget.position?.dx ?? 0;
   late var _top = widget.position?.dy ?? 0;
 
@@ -20,7 +28,7 @@ class _ContextMenuState extends State<ContextMenu> {
   double _estimateWidth() => 128;
 
   @pragma('vm:prefer-inline')
-  double _estimateHeight() => widget.children.length * 32 + 4 * 2;
+  double _estimateHeight() => widget.menus.length * 32 + 4 * 2;
 
   @override
   void initState() {
@@ -34,7 +42,7 @@ class _ContextMenuState extends State<ContextMenu> {
       if (_top + height > overlay.height) _top -= height;
       if (_left < 0) _left = 0;
       if (_top < 0) _top -= 0;
-      _controller.show();
+      if (_controller != widget.controller) _controller.show();
     });
   }
 
@@ -59,13 +67,14 @@ class _ContextMenuState extends State<ContextMenu> {
                 value: this,
                 child: Column(
                   crossAxisAlignment: .stretch,
-                  children: widget.children,
+                  children: widget.menus,
                 ),
               ),
             ),
           ),
         ),
       ),
+      child: widget.child,
     );
   }
 }

@@ -41,7 +41,7 @@ class _InputState extends State<Input>
           position:
               _position -
               context.findAncestorElement<Overlay>()!.calculateWidgetOffset()!,
-          children: [
+          menus: [
             ContextMenuItem(
               onTap: () => state.cutSelection(.toolbar),
               child: Text('Potong'),

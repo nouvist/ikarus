@@ -97,30 +97,41 @@ class _Vpl extends StatefulWidget {
 class _VplState extends State<_Vpl> {
   final _children = <Widget>[
     VplBlock(
+      key: UniqueKey(),
       cutout: .start,
       type: .start,
       child: Center(child: Text('Mulai')),
     ),
     VplBlock(
+      key: UniqueKey(),
       type: .call,
       child: Center(child: Text('Fungsi 1')),
     ),
-    VplScopeStart(child: Center(child: Text('Jika 1'))),
+    VplScopeStart(
+      key: UniqueKey(),
+      child: Center(child: Text('Jika 1')),
+    ),
     VplBlock(
+      key: UniqueKey(),
       type: .call,
       child: Center(child: Text('Fungsi 2')),
     ),
     VplBlock(
+      key: UniqueKey(),
       type: .call,
       child: Center(child: Text('Fungsi 3')),
     ),
-    VplScopeStart(child: Center(child: Text('Jika bersarang 1'))),
+    VplScopeStart(
+      key: UniqueKey(),
+      child: Center(child: Text('Jika bersarang 1')),
+    ),
     VplBlock(
+      key: UniqueKey(),
       type: .call,
       child: Center(child: Text('Fungsi 4')),
     ),
-    VplScopeEnd(),
-    VplScopeEnd(),
+    VplScopeEnd(key: UniqueKey()),
+    VplScopeEnd(key: UniqueKey()),
   ];
 
   void _handleReorder(int oldIndex, int newIndex) {
@@ -139,10 +150,16 @@ class _VplState extends State<_Vpl> {
       if (child is VplScopeEnd) nested -= 1;
 
       children.add(
-        ReorderableDragStartListener(
-          index: i,
-          key: ValueKey(child),
-          child: VplNested(value: nested, child: child),
+        KeyedSubtree(
+          key: ValueKey(('root', child.key!)),
+          child: ReorderableDragStartListener(
+            index: i,
+            child: VplNested(
+              key: ValueKey(('nested', child.key!)),
+              value: nested,
+              child: child,
+            ),
+          ),
         ),
       );
 
