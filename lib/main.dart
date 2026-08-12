@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
+import 'package:ikarus/extensions.dart';
 import 'package:ikarus/screens.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -26,32 +27,48 @@ Future<void> main() async {
   );
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   final Future<void>? waitFor;
 
   const App({super.key, this.waitFor});
 
   @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  final _context = RefCell<BuildContext>();
+
+  @override
   Widget build(BuildContext context) {
     return Root(
-      waitFor: waitFor,
+      waitFor: widget.waitFor,
       titlebar: Titlebar(
         menus: [
           // TitlebarMenu(child: Text('Baru')),
           // TitlebarMenu(child: Text('Buka')),
           // TitlebarMenu(child: Text('Simpan')),
-          TitlebarMenu(onTap: () => launch(), child: Text('Nyoba')),
-          TitlebarMenu(child: Text('Pengaturan')),
-          TitlebarMenu(child: Text('Tentang')),
+          // TitlebarMenu(onTap: () => launch(), child: Text('Nyoba')),
+          TitlebarMenu(
+            onTap: () => _context.value.navigator().push(
+              DialogRoute(builder: (context) => SettingsScreen()),
+            ),
+            child: Text('Pengaturan'),
+          ),
           if (kDebugMode) ...[
             TitlebarMenu(
               onTap: () => RestartProvider.of(context).restart(),
-              child: Text('Restart'),
+              child: Text('[DEBUG] Mulai Ulang'),
             ),
           ],
         ],
       ),
-      home: DocumentScreen(),
+      home: Builder(
+        builder: (context) {
+          _context.value = context;
+          return DocumentScreen();
+        },
+      ),
     );
   }
 }

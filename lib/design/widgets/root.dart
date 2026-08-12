@@ -168,7 +168,7 @@ class ScreenRoute<T> extends PageRoute<T> {
 
 class DialogRoute<T> extends PageRoute<T> {
   @override
-  final barrierColor = Colors.bg0.withAlpha(64);
+  final barrierColor = Colors.bg0.withAlpha(128);
   @override
   final barrierLabel = null;
   @override
@@ -190,6 +190,19 @@ class DialogRoute<T> extends PageRoute<T> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    return builder(context);
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) => Transform.translate(
+        offset: .new(0, animation.value.curve(Curves.easeOutCirc).lerp(64, 0)),
+        child: Opacity(
+          opacity: animation.value.invlerp(0, 0.2).clampd(),
+          child: child!,
+        ),
+      ),
+      child: BackdropFilter(
+        filter: .blur(sigmaX: 4, sigmaY: 4, tileMode: .mirror),
+        child: builder(context),
+      ),
+    );
   }
 }

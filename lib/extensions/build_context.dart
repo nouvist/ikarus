@@ -34,4 +34,7 @@ extension BuildContextExtension on BuildContext {
 
     return result;
   }
+
+  @pragma('vm:prefer-inline')
+  NavigatorState navigator() => Navigator.of(this);
 }
