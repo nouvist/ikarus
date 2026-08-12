@@ -150,7 +150,7 @@ class ScreenRoute<T> extends PageRoute<T> {
   @override
   final maintainState = true;
   @override
-  final transitionDuration = Duration(milliseconds: 300);
+  final transitionDuration = Duration.zero;
 
   final WidgetBuilder builder;
 
@@ -193,7 +193,7 @@ class DialogRoute<T> extends PageRoute<T> {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) => Transform.translate(
-        offset: .new(0, animation.value.curve(Curves.easeOutCirc).lerp(64, 0)),
+        offset: .new(0, animation.value.curve(Curves.easeOutCirc).lerp(128, 0)),
         child: Opacity(
           opacity: animation.value.invlerp(0, 0.2).clampd(),
           child: child!,

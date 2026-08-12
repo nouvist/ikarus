@@ -118,7 +118,13 @@ class _VplState extends State<_Vpl> {
     ),
     VplScopeStart(
       key: UniqueKey(),
-      child: Center(child: Text('Jika 1')),
+      child: Center(child: Row(
+        children: [
+          Text('Jika 1'),
+          Gap(8),
+          VplVariable(),
+        ],
+      )),
     ),
     VplBlock(
       key: UniqueKey(),
