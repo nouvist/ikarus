@@ -49,7 +49,7 @@ class Root extends StatelessWidget {
     RouteSettings settings,
     WidgetBuilder builder,
   ) {
-    return _PageRoute(builder: builder);
+    return ScreenRoute(builder: builder);
   }
 }
 
@@ -58,7 +58,6 @@ class _Splash extends StatefulWidget {
   final Widget child;
 
   const _Splash({required this.waitFor, required this.child});
-
 
   @override
   State<_Splash> createState() => _SplashState();
@@ -143,7 +142,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
   }
 }
 
-class _PageRoute<T> extends PageRoute<T> {
+class ScreenRoute<T> extends PageRoute<T> {
   @override
   final barrierColor = null;
   @override
@@ -155,7 +154,35 @@ class _PageRoute<T> extends PageRoute<T> {
 
   final WidgetBuilder builder;
 
-  _PageRoute({required this.builder});
+  ScreenRoute({required this.builder});
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    return builder(context);
+  }
+}
+
+class DialogRoute<T> extends PageRoute<T> {
+  @override
+  final barrierColor = Colors.bg0.withAlpha(64);
+  @override
+  final barrierLabel = null;
+  @override
+  final maintainState = true;
+  @override
+  final transitionDuration = Duration(milliseconds: 300);
+  @override
+  final opaque = false;
+  @override
+  final bool barrierDismissible;
+
+  final WidgetBuilder builder;
+
+  DialogRoute({required this.builder, this.barrierDismissible = true});
 
   @override
   Widget buildPage(

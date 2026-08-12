@@ -35,7 +35,7 @@ class VplBlock extends StatelessWidget {
         bottom: 1,
       ),
       child: Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: .none,
         children: [
           Padding(
             padding: const .only(left: 68),

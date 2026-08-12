@@ -15,7 +15,7 @@ class VplScopeStart extends StatelessWidget {
         bottom: 1,
       ),
       child: Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: .none,
         children: [
           Positioned(
             left: 0,
@@ -57,21 +57,23 @@ class VplScopeEnd extends StatelessWidget {
         left: (nested ?? VplNested.maybeOf(context) ?? 0) * 33,
         bottom: 1,
       ),
-      child: SizedBox(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Gap(48),
-            Positioned(
-              left: 0,
-              bottom: -18,
-              child: SvgPicture.asset(
-                colorFilter: .mode(Colors.cScope, .srcIn),
-                'assets/paths/VplScopeEnd.svg',
-              ),
+      child: Stack(
+        clipBehavior: .none,
+        children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            child: SvgPicture.asset(
+              colorFilter: .mode(Colors.cScope, .srcIn),
+              'assets/paths/VplScopeEnd.svg',
             ),
-          ],
-        ),
+          ),
+          Container(
+            width: 128,
+            height: 48,
+            padding: .only(right: 16),
+          ),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:ikarus/design.dart';
+import 'package:ikarus/extensions.dart';
 
 class DocumentScreen extends StatelessWidget {
   const DocumentScreen({super.key});
@@ -81,6 +82,14 @@ class DocumentScreen extends StatelessWidget {
           Icon(Icons.stop),
           Text('Firefox'),
           Text('Chrome'),
+          Builder(
+            builder: (context) => TitlebarMenu(
+              onTap: () => Navigator.of(
+                context,
+              ).push(DialogRoute(builder: (context) => Dialog())),
+              child: Text('NyobaDialog'),
+            ),
+          ),
         ],
       ),
     );
@@ -135,6 +144,7 @@ class _VplState extends State<_Vpl> {
   ];
 
   void _handleReorder(int oldIndex, int newIndex) {
+    if (newIndex == 0) newIndex = 1;
     setState(() {
       if (oldIndex < newIndex) newIndex -= 1;
       final item = _children.removeAt(oldIndex);
@@ -148,6 +158,10 @@ class _VplState extends State<_Vpl> {
     for (var i = 0; i < _children.length; i++) {
       final child = _children[i];
       if (child is VplScopeEnd) nested -= 1;
+      if (child case VplBlock(type: .start)) {
+        children.add(child);
+        continue;
+      }
 
       children.add(
         KeyedSubtree(

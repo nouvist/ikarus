@@ -58,7 +58,7 @@ class _ContextMenuState extends State<ContextMenu> {
             color: Colors.bg1,
             border: .all(color: Colors.bro),
             borderRadius: .circular(8),
-            boxShadow: [.new(color: Colors.bg0.withAlpha(128), blurRadius: 16)],
+            boxShadow: Shadows.s0,
           ),
           child: Padding(
             padding: .all(4),
