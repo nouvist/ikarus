@@ -29,7 +29,7 @@ class Root extends StatelessWidget {
       child: DefaultTextStyle(
         style: Typography.body.copyWith(color: Colors.fg0),
         child: IconTheme(
-          data: .new(color: Colors.fg0),
+          data: .new(color: Colors.fg0, size: 24),
           child: _Splash(
             waitFor: waitFor ?? yieldNow(),
             child: Column(

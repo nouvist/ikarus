@@ -1,8 +1,18 @@
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
+import 'package:ikarus/screens.dart';
 
-class DocumentScreen extends StatelessWidget {
+class DocumentScreen extends StatefulWidget {
   const DocumentScreen({super.key});
+
+  @override
+  State<DocumentScreen> createState() => _DocumentScreenState();
+}
+
+class _DocumentScreenState extends State<DocumentScreen> {
+  void _handleAdd() {
+    context.navigator().push(CreateScreen.route());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +73,21 @@ class DocumentScreen extends StatelessWidget {
         border: .all(color: Colors.bro),
         borderRadius: .circular(8),
       ),
-      child: _Vpl(),
+      child: Stack(
+        children: [
+          Positioned.fill(child: _Vpl()),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Button(
+              onTap: _handleAdd,
+              width: 48,
+              padding: .zero,
+              child: Icon(FluentIcons.add_24_filled),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -166,14 +190,10 @@ class _VplState extends State<_Vpl> {
 
       children.add(
         KeyedSubtree(
-          key: ValueKey((child.key!, 'root')),
+          key: ValueKey(child.key!),
           child: ReorderableDragStartListener(
             index: i,
-            child: VplNested(
-              key: ValueKey((child.key!, 'nested', )),
-              value: nested,
-              child: child,
-            ),
+            child: VplNested(value: nested, child: child),
           ),
         ),
       );
