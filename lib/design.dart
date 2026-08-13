@@ -1,3 +1,4 @@
+export 'package:fluentui_system_icons/fluentui_system_icons.dart';
 export 'package:flutter/widgets.dart';
 export 'package:nested/nested.dart';
 export 'package:gap/gap.dart';
@@ -5,7 +6,6 @@ export 'package:gap/gap.dart';
 export 'package:ikarus/design/constants/colors.dart';
 export 'package:ikarus/design/constants/shadows.dart';
 export 'package:ikarus/design/constants/typography.dart';
-export 'package:flutter/material.dart' show Icons;
 
 export 'package:ikarus/design/widgets/root.dart';
 export 'package:ikarus/design/widgets/foreground.dart';
@@ -23,6 +23,7 @@ export 'package:ikarus/design/widgets/vpl_block.dart';
 export 'package:ikarus/design/widgets/vpl_scope.dart';
 export 'package:ikarus/design/widgets/vpl_nested.dart';
 export 'package:ikarus/design/widgets/vpl_variable.dart';
+export 'package:ikarus/design/widgets/vpl_controls.dart';
 
 // input
 export 'package:ikarus/design/widgets/button_builder.dart';

@@ -1,9 +1,13 @@
-import 'package:ikarus/crux/ai/settings.dart';
+import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions/build_context.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  static PageRoute route() {
+    return DialogRoute(builder: (context) => SettingsScreen());
+  }
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();

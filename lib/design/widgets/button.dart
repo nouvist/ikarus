@@ -5,6 +5,9 @@ class Button extends StatelessWidget {
   final VoidCallback? onTapUp;
   final VoidCallback? onTapDown;
   final VoidCallback? onDoubleTap;
+  final double? width;
+  final double? height;
+  final EdgeInsets padding;
   final Widget child;
 
   const Button({
@@ -13,13 +16,17 @@ class Button extends StatelessWidget {
     this.onTapUp,
     this.onTapDown,
     this.onDoubleTap,
+    this.width,
+    this.height = 48,
+    this.padding = const .symmetric(horizontal: 16),
     required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48,
+      width: width,
+      height: height,
       child: ButtonBuilder(
         onTap: onTap,
         onTapUp: onTapUp,
@@ -66,7 +73,7 @@ class Button extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Padding(padding: .symmetric(horizontal: 16), child: child),
+          child: Padding(padding: padding, child: child),
         ),
       ),
     );

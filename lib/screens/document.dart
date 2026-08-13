@@ -47,7 +47,7 @@ class DocumentScreen extends StatelessWidget {
               spacing: 8,
               children: [
                 Expanded(child: Input()),
-                Button(child: Icon(Icons.send)),
+                Button(child: Icon(FluentIcons.send_24_regular)),
               ],
             ),
           ),
@@ -77,9 +77,9 @@ class DocumentScreen extends StatelessWidget {
       child: Row(
         spacing: 2,
         children: [
-          Icon(Icons.play_arrow),
-          Icon(Icons.pause),
-          Icon(Icons.stop),
+          Icon(FluentIcons.play_24_regular),
+          Icon(FluentIcons.pause_24_regular),
+          Icon(FluentIcons.stop_24_regular),
           Text('Firefox'),
           Text('Chrome'),
           Builder(
@@ -118,13 +118,9 @@ class _VplState extends State<_Vpl> {
     ),
     VplScopeStart(
       key: UniqueKey(),
-      child: Center(child: Row(
-        children: [
-          Text('Jika 1'),
-          Gap(8),
-          VplVariable(),
-        ],
-      )),
+      child: Center(
+        child: Row(children: [Text('Jika 1'), Gap(8), VplVariable()]),
+      ),
     ),
     VplBlock(
       key: UniqueKey(),
@@ -152,7 +148,6 @@ class _VplState extends State<_Vpl> {
   void _handleReorder(int oldIndex, int newIndex) {
     if (newIndex == 0) newIndex = 1;
     setState(() {
-      if (oldIndex < newIndex) newIndex -= 1;
       final item = _children.removeAt(oldIndex);
       _children.insert(newIndex, item);
     });
@@ -171,11 +166,11 @@ class _VplState extends State<_Vpl> {
 
       children.add(
         KeyedSubtree(
-          key: ValueKey(('root', child.key!)),
+          key: ValueKey((child.key!, 'root')),
           child: ReorderableDragStartListener(
             index: i,
             child: VplNested(
-              key: ValueKey(('nested', child.key!)),
+              key: ValueKey((child.key!, 'nested', )),
               value: nested,
               child: child,
             ),

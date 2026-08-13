@@ -50,9 +50,8 @@ class _AppState extends State<App> {
           // TitlebarMenu(child: Text('Simpan')),
           // TitlebarMenu(onTap: () => launch(), child: Text('Nyoba')),
           TitlebarMenu(
-            onTap: () => _context.value.navigator().push(
-              DialogRoute(builder: (context) => SettingsScreen()),
-            ),
+            onTap: () =>
+                _context.value.navigator().push(SettingsScreen.route()),
             child: Text('Pengaturan'),
           ),
           if (kDebugMode) ...[
