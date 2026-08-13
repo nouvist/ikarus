@@ -9,6 +9,10 @@ pub mod vpl {
     pub mod dto;
 }
 
+pub mod ai {
+    pub mod settings;
+}
+
 #[frb]
 pub async fn launch() -> anyhow::Result<()> {
     let driver = WebDriver::managed(DesiredCapabilities::chrome())

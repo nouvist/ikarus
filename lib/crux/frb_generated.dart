@@ -3,6 +3,7 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
+import 'ai/settings.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -67,7 +68,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.12.0';
 
   @override
-  int get rustContentHash => -1315940481;
+  int get rustContentHash => -1782856766;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -79,6 +80,12 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
+  Future<AiSettings> crateAiSettingsAiSettingsCurrent();
+
+  Future<AiSettings> crateAiSettingsAiSettingsEmpty();
+
+  Future<void> crateAiSettingsAiSettingsUpdate({required AiSettings that});
+
   Future<void> crateInitApp();
 
   Future<void> crateLaunch();
@@ -93,7 +100,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  Future<void> crateInitApp() {
+  Future<AiSettings> crateAiSettingsAiSettingsCurrent() {
     return handler.executeNormal(
       NormalTask(
         callFfi: (port_) {
@@ -102,6 +109,88 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
             generalizedFrbRustBinding,
             serializer,
             funcId: 1,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_ai_settings,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateAiSettingsAiSettingsCurrentConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateAiSettingsAiSettingsCurrentConstMeta =>
+      const TaskConstMeta(debugName: "ai_settings_current", argNames: []);
+
+  @override
+  Future<AiSettings> crateAiSettingsAiSettingsEmpty() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 2,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_ai_settings,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateAiSettingsAiSettingsEmptyConstMeta,
+        argValues: [],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateAiSettingsAiSettingsEmptyConstMeta =>
+      const TaskConstMeta(debugName: "ai_settings_empty", argNames: []);
+
+  @override
+  Future<void> crateAiSettingsAiSettingsUpdate({required AiSettings that}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_ai_settings(that, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 3,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateAiSettingsAiSettingsUpdateConstMeta,
+        argValues: [that],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateAiSettingsAiSettingsUpdateConstMeta =>
+      const TaskConstMeta(debugName: "ai_settings_update", argNames: ["that"]);
+
+  @override
+  Future<void> crateInitApp() {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 4,
             port: port_,
           );
         },
@@ -128,7 +217,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 2,
+            funcId: 5,
             port: port_,
           );
         },
@@ -159,9 +248,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  AiSettings dco_decode_ai_settings(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 7)
+      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    return AiSettings(
+      textUrl: dco_decode_String(arr[0]),
+      textKey: dco_decode_String(arr[1]),
+      textModel: dco_decode_String(arr[2]),
+      embedUrl: dco_decode_String(arr[3]),
+      embedKey: dco_decode_String(arr[4]),
+      embedModel: dco_decode_String(arr[5]),
+      embedDimensions: dco_decode_i_32(arr[6]),
+    );
+  }
+
+  @protected
   bool dco_decode_bool(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as bool;
+  }
+
+  @protected
+  AiSettings dco_decode_box_autoadd_ai_settings(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_ai_settings(raw);
   }
 
   @protected
@@ -302,9 +414,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  AiSettings sse_decode_ai_settings(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_textUrl = sse_decode_String(deserializer);
+    var var_textKey = sse_decode_String(deserializer);
+    var var_textModel = sse_decode_String(deserializer);
+    var var_embedUrl = sse_decode_String(deserializer);
+    var var_embedKey = sse_decode_String(deserializer);
+    var var_embedModel = sse_decode_String(deserializer);
+    var var_embedDimensions = sse_decode_i_32(deserializer);
+    return AiSettings(
+      textUrl: var_textUrl,
+      textKey: var_textKey,
+      textModel: var_textModel,
+      embedUrl: var_embedUrl,
+      embedKey: var_embedKey,
+      embedModel: var_embedModel,
+      embedDimensions: var_embedDimensions,
+    );
+  }
+
+  @protected
   bool sse_decode_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8() != 0;
+  }
+
+  @protected
+  AiSettings sse_decode_box_autoadd_ai_settings(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_ai_settings(deserializer));
   }
 
   @protected
@@ -474,9 +613,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_ai_settings(AiSettings self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.textUrl, serializer);
+    sse_encode_String(self.textKey, serializer);
+    sse_encode_String(self.textModel, serializer);
+    sse_encode_String(self.embedUrl, serializer);
+    sse_encode_String(self.embedKey, serializer);
+    sse_encode_String(self.embedModel, serializer);
+    sse_encode_i_32(self.embedDimensions, serializer);
+  }
+
+  @protected
   void sse_encode_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self ? 1 : 0);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_ai_settings(
+    AiSettings self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_ai_settings(self, serializer);
   }
 
   @protected

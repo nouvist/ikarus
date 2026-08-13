@@ -3,15 +3,20 @@ import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
 
 class Input extends StatefulWidget {
-  const Input({super.key});
+  final TextInputType? type;
+  final TextEditingController? controller;
+
+  const Input({super.key, this.type, this.controller});
+
+
   @override
   State<Input> createState() => _InputState();
 }
 
 class _InputState extends State<Input>
     implements TextSelectionGestureDetectorBuilderDelegate {
+  late final _controller = widget.controller ?? TextEditingController();
   final _key = GlobalKey<EditableTextState>();
-  final _controller = TextEditingController();
   final _focus = FocusNode();
   late final _gesture = TextSelectionGestureDetectorBuilder(delegate: this);
   var _position = Offset.zero;
@@ -25,39 +30,18 @@ class _InputState extends State<Input>
   @override
   bool get selectionEnabled => true;
 
+  @override
+  void dispose() {
+    if (_controller != widget.controller) _controller.dispose();
+    super.dispose();
+  }
+
   void _handleHover(PointerHoverEvent event) {
     _position = event.position;
   }
 
   void _handleTapOutside(PointerUpEvent event) {
     _focus.unfocus();
-  }
-
-  Widget _buildContextMenu(BuildContext context, EditableTextState state) {
-    return Focus(
-      parentNode: _focus,
-      child: _gesture.buildGestureDetector(
-        child: ContextMenu(
-          position:
-              _position -
-              context.findAncestorElement<Overlay>()!.calculateWidgetOffset()!,
-          menus: [
-            ContextMenuItem(
-              onTap: () => state.cutSelection(.toolbar),
-              child: Text('Potong'),
-            ),
-            ContextMenuItem(
-              onTap: () => state.copySelection(.toolbar),
-              child: Text('Salin'),
-            ),
-            ContextMenuItem(
-              onTap: () => state.pasteText(.toolbar),
-              child: Text('Tempel'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -94,6 +78,7 @@ class _InputState extends State<Input>
                     key: _key,
                     controller: _controller,
                     focusNode: _focus,
+                    keyboardType: widget.type,
                     style: DefaultTextStyle.of(context).style,
                     cursorColor: Colors.fg0,
                     backgroundCursorColor: Colors.fg0,
@@ -105,6 +90,33 @@ class _InputState extends State<Input>
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContextMenu(BuildContext context, EditableTextState state) {
+    return Focus(
+      parentNode: _focus,
+      child: _gesture.buildGestureDetector(
+        child: ContextMenu(
+          position:
+              _position -
+              context.findAncestorElement<Overlay>()!.calculateWidgetOffset()!,
+          menus: [
+            ContextMenuItem(
+              onTap: () => state.cutSelection(.toolbar),
+              child: Text('Potong'),
+            ),
+            ContextMenuItem(
+              onTap: () => state.copySelection(.toolbar),
+              child: Text('Salin'),
+            ),
+            ContextMenuItem(
+              onTap: () => state.pasteText(.toolbar),
+              child: Text('Tempel'),
+            ),
+          ],
         ),
       ),
     );
