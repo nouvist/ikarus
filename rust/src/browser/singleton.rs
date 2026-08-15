@@ -14,8 +14,14 @@ use tokio_stream::StreamExt;
 #[derive(Debug)]
 pub struct BrowserSingleton {
     browser: Mutex<Option<Browser>>,
-    is_running_tx: watch::Sender<bool>,
-    is_running_rx: watch::Receiver<bool>,
+    metadata_tx: watch::Sender<Option<BrowserMetadata>>,
+    metadata_rx: watch::Receiver<Option<BrowserMetadata>>,
+}
+
+#[derive(Debug, Clone, Copy)]
+#[frb(unignore)]
+pub struct BrowserMetadata {
+    pub pid: u32,
 }
 
 #[frb(unignore)]
@@ -27,6 +33,9 @@ pub enum BrowserError {
     ChromiumoxideError(Cow<'static, str>),
     #[error("{0}")]
     TokioJoinError(#[from] JoinError),
+
+    #[error("failed to get browser pid")]
+    PidError,
 }
 
 impl From<String> for BrowserError {
@@ -34,6 +43,7 @@ impl From<String> for BrowserError {
         Self::ChromiumoxideError(Cow::Owned(value))
     }
 }
+
 impl From<&'static str> for BrowserError {
     fn from(value: &'static str) -> Self {
         Self::ChromiumoxideError(Cow::Borrowed(value))
@@ -58,11 +68,11 @@ impl BrowserSingleton {
     pub fn global() -> &'static Self {
         static INSTANCE: OnceLock<BrowserSingleton> = OnceLock::new();
         INSTANCE.get_or_init(|| {
-            let (is_running_tx, is_running_rx) = watch::channel(false);
+            let (metadata_tx, metadata_rx) = watch::channel(None);
             BrowserSingleton {
                 browser: Mutex::new(None),
-                is_running_tx,
-                is_running_rx,
+                metadata_tx,
+                metadata_rx,
             }
         })
     }
@@ -74,22 +84,27 @@ impl BrowserSingleton {
         }
 
         let config = BrowserConfig::builder().with_head().build()?;
-        let (browser, mut handler) = Browser::launch(config).await?;
+        let (mut browser, mut handler) = Browser::launch(config).await?;
+        let pid = browser
+            .get_mut_child()
+            .map(|it| it.inner.id())
+            .flatten()
+            .ok_or_else(|| BrowserError::PidError)?;
 
         {
             let mut guard = this.browser.lock().await;
             *guard = Some(browser);
         }
 
-        let tx = this.is_running_tx.clone();
+        let tx = this.metadata_tx.clone();
+        let _ = tx.send(Some(BrowserMetadata { pid: pid }));
         tokio::spawn(async move {
-            let _ = tx.send(true);
             while let Some(h) = handler.next().await {
                 if h.is_err() {
                     break;
                 }
             }
-            let _ = tx.send(false);
+            let _ = tx.send(None);
         });
 
         Ok(())
@@ -105,6 +120,11 @@ impl BrowserSingleton {
 
     #[inline]
     pub fn is_running(&self) -> bool {
-        *self.is_running_rx.borrow()
+        self.metadata_rx.borrow().is_some()
+    }
+
+    #[inline]
+    pub fn metadata(&self) -> Option<BrowserMetadata> {
+        self.metadata_rx.borrow().clone()
     }
 }

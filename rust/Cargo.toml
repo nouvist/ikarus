@@ -11,11 +11,13 @@ anyhow = "1.0.104"
 camino = "1.2.5"
 chromiumoxide = "0.9.1"
 flutter_rust_bridge = "=2.12.0"
+getset = "0.1.7"
 rig = "0.41.0"
 thiserror = "2.0.19"
 tokio = { version = "1.53.1", features = ["signal", "sync"] }
 tokio-stream = "0.1.19"
 tokio-util = "0.7.19"
+windows = { version = "0.62.2", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
