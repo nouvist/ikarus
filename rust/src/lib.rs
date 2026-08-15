@@ -1,12 +1,18 @@
+use std::{env, sync::OnceLock};
+
 use anyhow::anyhow;
+use camino::{Utf8Path, Utf8PathBuf};
 use chromiumoxide::{Browser, BrowserConfig};
 use flutter_rust_bridge::frb;
 use tokio_stream::StreamExt;
 
-mod frb_generated;
+pub mod frb_generated;
 
 pub mod vpl {
-    pub mod dto;
+    pub mod dto {
+        pub mod functions;
+        pub mod primitives;
+    }
 }
 
 pub mod ai {
@@ -14,8 +20,23 @@ pub mod ai {
 }
 
 pub mod browser {
-    pub mod singleton;
     pub mod facade;
+    pub mod singleton;
+}
+
+pub fn home() -> &'static Utf8Path {
+    static INSTANCE: OnceLock<Utf8PathBuf> = OnceLock::new();
+    let home = INSTANCE.get_or_init(|| {
+        let appdata = env::var("APPDATA").unwrap();
+        let mut appdata = Utf8PathBuf::from(appdata);
+        appdata.push("ProjectIkarus");
+        if !appdata.exists() {
+            std::fs::create_dir_all(&appdata).unwrap();
+        }
+        appdata
+    });
+
+    home.as_path()
 }
 
 #[frb]
@@ -65,5 +86,6 @@ pub async fn launch() -> anyhow::Result<()> {
 
 #[frb(init)]
 pub fn init_app() {
+    let _ = home();
     flutter_rust_bridge::setup_default_user_utils();
 }

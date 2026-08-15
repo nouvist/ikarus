@@ -2,7 +2,7 @@ use flutter_rust_bridge::frb;
 
 
 #[frb(unignore)]
-pub enum DtoValue {
+pub enum Value {
     Undefined,
     Number(f64),
     String(String),
@@ -11,13 +11,13 @@ pub enum DtoValue {
 }
 
 #[frb(unignore)]
-pub enum DtoVariable {
+pub enum Variable {
     Identifier(String),
-    Value(DtoValue),
+    Value(Value),
 }
 
 #[frb(unignore)]
-pub enum DtoCondition {
+pub enum Condition {
     Not,
     Equal,
     LessThan,
@@ -27,23 +27,23 @@ pub enum DtoCondition {
 }
 
 #[frb(unignore)]
-pub enum DtoStatement {
+pub enum Statement {
     Assignment {
         identifier: String,
-        value: DtoValue,
+        value: Value,
     },
     If {
-        left: DtoVariable,
-        right: DtoVariable,
-        condition: DtoCondition,
+        left: Variable,
+        right: Variable,
+        condition: Condition,
     },
     For {
-        left: DtoVariable,
-        right: DtoVariable,
-        condition: DtoCondition,
+        left: Variable,
+        right: Variable,
+        condition: Condition,
     },
     End,
 }
 
 #[frb(unignore)]
-pub struct DtoScope(pub Vec<DtoStatement>);
+pub struct Scope(pub Vec<Statement>);

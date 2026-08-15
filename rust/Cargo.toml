@@ -8,6 +8,7 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 anyhow = "1.0.104"
+camino = "1.2.5"
 chromiumoxide = "0.9.1"
 flutter_rust_bridge = "=2.12.0"
 rig = "0.41.0"
