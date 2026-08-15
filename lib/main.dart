@@ -48,7 +48,6 @@ class _AppState extends State<App> {
           // TitlebarMenu(child: Text('Baru')),
           // TitlebarMenu(child: Text('Buka')),
           // TitlebarMenu(child: Text('Simpan')),
-          // TitlebarMenu(onTap: () => launch(), child: Text('Nyoba')),
           TitlebarMenu(
             onTap: () =>
                 _context.value.navigator().push(SettingsScreen.route()),

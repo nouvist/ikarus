@@ -1,3 +1,4 @@
+import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
 import 'package:ikarus/screens.dart';
@@ -101,21 +102,49 @@ class _DocumentScreenState extends State<DocumentScreen> {
       child: Row(
         spacing: 2,
         children: [
-          Icon(FluentIcons.play_24_regular),
-          Icon(FluentIcons.pause_24_regular),
-          Icon(FluentIcons.stop_24_regular),
-          Text('Firefox'),
-          Text('Chrome'),
-          Builder(
-            builder: (context) => TitlebarMenu(
-              onTap: () => Navigator.of(
-                context,
-              ).push(DialogRoute(builder: (context) => Dialog())),
-              child: Text('NyobaDialog'),
-            ),
-          ),
+          _ToolbarButton(
+            onTap: () => BrowserSingletonFacade.renew(),
+            child: Icon(FluentIcons.new_24_regular)),
+          _ToolbarButton(child: Icon(FluentIcons.play_24_regular)),
+          _ToolbarButton(child: Icon(FluentIcons.pause_24_regular)),
+          _ToolbarButton(child: Icon(FluentIcons.stop_24_regular)),
         ],
       ),
+    );
+  }
+}
+
+class _ToolbarButton extends StatelessWidget {
+  final VoidCallback? onTap;
+  final Widget child;
+
+  const _ToolbarButton({this.onTap, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ButtonBuilder(
+      onTap: onTap,
+      builder: (context, state, child) => Container(
+        height: 32,
+        width: 32,
+        alignment: .center,
+        decoration: BoxDecoration(
+          borderRadius: .circular(4),
+          color: switch (state) {
+            .rest => null,
+            .hover => Colors.ov1,
+            .tap => Colors.ov2,
+          },
+        ),
+        child: Foreground(
+          color: switch (state) {
+            .hover => Colors.fg0,
+            _ => Colors.fg1,
+          },
+          child: child!,
+        ),
+      ),
+      child: child,
     );
   }
 }

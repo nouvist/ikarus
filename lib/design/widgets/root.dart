@@ -199,10 +199,7 @@ class DialogRoute<T> extends PageRoute<T> {
           child: child!,
         ),
       ),
-      child: BackdropFilter(
-        filter: .blur(sigmaX: 4, sigmaY: 4, tileMode: .mirror),
-        child: builder(context),
-      ),
+      child: builder(context),
     );
   }
 }
