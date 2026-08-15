@@ -103,7 +103,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         spacing: 2,
         children: [
           _ToolbarButton(
-            onTap: () => BrowserSingletonFacade.renew(),
+            onTap: () => BrowserFacade.renew(),
             child: Icon(FluentIcons.new_24_regular)),
           _ToolbarButton(child: Icon(FluentIcons.play_24_regular)),
           _ToolbarButton(child: Icon(FluentIcons.pause_24_regular)),

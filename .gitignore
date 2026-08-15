@@ -1,3 +1,7 @@
+# Ignore FRB generated code
+rust/src/frb_generated.rs
+lib/crux
+
 # Miscellaneous
 *.class
 *.log
