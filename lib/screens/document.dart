@@ -15,7 +15,17 @@ class _DocumentScreenState extends State<DocumentScreen> {
   final _idents = <String>[];
 
   final _statements = <RawStatement>[
-    .if_(.new(condition: .static_(.boolean(.new(field0: true))))),
+    .if_(
+      .new(
+        condition: .computed(
+          .new(
+            operation: .boolEq,
+            left: .number(.new(field0: 1)),
+            right: .number(.new(field0: 1)),
+          ),
+        ),
+      ),
+    ),
     .variable(
       .new(
         ident: .new(field0: "namavar"),

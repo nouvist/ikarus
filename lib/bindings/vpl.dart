@@ -117,6 +117,39 @@ class VplBindingInner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (data case Variable_Computed it) {
+      return Container(
+        height: 42,
+        padding: .symmetric(horizontal: 6),
+        decoration: BoxDecoration(
+          color: Colors.bg0,
+          borderRadius: .circular(6),
+          border: .all(color: Colors.bro)
+        ),
+        child: IgnorePointer(
+          child: Row(
+            children: [
+              VplBindingInner(it.field0.left),
+              Text(switch (it.field0.operation) {
+                .add => " + ",
+                .subtract => " - ",
+                .multiply => " * ",
+                .divide => " / ",
+                .reminder => " % ",
+                .boolAnd => " && ",
+                .boolOr => " || ",
+                .boolEq => " == ",
+                .boolLt => " < ",
+                .boolLe => " <=",
+                .boolGt => " > ",
+                .boolGe => " >= ",
+              }),
+              VplBindingInner(it.field0.right),
+            ],
+          ),
+        ),
+      );
+    }
     return VplInner(
       type: switch (data) {
         Variable_Ident() => .ident,
@@ -128,7 +161,7 @@ class VplBindingInner extends StatelessWidget {
         Variable_String it => Text(jsonEncode(it.field0.field0)),
         Variable_Number it => Text(it.field0.field0.toString()),
         Variable_Boolean it => Text(it.field0.field0.toString()),
-        Variable_Computed it => throw UnimplementedError(),
+        _ => throw UnimplementedError(),
       },
     );
   }
@@ -176,9 +209,9 @@ class VplBindingVariable extends StatelessWidget implements VplBinding {
       type: .assignment,
       child: Row(
         children: [
-          Text('Variabel '),
+          Text('Var '),
           VplBindingInner.ident(data.field0.ident),
-          Text(' sebagai '),
+          Text(' sbg '),
           VplBindingInner(data.field0.value),
         ],
       ),
@@ -203,7 +236,9 @@ class VplBindingIf extends StatelessWidget implements VplBinding {
     return VplScopeStart(
       onDelete: onDelete,
       onDuplicate: onDuplicate,
-      child: Row(children: [Text('Jika')]),
+      child: Row(
+        children: [Text('Jika '), VplBindingInner(data.field0.condition)],
+      ),
     );
   }
 }

@@ -26,8 +26,15 @@ pub enum VarComputedOperation {
     Multiply,
     Divide,
     Reminder,
-    And,
-    Or,
+
+    BoolAnd,
+    BoolOr,
+
+    BoolEq,
+    BoolLt,
+    BoolLe,
+    BoolGt,
+    BoolGe,
 }
 
 #[frb(unignore)]
@@ -51,32 +58,6 @@ pub enum Variable {
 
 #[frb(unignore)]
 #[derive(Debug, Clone)]
-pub enum ConditionOperation {
-    Not,
-    Eq,
-    Lt,
-    Le,
-    Gt,
-    Ge,
-}
-
-#[frb(unignore)]
-#[derive(Debug, Clone)]
-pub struct ConditionComputed {
-    pub operartion: ConditionOperation,
-    pub left: Box<Variable>,
-    pub right: Box<Variable>,
-}
-
-#[frb(unignore)]
-#[derive(Debug, Clone)]
-pub enum Condition {
-    Static(Variable),
-    Computed(ConditionComputed),
-}
-
-#[frb(unignore)]
-#[derive(Debug, Clone)]
 pub struct StVariable {
     pub ident: Ident,
     pub value: Variable,
@@ -91,14 +72,14 @@ pub enum StCall {
 #[frb(unignore)]
 #[derive(Debug, Clone)]
 pub struct StIf {
-    pub condition: Condition,
+    pub condition: Variable,
     pub scope: Scope,
 }
 
 #[frb(unignore)]
 #[derive(Debug, Clone)]
 pub struct StFor {
-    pub condition: Condition,
+    pub condition: Variable,
     pub scope: Scope,
 }
 

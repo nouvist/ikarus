@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 use flutter_rust_bridge::frb;
 
-use crate::vpl::tokens::{Condition, Scope, StCall, StFor, StIf, StVariable, Statement};
+use crate::vpl::tokens::{Scope, StCall, StFor, StIf, StVariable, Statement, Variable};
 
 macro_rules! impl_copy {
     ($type:ty) => {
@@ -22,14 +22,14 @@ impl_copy!(RawScope);
 #[frb(unignore)]
 #[derive(Debug, Clone)]
 pub struct RawIf {
-    pub condition: Condition,
+    pub condition: Variable,
 }
 impl_copy!(RawIf);
 
 #[frb(unignore)]
 #[derive(Debug, Clone)]
 pub struct RawFor {
-    pub condition: Condition,
+    pub condition: Variable,
 }
 impl_copy!(RawFor);
 
