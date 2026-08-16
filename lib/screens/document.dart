@@ -165,7 +165,7 @@ class _VplState extends State<_Vpl> {
     VplBlock(
       key: UniqueKey(),
       cutout: .start,
-      type: .start,
+      type: .sentinel,
       child: Center(child: Text('Mulai')),
     ),
     VplBlock(
@@ -216,7 +216,7 @@ class _VplState extends State<_Vpl> {
     for (var i = 0; i < _children.length; i++) {
       final child = _children[i];
       if (child is VplScopeEnd) nested -= 1;
-      if (child case VplBlock(type: .start)) {
+      if (child case VplBlock(type: .sentinel)) {
         children.add(
           KeyedSubtree(
             key: ValueKey(child.key!),

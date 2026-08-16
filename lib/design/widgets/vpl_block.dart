@@ -4,7 +4,7 @@ import 'package:ikarus/design.dart';
 
 enum VplBlockCutout { both, start }
 
-enum VplBlockType { start, assignment, call, ident, value }
+enum VplBlockType { sentinel, assignment, call, ident, value }
 
 class VplBlock extends StatefulWidget {
   final int? nested;
@@ -42,11 +42,11 @@ class _VplBlockState extends State<VplBlock> {
   @override
   Widget build(BuildContext context) {
     final color = switch (widget.type) {
-      .start => Colors.cStart,
-      .assignment => Colors.cAssignment,
-      .call => Colors.cCall,
-      .ident => Colors.cIdent,
-      .value => Colors.cValue,
+      .sentinel => Colors.cSentinel0,
+      .assignment => Colors.cAssignment0,
+      .call => Colors.cCall0,
+      .ident => Colors.cIdent0,
+      .value => Colors.cValue0,
     };
 
     return MouseRegion(
@@ -74,7 +74,7 @@ class _VplBlockState extends State<VplBlock> {
                       ),
                       child: widget.child,
                     ),
-                    if (_isShowControls && widget.type != .start) ...[
+                    if (_isShowControls && widget.type != .sentinel) ...[
                       Gap(16),
                       VplControls(),
                     ],

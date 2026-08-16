@@ -3,11 +3,11 @@ import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
 
 class Input extends StatefulWidget {
+  final bool obscure;
   final TextInputType? type;
   final TextEditingController? controller;
 
-  const Input({super.key, this.type, this.controller});
-
+  const Input({super.key, this.obscure = false, this.type, this.controller});
 
   @override
   State<Input> createState() => _InputState();
@@ -79,6 +79,7 @@ class _InputState extends State<Input>
                     controller: _controller,
                     focusNode: _focus,
                     keyboardType: widget.type,
+                    obscureText: widget.obscure,
                     style: DefaultTextStyle.of(context).style,
                     cursorColor: Colors.fg0,
                     backgroundCursorColor: Colors.fg0,

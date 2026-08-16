@@ -6,10 +6,9 @@ use flutter_rust_bridge::frb;
 pub mod frb_generated;
 
 pub mod vpl {
-    pub mod dto {
-        pub mod functions;
-        pub mod primitives;
-    }
+    pub mod functions;
+    pub mod raw_tokens;
+    pub mod tokens;
 }
 
 pub mod ai {

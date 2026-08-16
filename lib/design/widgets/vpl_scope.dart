@@ -44,7 +44,7 @@ class _VplScopeStartState extends State<VplScopeStart> {
               left: 0,
               top: 0,
               child: SvgPicture.asset(
-                colorFilter: .mode(Colors.cScope, .srcIn),
+                colorFilter: .mode(Colors.cScope0, .srcIn),
                 'assets/paths/VplScopeStart.svg',
               ),
             ),
@@ -58,7 +58,7 @@ class _VplScopeStartState extends State<VplScopeStart> {
                       padding: .only(right: 16),
                       decoration: BoxDecoration(
                         borderRadius: .horizontal(right: .circular(6)),
-                        color: Colors.cScope,
+                        color: Colors.cScope0,
                       ),
                       child: widget.child,
                     ),
@@ -117,7 +117,7 @@ class _VplScopeEndState extends State<VplScopeEnd> {
               child: Row(
                 children: [
                   SvgPicture.asset(
-                    colorFilter: .mode(Colors.cScope, .srcIn),
+                    colorFilter: .mode(Colors.cScope0, .srcIn),
                     'assets/paths/VplScopeEnd.svg',
                   ),
                   if (_isShowControls) ...[
