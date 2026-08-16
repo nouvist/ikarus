@@ -1,3 +1,4 @@
+import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
@@ -11,8 +12,35 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
+  final _statements = <RawStatement>[
+    .if_(.new(condition: .static_(.boolean(.new(field0: true))))),
+    .variable(
+      .new(
+        ident: .new(field0: "namavar"),
+        value: .string(.new(field0: 'valuenya')),
+      ),
+    ),
+    .variable(
+      .new(
+        ident: .new(field0: "namavar2"),
+        value: .string(.new(field0: 'valuenya')),
+      ),
+    ),
+    .end(),
+    .call(.print(.new(content: .string(.new(field0: "Halo Dunia!"))))),
+  ];
+
   void _handleAdd() {
     context.navigator().push(CreateScreen.route());
+  }
+
+  void _handleReorder(int oldIndex, int newIndex) {
+    print("lama : $oldIndex");
+    print("baru : $newIndex");
+    setState(() {
+      final item = _statements.removeAt(oldIndex);
+      _statements.insert(newIndex, item);
+    });
   }
 
   @override
@@ -76,7 +104,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
       ),
       child: Stack(
         children: [
-          Positioned.fill(child: _Vpl()),
+          Positioned.fill(
+            child: Vpl(onReorderItem: _handleReorder, statements: _statements),
+          ),
           Positioned(
             top: 8,
             right: 8,
