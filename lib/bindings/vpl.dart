@@ -3,28 +3,40 @@ import 'dart:convert';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
+import 'package:ikarus/screens.dart';
 
-typedef VplIndexedCallback = void Function(int index);
+part 'vpl_blocks.dart';
+part 'vpl_inner.dart';
 
-class Vpl extends StatelessWidget {
-  final VplIndexedCallback? onDelete;
-  final VplIndexedCallback? onDuplicate;
-  final ReorderCallback? onReorderItem;
+class Vpl extends StatefulWidget {
   final List<RawStatement> statements;
 
-  const Vpl({
-    super.key,
-    this.onDelete,
-    this.onDuplicate,
-    this.onReorderItem,
-    this.statements = const [],
-  });
+  const Vpl(this.statements, {super.key});
+
+  @override
+  State<Vpl> createState() => _VplState();
+}
+
+class _VplState extends State<Vpl> {
+  final _idents = <String>[];
+
+  void _calculateIdents([bool shouldUpdate = false]) {
+    if (shouldUpdate) return setState(() => _calculateIdents());
+    _idents.clear();
+    for (final st in widget.statements) {
+      if (st case RawStatement_Variable it) {
+        final next = it.field0.ident.field0;
+        if (_idents.contains(next)) continue;
+        _idents.add(it.field0.ident.field0);
+      }
+    }
+  }
 
   List<int> _calculateNested() {
     final result = <int>[];
     var nested = 0;
 
-    for (final st in statements) {
+    for (final st in widget.statements) {
       switch (st) {
         case RawStatement_If():
         case RawStatement_For():
@@ -42,11 +54,42 @@ class Vpl extends StatelessWidget {
     return result;
   }
 
+  Future<void> _handleAdd() async {
+    final st = await context.navigator().push(CreateScreen.route());
+    if (!mounted) return;
+    if (st == null) return;
+    setState(() {
+      widget.statements.add(switch (st) {
+        RawStatementVariant_End() => .end(),
+        RawStatementVariant_If() => .if_(.new(condition: .null_())),
+        RawStatementVariant_For() => .for_(.new(condition: .null_())),
+        RawStatementVariant_Variable() => .variable(
+          .new(
+            ident: .new(field0: "NamaVar"),
+            value: .null_(),
+          ),
+        ),
+        RawStatementVariant_Call() => throw UnimplementedError(),
+      });
+    });
+  }
+
+  void _handleDelete(int index) => setState(() {
+    widget.statements.removeAt(index);
+  });
+
+  void _handleDuplicate(int index) => setState(() {
+    widget.statements.insert(index + 1, widget.statements[index].copy());
+  });
+
   void _handleReorderItem(int oldIndex, int newIndex) {
     if (newIndex == 0) newIndex = 1;
     if (--oldIndex < 0) return;
     if (--newIndex < 0) return;
-    onReorderItem?.call(oldIndex, newIndex);
+    setState(() {
+      final item = widget.statements.removeAt(oldIndex);
+      widget.statements.insert(newIndex, item);
+    });
   }
 
   Widget _buildItem(BuildContext context, int index, List<int> nesteds) {
@@ -61,27 +104,31 @@ class Vpl extends StatelessWidget {
       );
     }
 
-    final data = statements[index];
+    final data = widget.statements[index];
     final nested = nesteds[index];
     final child = switch (data) {
-      RawStatement_Variable it => VplBinding.variable(
-        onDelete: () => onDelete?.call(index),
-        onDuplicate: () => onDuplicate?.call(index),
-        data: it,
-      ),
-      RawStatement_End it => VplBinding.sEnd(
-        onDelete: () => onDelete?.call(index),
-        onDuplicate: () => onDuplicate?.call(index),
+      RawStatement_End _ => VplBinding.sEnd(
+        onDelete: () => _handleDelete(index),
+        onDuplicate: () => _handleDuplicate(index),
       ),
       RawStatement_If it => VplBinding.sIf(
-        onDelete: () => onDelete?.call(index),
-        onDuplicate: () => onDuplicate?.call(index),
+        onDelete: () => _handleDelete(index),
+        onDuplicate: () => _handleDuplicate(index),
         data: it,
       ),
-      RawStatement_For it => throw UnimplementedError(),
+      RawStatement_For it => VplBinding.sFor(
+        onDelete: () => _handleDelete(index),
+        onDuplicate: () => _handleDuplicate(index),
+        data: it,
+      ),
+      RawStatement_Variable it => VplBinding.variable(
+        onDelete: () => _handleDelete(index),
+        onDuplicate: () => _handleDuplicate(index),
+        data: it,
+      ),
       RawStatement_Call it => VplBinding.call(
-        onDelete: () => onDelete?.call(index),
-        onDuplicate: () => onDuplicate?.call(index),
+        onDelete: () => _handleDelete(index),
+        onDuplicate: () => _handleDuplicate(index),
         data: it,
       ),
     };
@@ -99,181 +146,30 @@ class Vpl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nesteds = _calculateNested();
-    return ReorderableList(
-      onReorderItem: _handleReorderItem,
-      padding: .all(8),
-      itemCount: statements.length + 1,
-      itemBuilder: (context, index) => _buildItem(context, index, nesteds),
-    );
-  }
-}
+    _calculateIdents();
 
-class VplBindingInner extends StatelessWidget {
-  final Variable data;
-
-  const VplBindingInner(this.data, {super.key});
-
-  VplBindingInner.ident(Ident data, {Key? key}) : this(.ident(data), key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (data case Variable_Computed it) {
-      return Container(
-        height: 42,
-        padding: .symmetric(horizontal: 6),
-        decoration: BoxDecoration(
-          color: Colors.bg0,
-          borderRadius: .circular(6),
-          border: .all(color: Colors.bro)
-        ),
-        child: IgnorePointer(
-          child: Row(
-            children: [
-              VplBindingInner(it.field0.left),
-              Text(switch (it.field0.operation) {
-                .add => " + ",
-                .subtract => " - ",
-                .multiply => " * ",
-                .divide => " / ",
-                .reminder => " % ",
-                .boolAnd => " && ",
-                .boolOr => " || ",
-                .boolEq => " == ",
-                .boolLt => " < ",
-                .boolLe => " <=",
-                .boolGt => " > ",
-                .boolGe => " >= ",
-              }),
-              VplBindingInner(it.field0.right),
-            ],
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: ReorderableList(
+            onReorderItem: _handleReorderItem,
+            padding: .all(8),
+            itemCount: widget.statements.length + 1,
+            itemBuilder: (context, index) =>
+                _buildItem(context, index, nesteds),
           ),
         ),
-      );
-    }
-    return VplInner(
-      type: switch (data) {
-        Variable_Ident() => .ident,
-        _ => .value,
-      },
-      child: switch (data) {
-        Variable_Null() => Text('null'),
-        Variable_Ident it => Text(it.field0.field0),
-        Variable_String it => Text(jsonEncode(it.field0.field0)),
-        Variable_Number it => Text(it.field0.field0.toString()),
-        Variable_Boolean it => Text(it.field0.field0.toString()),
-        _ => throw UnimplementedError(),
-      },
-    );
-  }
-}
-
-sealed class VplBinding implements Widget {
-  const factory VplBinding.variable({
-    VoidCallback? onDelete,
-    VoidCallback? onDuplicate,
-    required RawStatement_Variable data,
-  }) = VplBindingVariable;
-  const factory VplBinding.sIf({
-    VoidCallback? onDelete,
-    VoidCallback? onDuplicate,
-    required RawStatement_If data,
-  }) = VplBindingIf;
-  const factory VplBinding.sEnd({
-    VoidCallback? onDelete,
-    VoidCallback? onDuplicate,
-  }) = VplBindingEnd;
-  const factory VplBinding.call({
-    VoidCallback? onDelete,
-    VoidCallback? onDuplicate,
-    required RawStatement_Call data,
-  }) = VplBindingCall;
-}
-
-class VplBindingVariable extends StatelessWidget implements VplBinding {
-  final VoidCallback? onDelete;
-  final VoidCallback? onDuplicate;
-  final RawStatement_Variable data;
-
-  const VplBindingVariable({
-    super.key,
-    this.onDelete,
-    this.onDuplicate,
-    required this.data,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return VplBlock(
-      onDelete: onDelete,
-      onDuplicate: onDuplicate,
-      type: .assignment,
-      child: Row(
-        children: [
-          Text('Var '),
-          VplBindingInner.ident(data.field0.ident),
-          Text(' sbg '),
-          VplBindingInner(data.field0.value),
-        ],
-      ),
-    );
-  }
-}
-
-class VplBindingIf extends StatelessWidget implements VplBinding {
-  final VoidCallback? onDelete;
-  final VoidCallback? onDuplicate;
-  final RawStatement_If data;
-
-  const VplBindingIf({
-    super.key,
-    this.onDelete,
-    this.onDuplicate,
-    required this.data,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return VplScopeStart(
-      onDelete: onDelete,
-      onDuplicate: onDuplicate,
-      child: Row(
-        children: [Text('Jika '), VplBindingInner(data.field0.condition)],
-      ),
-    );
-  }
-}
-
-class VplBindingEnd extends StatelessWidget implements VplBinding {
-  final VoidCallback? onDelete;
-  final VoidCallback? onDuplicate;
-
-  const VplBindingEnd({super.key, this.onDelete, this.onDuplicate});
-
-  @override
-  Widget build(BuildContext context) {
-    return VplScopeEnd(onDelete: onDelete, onDuplicate: onDuplicate);
-  }
-}
-
-class VplBindingCall extends StatelessWidget implements VplBinding {
-  final VoidCallback? onDelete;
-  final VoidCallback? onDuplicate;
-  final RawStatement_Call data;
-
-  const VplBindingCall({
-    super.key,
-    this.onDelete,
-    this.onDuplicate,
-    required this.data,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return VplBlock(
-      onDelete: onDelete,
-      onDuplicate: onDuplicate,
-      type: .call,
-      child: Row(children: [Text("Cetak")]),
+        Positioned(
+          top: 8,
+          right: 8,
+          child: Button(
+            onTap: _handleAdd,
+            width: 48,
+            padding: .zero,
+            child: Icon(FluentIcons.add_24_filled),
+          ),
+        ),
+      ],
     );
   }
 }

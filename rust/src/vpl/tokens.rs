@@ -2,23 +2,23 @@ use flutter_rust_bridge::frb;
 
 use crate::vpl::functions::FnPrint;
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct Ident(pub String);
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct VarString(pub String);
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct VarNumber(pub f64);
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct VarBoolean(pub bool);
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub enum VarComputedOperation {
     Add,
@@ -37,7 +37,7 @@ pub enum VarComputedOperation {
     BoolGe,
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct VarComputed {
     pub operation: VarComputedOperation,
@@ -45,7 +45,7 @@ pub struct VarComputed {
     pub right: Box<Variable>,
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub enum Variable {
     Null,
@@ -56,38 +56,38 @@ pub enum Variable {
     Computed(Box<VarComputed>),
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct StVariable {
     pub ident: Ident,
     pub value: Variable,
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub enum StCall {
     Print(FnPrint),
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct StIf {
     pub condition: Variable,
     pub scope: Scope,
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct StFor {
     pub condition: Variable,
     pub scope: Scope,
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct Scope(pub Vec<Statement>);
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub enum Statement {
     If(StIf),

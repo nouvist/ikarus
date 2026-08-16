@@ -19,12 +19,12 @@ pub struct BrowserSingleton {
 }
 
 #[derive(Debug, Clone, Copy)]
-#[frb(unignore)]
+#[frb]
 pub struct BrowserMetadata {
     pub pid: u32,
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Error, Debug)]
 pub enum BrowserError {
     #[error("{0}")]

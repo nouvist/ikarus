@@ -14,26 +14,26 @@ macro_rules! impl_copy {
     };
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct RawScope(pub Vec<RawStatement>);
 impl_copy!(RawScope);
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct RawIf {
     pub condition: Variable,
 }
 impl_copy!(RawIf);
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub struct RawFor {
     pub condition: Variable,
 }
 impl_copy!(RawFor);
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub enum RawStatement {
     End,
@@ -129,7 +129,7 @@ impl RawScope {
     }
 }
 
-#[frb(unignore)]
+#[frb]
 #[derive(Debug, Clone)]
 pub enum RawStatementVariant {
     End,

@@ -1,8 +1,6 @@
 import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
-import 'package:ikarus/extensions.dart';
-import 'package:ikarus/screens.dart';
 
 class DocumentScreen extends StatefulWidget {
   const DocumentScreen({super.key});
@@ -12,64 +10,7 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
-  final _idents = <String>[];
-
-  final _statements = <RawStatement>[
-    .if_(
-      .new(
-        condition: .computed(
-          .new(
-            operation: .boolEq,
-            left: .number(.new(field0: 1)),
-            right: .number(.new(field0: 1)),
-          ),
-        ),
-      ),
-    ),
-    .variable(
-      .new(
-        ident: .new(field0: "namavar"),
-        value: .string(.new(field0: 'valuenya')),
-      ),
-    ),
-    .variable(
-      .new(
-        ident: .new(field0: "namavar2"),
-        value: .string(.new(field0: 'valuenya')),
-      ),
-    ),
-    .end(),
-    .call(.print(.new(content: .string(.new(field0: "Halo Dunia!"))))),
-  ];
-
-  void _recalculateIdents([bool shouldUpdate = false]) {
-    if (shouldUpdate) return setState(() => _recalculateIdents());
-    _idents.clear();
-    for (final st in _statements) {
-      if (st case RawStatement_Variable it) {
-        final next = it.field0.ident.field0;
-        if (_idents.contains(next)) continue;
-        _idents.add(it.field0.ident.field0);
-      }
-    }
-  }
-
-  void _handleAdd() {
-    context.navigator().push(CreateScreen.route());
-  }
-
-  void _handleReorder(int oldIndex, int newIndex) => setState(() {
-    final item = _statements.removeAt(oldIndex);
-    _statements.insert(newIndex, item);
-  });
-
-  void _handleDelete(int index) => setState(() {
-    _statements.removeAt(index);
-  });
-
-  void _handleDuplicate(int index) => setState(() {
-    _statements.insert(index + 1, _statements[index].copy());
-  });
+  final _statements = <RawStatement>[];
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +27,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 spacing: 8,
                 crossAxisAlignment: .stretch,
                 children: [
-                  Expanded(child: _buildVpl(context)),
+                  Expanded(child: Vpl(_statements)),
                   Expanded(child: _buildChat(context)),
                 ],
               ),
@@ -116,39 +57,6 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 Expanded(child: Input()),
                 Button(child: Icon(FluentIcons.send_24_regular)),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVpl(BuildContext context) {
-    _recalculateIdents();
-    return Container(
-      clipBehavior: .antiAlias,
-      decoration: BoxDecoration(
-        border: .all(color: Colors.bro),
-        borderRadius: .circular(8),
-      ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Vpl(
-              onReorderItem: _handleReorder,
-              onDelete: _handleDelete,
-              onDuplicate: _handleDuplicate,
-              statements: _statements,
-            ),
-          ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Button(
-              onTap: _handleAdd,
-              width: 48,
-              padding: .zero,
-              child: Icon(FluentIcons.add_24_filled),
             ),
           ),
         ],
