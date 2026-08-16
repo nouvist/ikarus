@@ -67,7 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       embedDimensions: int.parse(_embedDimensions.text),
     );
 
-    await settings.update();
+    settings.update();
     if (!mounted) return;
     context.navigator().pop();
   }

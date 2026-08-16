@@ -107,7 +107,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
               await BrowserFacade.renew();
               BrowserFacade.window()?.focus();
             },
-            child: Icon(FluentIcons.new_24_regular)),
+            child: Icon(FluentIcons.new_24_regular),
+          ),
           _ToolbarButton(child: Icon(FluentIcons.play_24_regular)),
           _ToolbarButton(child: Icon(FluentIcons.pause_24_regular)),
           _ToolbarButton(child: Icon(FluentIcons.stop_24_regular)),
@@ -216,7 +217,12 @@ class _VplState extends State<_Vpl> {
       final child = _children[i];
       if (child is VplScopeEnd) nested -= 1;
       if (child case VplBlock(type: .start)) {
-        children.add(child);
+        children.add(
+          KeyedSubtree(
+            key: ValueKey(child.key!),
+            child: VplIndicator(child: child),
+          ),
+        );
         continue;
       }
 
@@ -225,7 +231,9 @@ class _VplState extends State<_Vpl> {
           key: ValueKey(child.key!),
           child: ReorderableDragStartListener(
             index: i,
-            child: VplNested(value: nested, child: child),
+            child: VplIndicator(
+              child: VplNested(value: nested, child: child),
+            ),
           ),
         ),
       );

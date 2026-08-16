@@ -41,7 +41,7 @@ pub fn home() -> &'static Utf8Path {
 }
 
 #[frb(init)]
-pub fn init_app() {
-    let _ = home();
+pub async fn init_app() {
+    _ = home();
     flutter_rust_bridge::setup_default_user_utils();
 }

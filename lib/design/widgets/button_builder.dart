@@ -47,35 +47,37 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      hitTestBehavior: widget.behavior,
-      onEnter: (event) {
-        _lastHover = true;
-        _state.add(.hover);
-      },
-      onExit: (event) {
-        _lastHover = false;
-        _state.add(.rest);
-      },
-      child: GestureDetector(
-        behavior: widget.behavior,
-        onTap: widget.onTap,
-        onDoubleTap: widget.onDoubleTap,
-        onTapUp: (details) {
-          widget.onTapUp?.call();
-          _state.add(switch (_lastHover) {
-            true => .hover,
-            false => .rest,
-          });
+    return FocusScope(
+      child: MouseRegion(
+        hitTestBehavior: widget.behavior,
+        onEnter: (event) {
+          _lastHover = true;
+          _state.add(.hover);
         },
-        onTapDown: (details) {
-          widget.onTapDown?.call();
-          _state.add(.tap);
+        onExit: (event) {
+          _lastHover = false;
+          _state.add(.rest);
         },
-        child: StreamBuilder(
-          stream: _state,
-          builder: (context, snapshot) =>
-              widget.builder(context, _state.value, widget.child),
+        child: GestureDetector(
+          behavior: widget.behavior,
+          onTap: widget.onTap,
+          onDoubleTap: widget.onDoubleTap,
+          onTapUp: (details) {
+            widget.onTapUp?.call();
+            _state.add(switch (_lastHover) {
+              true => .hover,
+              false => .rest,
+            });
+          },
+          onTapDown: (details) {
+            widget.onTapDown?.call();
+            _state.add(.tap);
+          },
+          child: StreamBuilder(
+            stream: _state,
+            builder: (context, snapshot) =>
+                widget.builder(context, _state.value, widget.child),
+          ),
         ),
       ),
     );

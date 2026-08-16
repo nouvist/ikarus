@@ -24,6 +24,7 @@ export 'package:ikarus/design/widgets/vpl_scope.dart';
 export 'package:ikarus/design/widgets/vpl_nested.dart';
 export 'package:ikarus/design/widgets/vpl_variable.dart';
 export 'package:ikarus/design/widgets/vpl_controls.dart';
+export 'package:ikarus/design/widgets/vpl_indicator.dart';
 
 // input
 export 'package:ikarus/design/widgets/button_builder.dart';
