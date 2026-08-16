@@ -12,6 +12,8 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
+  final _idents = <String>[];
+
   final _statements = <RawStatement>[
     .if_(.new(condition: .static_(.boolean(.new(field0: true))))),
     .variable(
@@ -30,18 +32,34 @@ class _DocumentScreenState extends State<DocumentScreen> {
     .call(.print(.new(content: .string(.new(field0: "Halo Dunia!"))))),
   ];
 
+  void _recalculateIdents([bool shouldUpdate = false]) {
+    if (shouldUpdate) return setState(() => _recalculateIdents());
+    _idents.clear();
+    for (final st in _statements) {
+      if (st case RawStatement_Variable it) {
+        final next = it.field0.ident.field0;
+        if (_idents.contains(next)) continue;
+        _idents.add(it.field0.ident.field0);
+      }
+    }
+  }
+
   void _handleAdd() {
     context.navigator().push(CreateScreen.route());
   }
 
-  void _handleReorder(int oldIndex, int newIndex) {
-    print("lama : $oldIndex");
-    print("baru : $newIndex");
-    setState(() {
-      final item = _statements.removeAt(oldIndex);
-      _statements.insert(newIndex, item);
-    });
-  }
+  void _handleReorder(int oldIndex, int newIndex) => setState(() {
+    final item = _statements.removeAt(oldIndex);
+    _statements.insert(newIndex, item);
+  });
+
+  void _handleDelete(int index) => setState(() {
+    _statements.removeAt(index);
+  });
+
+  void _handleDuplicate(int index) => setState(() {
+    _statements.insert(index + 1, _statements[index].copy());
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +114,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Widget _buildVpl(BuildContext context) {
+    _recalculateIdents();
     return Container(
       clipBehavior: .antiAlias,
       decoration: BoxDecoration(
@@ -105,7 +124,12 @@ class _DocumentScreenState extends State<DocumentScreen> {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Vpl(onReorderItem: _handleReorder, statements: _statements),
+            child: Vpl(
+              onReorderItem: _handleReorder,
+              onDelete: _handleDelete,
+              onDuplicate: _handleDuplicate,
+              statements: _statements,
+            ),
           ),
           Positioned(
             top: 8,
@@ -179,110 +203,6 @@ class _ToolbarButton extends StatelessWidget {
         ),
       ),
       child: child,
-    );
-  }
-}
-
-class _Vpl extends StatefulWidget {
-  const _Vpl();
-
-  @override
-  State<_Vpl> createState() => _VplState();
-}
-
-class _VplState extends State<_Vpl> {
-  final _children = <Widget>[
-    VplBlock(
-      key: UniqueKey(),
-      cutout: .start,
-      type: .sentinel,
-      child: Center(child: Text('Mulai')),
-    ),
-    VplBlock(
-      key: UniqueKey(),
-      type: .call,
-      child: Center(child: Text('Fungsi 1')),
-    ),
-    VplScopeStart(
-      key: UniqueKey(),
-      child: Center(
-        child: Row(children: [Text('Jika 1'), Gap(8), VplVariable()]),
-      ),
-    ),
-    VplBlock(
-      key: UniqueKey(),
-      type: .call,
-      child: Center(child: Text('Fungsi 2')),
-    ),
-    VplBlock(
-      key: UniqueKey(),
-      type: .call,
-      child: Center(child: Text('Fungsi 3')),
-    ),
-    VplScopeStart(
-      key: UniqueKey(),
-      child: Center(child: Text('Jika bersarang 1')),
-    ),
-    VplBlock(
-      key: UniqueKey(),
-      type: .call,
-      child: Center(child: Text('Fungsi 4')),
-    ),
-    VplScopeEnd(key: UniqueKey()),
-    VplScopeEnd(key: UniqueKey()),
-  ];
-
-  void _handleReorder(int oldIndex, int newIndex) {
-    if (newIndex == 0) newIndex = 1;
-    setState(() {
-      final item = _children.removeAt(oldIndex);
-      _children.insert(newIndex, item);
-    });
-  }
-
-  List<Widget> _buildNested() {
-    var nested = 0;
-    final children = <Widget>[];
-    for (var i = 0; i < _children.length; i++) {
-      final child = _children[i];
-      if (child is VplScopeEnd) nested -= 1;
-      if (child case VplBlock(type: .sentinel)) {
-        children.add(
-          KeyedSubtree(
-            key: ValueKey(child.key!),
-            child: VplIndicator(child: child),
-          ),
-        );
-        continue;
-      }
-
-      children.add(
-        KeyedSubtree(
-          key: ValueKey(child.key!),
-          child: ReorderableDragStartListener(
-            index: i,
-            child: VplIndicator(
-              child: VplNested(value: nested, child: child),
-            ),
-          ),
-        ),
-      );
-
-      if (child is VplScopeStart) nested += 1;
-    }
-
-    return children;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final children = _buildNested();
-
-    return ReorderableList(
-      itemCount: children.length,
-      padding: .all(8),
-      onReorderItem: _handleReorder,
-      itemBuilder: (context, index) => children[index],
     );
   }
 }

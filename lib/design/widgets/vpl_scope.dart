@@ -3,10 +3,18 @@ import 'package:flutter_svg/svg.dart';
 import 'package:ikarus/design.dart';
 
 class VplScopeStart extends StatefulWidget {
+  final VoidCallback? onDelete;
+  final VoidCallback? onDuplicate;
   final int? nested;
   final Widget child;
 
-  const VplScopeStart({super.key, this.nested, required this.child});
+  const VplScopeStart({
+    super.key,
+    this.onDelete,
+    this.onDuplicate,
+    this.nested,
+    required this.child,
+  });
 
   @override
   State<VplScopeStart> createState() => _VplScopeStartState();
@@ -62,7 +70,13 @@ class _VplScopeStartState extends State<VplScopeStart> {
                       ),
                       child: widget.child,
                     ),
-                    if (_isShowControls) ...[Gap(16), VplControls()],
+                    if (_isShowControls) ...[
+                      Gap(16),
+                      VplControls(
+                        onDelete: widget.onDelete,
+                        onDuplicate: widget.onDuplicate,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -75,9 +89,11 @@ class _VplScopeStartState extends State<VplScopeStart> {
 }
 
 class VplScopeEnd extends StatefulWidget {
+  final VoidCallback? onDelete;
+  final VoidCallback? onDuplicate;
   final int? nested;
 
-  const VplScopeEnd({super.key, this.nested});
+  const VplScopeEnd({super.key, this.onDelete, this.onDuplicate, this.nested});
 
   @override
   State<VplScopeEnd> createState() => _VplScopeEndState();
@@ -122,7 +138,13 @@ class _VplScopeEndState extends State<VplScopeEnd> {
                   ),
                   if (_isShowControls) ...[
                     Gap(16),
-                    Transform.translate(offset: Offset(0, -10), child: VplControls()),
+                    Transform.translate(
+                      offset: Offset(0, -10),
+                      child: VplControls(
+                        onDelete: widget.onDelete,
+                        onDuplicate: widget.onDuplicate,
+                      ),
+                    ),
                   ],
                 ],
               ),

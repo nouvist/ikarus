@@ -1,7 +1,10 @@
 import 'package:ikarus/design.dart';
 
 class VplControls extends StatelessWidget {
-  const VplControls({super.key});
+  final VoidCallback? onDelete;
+  final VoidCallback? onDuplicate;
+
+  const VplControls({super.key, this.onDelete, this.onDuplicate});
 
   @override
   Widget build(BuildContext context) {
@@ -9,8 +12,8 @@ class VplControls extends StatelessWidget {
       child: Row(
         spacing: 8,
         children: [
-          _Button(child: Icon(FluentIcons.delete_24_regular)),
-          Button(child: Icon(FluentIcons.copy_24_regular)),
+          _Button(onTap: onDelete, child: Icon(FluentIcons.delete_24_regular)),
+          _Button(onTap: onDuplicate, child: Icon(FluentIcons.copy_24_regular)),
         ],
       ),
     );
@@ -21,10 +24,7 @@ class _Button extends StatelessWidget {
   final VoidCallback? onTap;
   final Widget child;
 
-  const _Button({
-    this.onTap,
-    required this.child,
-  });
+  const _Button({this.onTap, required this.child});
 
   @override
   Widget build(BuildContext context) {

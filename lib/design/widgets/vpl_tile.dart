@@ -45,9 +45,9 @@ class VplTile extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: .circular(2),
               color: switch (type) {
-                .sentinel => Colors.cSentinel1,
+                .sentinel => Colors.cStart1,
                 .scope => Colors.cScope1,
-                .assignment => Colors.cAssignment1,
+                .assignment => Colors.cVariable1,
                 .ident => Colors.cIdent1,
                 .value => Colors.cValue1,
                 .call => Colors.cCall1,

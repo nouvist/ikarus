@@ -20,6 +20,7 @@ export 'package:ikarus/design/widgets/nouvist_logo.dart';
 
 // vpl
 export 'package:ikarus/design/widgets/vpl_block.dart';
+export 'package:ikarus/design/widgets/vpl_inner.dart';
 export 'package:ikarus/design/widgets/vpl_scope.dart';
 export 'package:ikarus/design/widgets/vpl_nested.dart';
 export 'package:ikarus/design/widgets/vpl_variable.dart';

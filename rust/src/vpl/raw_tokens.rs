@@ -3,21 +3,35 @@ use flutter_rust_bridge::frb;
 
 use crate::vpl::tokens::{Condition, Scope, StCall, StFor, StIf, StVariable, Statement};
 
+macro_rules! impl_copy {
+    ($type:ty) => {
+        impl $type {
+            #[frb(sync)]
+            pub fn copy(&self) -> Self {
+                self.clone()
+            }
+        }
+    };
+}
+
 #[frb(unignore)]
 #[derive(Debug, Clone)]
 pub struct RawScope(pub Vec<RawStatement>);
+impl_copy!(RawScope);
 
 #[frb(unignore)]
 #[derive(Debug, Clone)]
 pub struct RawIf {
     pub condition: Condition,
 }
+impl_copy!(RawIf);
 
 #[frb(unignore)]
 #[derive(Debug, Clone)]
 pub struct RawFor {
     pub condition: Condition,
 }
+impl_copy!(RawFor);
 
 #[frb(unignore)]
 #[derive(Debug, Clone)]
@@ -28,6 +42,7 @@ pub enum RawStatement {
     Call(StCall),
     Variable(StVariable),
 }
+impl_copy!(RawStatement);
 
 impl RawStatement {
     pub fn variant(&self) -> RawStatementVariant {
@@ -115,6 +130,7 @@ impl RawScope {
 }
 
 #[frb(unignore)]
+#[derive(Debug, Clone)]
 pub enum RawStatementVariant {
     End,
     If,
@@ -122,7 +138,10 @@ pub enum RawStatementVariant {
     Variable,
     Call(RawCallVariant),
 }
+impl_copy!(RawStatementVariant);
 
+#[derive(Debug, Clone)]
 pub enum RawCallVariant {
     Print,
 }
+impl_copy!(RawCallVariant);

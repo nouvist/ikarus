@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use flutter_rust_bridge::frb;
 
 use crate::vpl::functions::FnPrint;

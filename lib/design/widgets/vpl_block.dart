@@ -7,6 +7,8 @@ enum VplBlockCutout { both, start }
 enum VplBlockType { sentinel, assignment, call, ident, value }
 
 class VplBlock extends StatefulWidget {
+  final VoidCallback? onDelete;
+  final VoidCallback? onDuplicate;
   final int? nested;
   final VplBlockCutout cutout;
   final VplBlockType type;
@@ -14,6 +16,8 @@ class VplBlock extends StatefulWidget {
 
   const VplBlock({
     super.key,
+    this.onDelete,
+    this.onDuplicate,
     this.nested,
     required this.type,
     this.cutout = .both,
@@ -42,8 +46,8 @@ class _VplBlockState extends State<VplBlock> {
   @override
   Widget build(BuildContext context) {
     final color = switch (widget.type) {
-      .sentinel => Colors.cSentinel0,
-      .assignment => Colors.cAssignment0,
+      .sentinel => Colors.cStart0,
+      .assignment => Colors.cVariable0,
       .call => Colors.cCall0,
       .ident => Colors.cIdent0,
       .value => Colors.cValue0,
@@ -76,7 +80,10 @@ class _VplBlockState extends State<VplBlock> {
                     ),
                     if (_isShowControls && widget.type != .sentinel) ...[
                       Gap(16),
-                      VplControls(),
+                      VplControls(
+                        onDelete: widget.onDelete,
+                        onDuplicate: widget.onDuplicate,
+                      ),
                     ],
                   ],
                 ),
