@@ -34,8 +34,8 @@ class _IdentifierScreenState extends State<IdentifierScreen> {
     super.dispose();
   }
 
-  void _handleSave() {
-    final next = _input.text.trim();
+  void _handleSave([String? text]) {
+    final next = (text ?? _input.text).trim();
     if (next.isEmpty) return;
     context.navigator().pop(next);
   }
@@ -63,7 +63,12 @@ class _IdentifierScreenState extends State<IdentifierScreen> {
                     child: Row(
                       spacing: 8,
                       children: [
-                        Expanded(child: Input(controller: _input)),
+                        Expanded(
+                          child: Input(
+                            controller: _input,
+                            onSubmit: _handleSave,
+                          ),
+                        ),
                         Button(
                           onTap: _handleSave,
                           child: Icon(FluentIcons.save_24_regular),

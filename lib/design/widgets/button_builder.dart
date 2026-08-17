@@ -1,5 +1,4 @@
 import 'package:ikarus/design.dart';
-import 'package:rxdart/subjects.dart';
 
 typedef ButtonContainerBuilder =
     Widget Function(BuildContext context, ButtonState state, Widget? child);
@@ -42,8 +41,16 @@ class ButtonBuilder extends StatefulWidget {
 }
 
 class _ButtonBuilderState extends State<ButtonBuilder> {
-  final _state = BehaviorSubject<ButtonState>.seeded(.rest);
+  var _state = ButtonState.rest;
   var _lastHover = false;
+
+  Future<void> _updateState(ButtonState state) async {
+    await yieldNow();
+    if (!mounted) return;
+    setState(() {
+      _state = state;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +59,11 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
         hitTestBehavior: widget.behavior,
         onEnter: (event) {
           _lastHover = true;
-          _state.add(.hover);
+          _updateState(.hover);
         },
         onExit: (event) {
           _lastHover = false;
-          _state.add(.rest);
+          _updateState(.rest);
         },
         child: GestureDetector(
           behavior: widget.behavior,
@@ -64,20 +71,16 @@ class _ButtonBuilderState extends State<ButtonBuilder> {
           onDoubleTap: widget.onDoubleTap,
           onTapUp: (details) {
             widget.onTapUp?.call();
-            _state.add(switch (_lastHover) {
+            _updateState(switch (_lastHover) {
               true => .hover,
               false => .rest,
             });
           },
           onTapDown: (details) {
             widget.onTapDown?.call();
-            _state.add(.tap);
+            _updateState(.tap);
           },
-          child: StreamBuilder(
-            stream: _state,
-            builder: (context, snapshot) =>
-                widget.builder(context, _state.value, widget.child),
-          ),
+          child: widget.builder(context, _state, widget.child),
         ),
       ),
     );

@@ -28,12 +28,30 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 crossAxisAlignment: .stretch,
                 children: [
                   Expanded(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        border: .all(color: Colors.bro),
-                        borderRadius: .circular(8),
-                      ),
-                      child: Vpl(_statements),
+                    child: Column(
+                      spacing: 8,
+                      crossAxisAlignment: .stretch,
+                      children: [
+                        Expanded(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              border: .all(color: Colors.bro),
+                              borderRadius: .circular(8),
+                            ),
+                            child: Vpl(_statements),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 128,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              border: .all(color: Colors.bro),
+                              borderRadius: .circular(8),
+                            ),
+                            child: Console(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Expanded(child: _buildChat(context)),
@@ -84,7 +102,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         children: [
           _ToolbarButton(
             onTap: () async {
-              await BrowserFacade.renew();
+              await BrowserFacade.init();
               BrowserFacade.window()?.focus();
             },
             child: Icon(FluentIcons.new_24_regular),

@@ -6,8 +6,15 @@ class Input extends StatefulWidget {
   final bool obscure;
   final TextInputType? type;
   final TextEditingController? controller;
+  final ValueChanged<String>? onSubmit;
 
-  const Input({super.key, this.obscure = false, this.type, this.controller});
+  const Input({
+    super.key,
+    this.obscure = false,
+    this.type,
+    this.controller,
+    this.onSubmit,
+  });
 
   @override
   State<Input> createState() => _InputState();
@@ -77,6 +84,8 @@ class _InputState extends State<Input>
                   child: EditableText(
                     key: _key,
                     controller: _controller,
+                    onTapUpOutside: _handleTapOutside,
+                    onSubmitted: widget.onSubmit,
                     focusNode: _focus,
                     keyboardType: widget.type,
                     obscureText: widget.obscure,
@@ -85,7 +94,6 @@ class _InputState extends State<Input>
                     backgroundCursorColor: Colors.fg0,
                     selectionColor: Colors.bg2,
                     contextMenuBuilder: _buildContextMenu,
-                    onTapUpOutside: _handleTapOutside,
                   ),
                 ),
               ),

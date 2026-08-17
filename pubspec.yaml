@@ -37,7 +37,6 @@ dependencies:
   rust_lib_ikarus:
     path: rust_builder
   flutter_rust_bridge: 2.12.0
-  rxdart: ^0.28.0
   flutter_svg: ^2.3.0
   nested: ^1.0.0
   window_manager: ^0.5.2

@@ -18,6 +18,9 @@ export 'package:ikarus/design/widgets/ikarus_logo.dart';
 export 'package:ikarus/design/widgets/istn_logo.dart';
 export 'package:ikarus/design/widgets/nouvist_logo.dart';
 
+// console
+export 'package:ikarus/design/widgets/console.dart';
+
 // vpl
 export 'package:ikarus/design/widgets/vpl_block.dart';
 export 'package:ikarus/design/widgets/vpl_inner.dart';

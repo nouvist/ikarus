@@ -1,16 +1,15 @@
 use flutter_rust_bridge::frb;
 
 use crate::{
-    browser::singleton::{BrowserError, BrowserMetadata, BrowserSingleton},
-    win32::window::Window,
+    browser::singleton::{BrowserError, BrowserMetadata, BrowserSingleton}, log, win32::window::Window,
 };
 
 #[frb(opaque)]
 pub struct BrowserFacade;
 
 impl BrowserFacade {
-    pub async fn renew() -> Result<(), BrowserError> {
-        BrowserSingleton::init_or_renew().await?;
+    pub async fn init() -> Result<(), BrowserError> {
+        BrowserSingleton::init().await?;
         Ok(())
     }
 

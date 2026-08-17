@@ -10,6 +10,8 @@ use tokio::sync::{Mutex, MutexGuard, watch};
 use tokio::task::JoinError;
 use tokio_stream::StreamExt;
 
+use crate::log;
+
 #[frb(ignore)]
 #[derive(Debug)]
 pub struct BrowserSingleton {
@@ -77,12 +79,14 @@ impl BrowserSingleton {
         })
     }
 
-    pub async fn init_or_renew() -> Result<(), BrowserError> {
+    pub async fn init() -> Result<(), BrowserError> {
         let this = Self::global();
         if this.is_running() {
+            log("Chrome sudah berjalan...").await;
             return Ok(());
         }
 
+        log("Menjalankan Chrome...").await;
         let config = BrowserConfig::builder().with_head().build()?;
         let (mut browser, mut handler) = Browser::launch(config).await?;
         let pid = browser
