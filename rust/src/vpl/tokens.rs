@@ -4,19 +4,19 @@ use crate::vpl::functions::FnPrint;
 
 #[frb]
 #[derive(Debug, Clone)]
-pub struct Ident(pub String);
+pub struct Ident(#[frb(non_final)] pub String);
 
 #[frb]
 #[derive(Debug, Clone)]
-pub struct VarString(pub String);
+pub struct VarString(#[frb(non_final)] pub String);
 
 #[frb]
 #[derive(Debug, Clone)]
-pub struct VarNumber(pub f64);
+pub struct VarNumber(#[frb(non_final)] pub f64);
 
 #[frb]
 #[derive(Debug, Clone)]
-pub struct VarBoolean(pub bool);
+pub struct VarBoolean(#[frb(non_final)] pub bool);
 
 #[frb]
 #[derive(Debug, Clone)]
@@ -40,8 +40,11 @@ pub enum VarComputedOperation {
 #[frb]
 #[derive(Debug, Clone)]
 pub struct VarComputed {
+    #[frb(non_final)]
     pub operation: VarComputedOperation,
+    #[frb(non_final)]
     pub left: Box<Variable>,
+    #[frb(non_final)]
     pub right: Box<Variable>,
 }
 
@@ -59,7 +62,9 @@ pub enum Variable {
 #[frb]
 #[derive(Debug, Clone)]
 pub struct StVariable {
+    #[frb(non_final)]
     pub ident: Ident,
+    #[frb(non_final)]
     pub value: Variable,
 }
 
@@ -72,20 +77,24 @@ pub enum StCall {
 #[frb]
 #[derive(Debug, Clone)]
 pub struct StIf {
+    #[frb(non_final)]
     pub condition: Variable,
+    #[frb(non_final)]
     pub scope: Scope,
 }
 
 #[frb]
 #[derive(Debug, Clone)]
 pub struct StFor {
+    #[frb(non_final)]
     pub condition: Variable,
+    #[frb(non_final)]
     pub scope: Scope,
 }
 
 #[frb]
 #[derive(Debug, Clone)]
-pub struct Scope(pub Vec<Statement>);
+pub struct Scope(#[frb(non_final)] pub Vec<Statement>);
 
 #[frb]
 #[derive(Debug, Clone)]

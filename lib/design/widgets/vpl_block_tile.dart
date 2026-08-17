@@ -1,13 +1,13 @@
 import 'package:ikarus/design.dart';
 
-enum VplTileType { sentinel, scope, assignment, ident, value, call }
+enum VplBlockTileType { sentinel, scope, assignment, ident, value, call }
 
-class VplTile extends StatelessWidget {
+class VplBlockTile extends StatelessWidget {
   final VoidCallback? onTap;
-  final VplTileType type;
+  final VplBlockTileType type;
   final Widget child;
 
-  const VplTile({
+  const VplBlockTile({
     super.key,
     this.onTap,
     required this.type,

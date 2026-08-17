@@ -27,7 +27,15 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 spacing: 8,
                 crossAxisAlignment: .stretch,
                 children: [
-                  Expanded(child: Vpl(_statements)),
+                  Expanded(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        border: .all(color: Colors.bro),
+                        borderRadius: .circular(8),
+                      ),
+                      child: Vpl(_statements),
+                    ),
+                  ),
                   Expanded(child: _buildChat(context)),
                 ],
               ),

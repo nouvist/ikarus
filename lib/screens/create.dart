@@ -48,27 +48,27 @@ class _CreateScreenState extends State<CreateScreen> {
 
   List<Widget> _buildVpls(BuildContext context) {
     return [
-      VplTile(
+      VplBlockTile(
         onTap: _createVplHandler(.if_()),
         type: .scope,
         child: Text("Jika"),
       ),
-      VplTile(
+      VplBlockTile(
         onTap: _createVplHandler(.for_()),
         type: .scope,
         child: Text("Selagi"),
       ),
-      VplTile(
+      VplBlockTile(
         onTap: _createVplHandler(.end()),
         type: .scope,
         child: Text("Tutup"),
       ),
-      VplTile(
+      VplBlockTile(
         onTap: _createVplHandler(.variable()),
         type: .assignment,
         child: Text("Variabel"),
       ),
-      VplTile(
+      VplBlockTile(
         onTap: _createVplHandler(.call(.print)),
         type: .call,
         child: Text("Cetak"),

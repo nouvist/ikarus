@@ -45,7 +45,18 @@ class VplBindingVariable extends StatefulWidget implements VplBinding {
 
 class _VplBindingVariableState extends State<VplBindingVariable> {
   Future<void> _handleIdentifier() async {
-    final next = await context.navigator().push(IdeentifierScreen.route());
+    final next = await context.navigator().push(
+      IdentifierScreen.route(
+        current: widget.data.field0.ident.field0,
+        existings: _VplInheritedData.of(context).idents,
+      ),
+    );
+
+    if (next == null) return;
+    if (!mounted) return;
+    setState(() {
+      widget.data.field0.ident.field0 = next;
+    });
   }
 
   @override

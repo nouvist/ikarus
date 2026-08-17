@@ -1,10 +1,43 @@
 import 'package:ikarus/design.dart';
+import 'package:ikarus/extensions.dart';
 
-class IdeentifierScreen extends StatelessWidget {
-  const IdeentifierScreen({super.key});
+class IdentifierScreen extends StatefulWidget {
+  final String current;
+  final List<String> existings;
 
-  static PageRoute<String?> route() {
-    return DialogRoute(builder: (context) => IdeentifierScreen());
+  const IdentifierScreen({
+    super.key,
+    required this.current,
+    required this.existings,
+  });
+
+  static PageRoute<String?> route({
+    required String current,
+    required List<String> existings,
+  }) {
+    return DialogRoute(
+      builder: (context) =>
+          IdentifierScreen(current: current, existings: existings),
+    );
+  }
+
+  @override
+  State<IdentifierScreen> createState() => _IdentifierScreenState();
+}
+
+class _IdentifierScreenState extends State<IdentifierScreen> {
+  late final _input = TextEditingController()..text = widget.current;
+
+  @override
+  void dispose() {
+    _input.dispose();
+    super.dispose();
+  }
+
+  void _handleSave() {
+    final next = _input.text.trim();
+    if (next.isEmpty) return;
+    context.navigator().pop(next);
   }
 
   @override
@@ -23,7 +56,32 @@ class IdeentifierScreen extends StatelessWidget {
               boxShadow: Shadows.s0,
             ),
             child: Column(
-              children: [Padding(padding: const .all(16), child: Input())],
+              children: [
+                IntrinsicHeight(
+                  child: Padding(
+                    padding: const .all(16),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(child: Input(controller: _input)),
+                        Button(
+                          onTap: _handleSave,
+                          child: Icon(FluentIcons.save_24_regular),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.existings.length,
+                    itemBuilder: (context, index) => VplVariableTile(
+                      onTap: () => _input.text = widget.existings[index],
+                      child: Text(widget.existings[index]),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

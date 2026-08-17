@@ -148,28 +148,58 @@ class _VplState extends State<Vpl> {
     final nesteds = _calculateNested();
     _calculateIdents();
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: ReorderableList(
-            onReorderItem: _handleReorderItem,
-            padding: .all(8),
-            itemCount: widget.statements.length + 1,
-            itemBuilder: (context, index) =>
-                _buildItem(context, index, nesteds),
+    return _VplInheritedData(
+      idents: _idents,
+      statements: widget.statements,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: ReorderableList(
+              onReorderItem: _handleReorderItem,
+              padding: .all(8),
+              itemCount: widget.statements.length + 1,
+              itemBuilder: (context, index) =>
+                  _buildItem(context, index, nesteds),
+            ),
           ),
-        ),
-        Positioned(
-          top: 8,
-          right: 8,
-          child: Button(
-            onTap: _handleAdd,
-            width: 48,
-            padding: .zero,
-            child: Icon(FluentIcons.add_24_filled),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Button(
+              onTap: _handleAdd,
+              width: 48,
+              padding: .zero,
+              child: Icon(FluentIcons.add_24_filled),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+}
+
+class _VplInheritedData extends InheritedWidget {
+  final List<String> idents;
+  final List<RawStatement> statements;
+
+  const _VplInheritedData({
+    required super.child,
+    required this.idents,
+    required this.statements,
+  });
+
+  @pragma('vm:prefer-inline')
+  static _VplInheritedData? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<_VplInheritedData>();
+  }
+
+  @pragma('vm:prefer-inline')
+  static _VplInheritedData of(BuildContext context) {
+    return maybeOf(context)!;
+  }
+
+  @override
+  bool updateShouldNotify(_VplInheritedData oldWidget) {
+    return idents != oldWidget.idents || statements != oldWidget.statements;
   }
 }

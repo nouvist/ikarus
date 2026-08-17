@@ -16,12 +16,13 @@ macro_rules! impl_copy {
 
 #[frb]
 #[derive(Debug, Clone)]
-pub struct RawScope(pub Vec<RawStatement>);
+pub struct RawScope(#[frb(non_final)] pub Vec<RawStatement>);
 impl_copy!(RawScope);
 
 #[frb]
 #[derive(Debug, Clone)]
 pub struct RawIf {
+    #[frb(non_final)]
     pub condition: Variable,
 }
 impl_copy!(RawIf);
@@ -29,6 +30,7 @@ impl_copy!(RawIf);
 #[frb]
 #[derive(Debug, Clone)]
 pub struct RawFor {
+    #[frb(non_final)]
     pub condition: Variable,
 }
 impl_copy!(RawFor);
