@@ -10,7 +10,18 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
+  final _browser = BrowserSingleton.instance();
   final _statements = <RawStatement>[];
+
+  @override
+  void dispose() {
+    _browser.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLaunchBrowser() async {
+    await _browser.init();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,10 +112,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         spacing: 2,
         children: [
           _ToolbarButton(
-            onTap: () async {
-              await BrowserFacade.init();
-              BrowserFacade.window()?.focus();
-            },
+            onTap: _handleLaunchBrowser,
             child: Icon(FluentIcons.new_24_regular),
           ),
           _ToolbarButton(child: Icon(FluentIcons.play_24_regular)),

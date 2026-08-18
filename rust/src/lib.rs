@@ -1,8 +1,7 @@
-use std::{env, pin::Pin, sync::OnceLock};
+use std::{env, sync::OnceLock};
 
 use camino::{Utf8Path, Utf8PathBuf};
 use flutter_rust_bridge::{DartFnFuture, frb};
-use tokio::sync::Mutex;
 
 pub mod frb_generated;
 
@@ -17,7 +16,6 @@ pub mod ai {
 }
 
 pub mod browser {
-    pub mod facade;
     pub mod singleton;
 }
 

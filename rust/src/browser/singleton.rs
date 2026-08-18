@@ -2,26 +2,31 @@ use chromiumoxide::{Browser, BrowserConfig, error::CdpError};
 use flutter_rust_bridge::frb;
 use std::{
     borrow::Cow,
-    ops::{Deref, DerefMut},
-    sync::OnceLock,
+    sync::{Arc, OnceLock},
 };
 use thiserror::Error;
-use tokio::sync::{Mutex, MutexGuard, watch};
+use tokio::sync::Mutex;
 use tokio::task::JoinError;
 use tokio_stream::StreamExt;
 
-use crate::log;
+use crate::{log, win32::window::Window};
 
 #[frb(ignore)]
 #[derive(Debug)]
-pub struct BrowserSingleton {
-    browser: Mutex<Option<Browser>>,
-    metadata_tx: watch::Sender<Option<BrowserMetadata>>,
-    metadata_rx: watch::Receiver<Option<BrowserMetadata>>,
+pub struct InnerBrowserSingleton {
+    browser: Option<Browser>,
+    window: Option<Window>,
+    metadata: Option<BrowserMetadata>,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[frb(opaque)]
+#[derive(Debug, Clone)]
+pub struct BrowserSingleton {
+    inner: Arc<Mutex<InnerBrowserSingleton>>,
+}
+
 #[frb]
+#[derive(Debug, Clone, Copy)]
 pub struct BrowserMetadata {
     pub pid: u32,
 }
@@ -52,37 +57,31 @@ impl From<&'static str> for BrowserError {
     }
 }
 
-pub struct BrowserGuard<'a>(MutexGuard<'a, Option<Browser>>);
-
-impl<'a> Deref for BrowserGuard<'a> {
-    type Target = Browser;
-    fn deref(&self) -> &Browser {
-        self.0.as_ref().unwrap()
-    }
-}
-impl<'a> DerefMut for BrowserGuard<'a> {
-    fn deref_mut(&mut self) -> &mut Browser {
-        self.0.as_mut().unwrap()
-    }
-}
-
 impl BrowserSingleton {
-    pub fn global() -> &'static Self {
+    #[frb(sync)]
+    pub fn frb_override_instance() -> Self {
+        Self::instance().clone()
+    }
+
+    pub fn instance() -> &'static Self {
         static INSTANCE: OnceLock<BrowserSingleton> = OnceLock::new();
-        INSTANCE.get_or_init(|| {
-            let (metadata_tx, metadata_rx) = watch::channel(None);
-            BrowserSingleton {
-                browser: Mutex::new(None),
-                metadata_tx,
-                metadata_rx,
-            }
+        INSTANCE.get_or_init(|| BrowserSingleton {
+            inner: Arc::new(Mutex::new(InnerBrowserSingleton {
+                browser: None,
+                window: None,
+                metadata: None,
+            })),
         })
     }
 
-    pub async fn init() -> Result<(), BrowserError> {
-        let this = Self::global();
-        if this.is_running() {
+    pub async fn init(&self) -> Result<(), BrowserError> {
+        let mut lock = self.inner.lock().await;
+
+        if lock.browser.is_some() {
             log("Chrome sudah berjalan...").await;
+            if let Some(window) = lock.window {
+                window.focus();
+            }
             return Ok(());
         }
 
@@ -95,40 +94,26 @@ impl BrowserSingleton {
             .flatten()
             .ok_or_else(|| BrowserError::PidError)?;
 
-        {
-            let mut guard = this.browser.lock().await;
-            *guard = Some(browser);
-        }
+        lock.browser = Some(browser);
+        lock.metadata = Some(BrowserMetadata { pid: pid });
+        lock.window = Window::from_pid(pid);
+        drop(lock);
 
-        let tx = this.metadata_tx.clone();
-        let _ = tx.send(Some(BrowserMetadata { pid: pid }));
+        let mutex = self.inner.clone();
         tokio::spawn(async move {
             while let Some(h) = handler.next().await {
                 if h.is_err() {
                     break;
                 }
             }
-            let _ = tx.send(None);
+
+            let mut lock = mutex.lock().await;
+            lock.browser = None;
+            lock.metadata = None;
+            lock.window = None;
+            drop(lock);
         });
 
         Ok(())
-    }
-
-    pub async fn browser(&self) -> Result<BrowserGuard<'_>, BrowserError> {
-        let guard = self.browser.lock().await;
-        if guard.is_none() {
-            return Err("browser not initialized".into());
-        }
-        Ok(BrowserGuard(guard))
-    }
-
-    #[inline]
-    pub fn is_running(&self) -> bool {
-        self.metadata_rx.borrow().is_some()
-    }
-
-    #[inline]
-    pub fn metadata(&self) -> Option<BrowserMetadata> {
-        self.metadata_rx.borrow().clone()
     }
 }
