@@ -66,13 +66,13 @@ class _VplState extends State<Vpl> {
         RawStatementVariant_End() => .end(),
         RawStatementVariant_If() => .if_(.new(condition: .null_())),
         RawStatementVariant_For() => .for_(.new(condition: .null_())),
+        RawStatementVariant_Call it => .call(.new(field0: it.field0.toCall())),
         RawStatementVariant_Variable() => .variable(
           .new(
             ident: .new(field0: "NamaVar"),
             value: .null_(),
           ),
         ),
-        RawStatementVariant_Call() => throw UnimplementedError(),
       });
     });
   }

@@ -45,7 +45,7 @@ class _VplIdentDialogState extends State<VplIdentDialog> {
       child: Padding(
         padding: .all(16),
         child: ConstrainedBox(
-          constraints: .new(maxWidth: 400, maxHeight: 600),
+          constraints: .new(maxWidth: 400, maxHeight: 500),
           child: Container(
             clipBehavior: .antiAlias,
             decoration: BoxDecoration(
@@ -81,7 +81,7 @@ class _VplIdentDialogState extends State<VplIdentDialog> {
                     itemCount: widget.existings.length,
                     itemBuilder: (context, index) => VplTile(
                       type: .ident,
-                      onTap: () => _input.text = widget.existings[index],
+                      onTap: () => _handleSave(widget.existings[index]),
                       icon: Icon(FluentIcons.rename_24_regular),
                       child: Text(widget.existings[index]),
                     ),

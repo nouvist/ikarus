@@ -23,7 +23,7 @@ class _VplAddDialogState extends State<VplAddDialog> {
       child: Padding(
         padding: .all(16),
         child: ConstrainedBox(
-          constraints: .new(maxWidth: 400, maxHeight: 600),
+          constraints: .new(maxWidth: 400, maxHeight: 500),
           child: Container(
             clipBehavior: .antiAlias,
             decoration: BoxDecoration(
@@ -70,12 +70,13 @@ class _VplAddDialogState extends State<VplAddDialog> {
         icon: Icon(FluentIcons.braces_variable_24_regular),
         child: Text("Variabel"),
       ),
-      VplTile(
-        onTap: _createVplHandler(.call(.print)),
-        type: .call,
-        icon: Icon(FluentIcons.cube_24_regular),
-        child: Text("Cetak"),
-      ),
+      for (final fn in FnName.values)
+        VplTile(
+          onTap: _createVplHandler(.call(fn)),
+          type: .call,
+          icon: Icon(FluentIcons.cube_24_regular),
+          child: Text(fn.display()),
+        ),
     ];
   }
 }

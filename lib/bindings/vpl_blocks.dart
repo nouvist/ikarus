@@ -162,11 +162,12 @@ class VplBindingCall extends StatelessWidget implements VplBinding {
 
   @override
   Widget build(BuildContext context) {
+    final name = data.field0.field0.name();
     return VplBlock(
       onDelete: onDelete,
       onDuplicate: onDuplicate,
       type: .call,
-      child: Row(children: [Text("Cetak")]),
+      child: Row(children: [Text(name.display())]),
     );
   }
 }
