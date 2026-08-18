@@ -19,6 +19,7 @@ class Vpl extends StatefulWidget {
 
 class _VplState extends State<Vpl> {
   final _idents = <String>[];
+  final _nesteds = <int>[];
 
   void _calculateIdents([bool shouldUpdate = false]) {
     if (shouldUpdate) return setState(() => _calculateIdents());
@@ -32,26 +33,24 @@ class _VplState extends State<Vpl> {
     }
   }
 
-  List<int> _calculateNested() {
-    final result = <int>[];
+  void _calculateNesteds() {
+    _nesteds.clear();
     var nested = 0;
 
     for (final st in widget.statements) {
       switch (st) {
         case RawStatement_If():
         case RawStatement_For():
-          result.add((nested++).clampLower(0));
+          _nesteds.add((nested++).clampLower(0));
           break;
         case RawStatement_End():
-          result.add((--nested).clampLower(0));
+          _nesteds.add((--nested).clampLower(0));
           break;
         default:
-          result.add(nested.clampLower(0));
+          _nesteds.add(nested.clampLower(0));
           break;
       }
     }
-
-    return result;
   }
 
   Future<void> _handleAdd() async {
@@ -145,12 +144,15 @@ class _VplState extends State<Vpl> {
 
   @override
   Widget build(BuildContext context) {
-    final nesteds = _calculateNested();
+    _calculateNesteds();
     _calculateIdents();
 
     return _VplInheritedData(
       idents: _idents,
+      nesteds: _nesteds,
       statements: widget.statements,
+      onCalculateIdents: _calculateIdents,
+      onCalculateNesteds: _calculateNesteds,
       child: Stack(
         children: [
           Positioned.fill(
@@ -159,7 +161,7 @@ class _VplState extends State<Vpl> {
               padding: .all(8),
               itemCount: widget.statements.length + 1,
               itemBuilder: (context, index) =>
-                  _buildItem(context, index, nesteds),
+                  _buildItem(context, index, _nesteds),
             ),
           ),
           Positioned(
@@ -180,13 +182,25 @@ class _VplState extends State<Vpl> {
 
 class _VplInheritedData extends InheritedWidget {
   final List<String> idents;
+  final List<int> nesteds;
   final List<RawStatement> statements;
+  final VoidCallback _onCalculateIdents;
+  final VoidCallback _onCalculateNesteds;
 
   const _VplInheritedData({
     required super.child,
     required this.idents,
+    required this.nesteds,
     required this.statements,
+    required this._onCalculateIdents,
+    required this._onCalculateNesteds,
   });
+
+  @pragma('vm:prefer-inline')
+  void calculateIdents() => _onCalculateIdents();
+
+  @pragma('vm:prefer-inline')
+  void calculateNesteds() => _onCalculateNesteds();
 
   @pragma('vm:prefer-inline')
   static _VplInheritedData? maybeOf(BuildContext context) {

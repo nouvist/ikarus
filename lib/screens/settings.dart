@@ -129,7 +129,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       Row(
         children: [
           Expanded(child: Text('API Key')),
-          Expanded(flex: 2, child: Input(controller: _textKey)),
+          Expanded(flex: 2, child: Input(controller: _textKey, obscure: true)),
         ],
       ),
       Gap(8),
@@ -157,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       Row(
         children: [
           Expanded(child: Text('API Key')),
-          Expanded(flex: 2, child: Input(controller: _embedKey)),
+          Expanded(flex: 2, child: Input(controller: _embedKey, obscure: true)),
         ],
       ),
       Gap(8),
