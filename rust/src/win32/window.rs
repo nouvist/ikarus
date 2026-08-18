@@ -3,7 +3,9 @@ use std::{ffi::c_void, process};
 use windows::{
     Win32::{
         Foundation::{HWND, LPARAM},
-        UI::WindowsAndMessaging::{EnumWindows, GetWindowThreadProcessId, SetForegroundWindow},
+        UI::WindowsAndMessaging::{
+            EnumWindows, GetWindowThreadProcessId, SW_RESTORE, SetForegroundWindow, ShowWindow,
+        },
     },
     core::BOOL,
 };
@@ -19,7 +21,7 @@ struct SearchData {
 
 impl Window {
     pub fn current() -> Self {
-        Self::from_pid(process::id()).unwrap()
+        Self::from_pid(process::id()).expect("Flutter will always have a window")
     }
 
     #[frb(ignore)]
@@ -60,6 +62,7 @@ impl Window {
     }
 
     pub fn focus(&self) {
+        _ = unsafe { ShowWindow(self.hwnd(), SW_RESTORE) };
         _ = unsafe { SetForegroundWindow(self.hwnd()) };
     }
 }

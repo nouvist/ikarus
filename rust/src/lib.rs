@@ -27,11 +27,11 @@ pub mod win32 {
 pub fn home() -> &'static Utf8Path {
     static INSTANCE: OnceLock<Utf8PathBuf> = OnceLock::new();
     let home = INSTANCE.get_or_init(|| {
-        let appdata = env::var("APPDATA").unwrap();
+        let appdata = env::var("APPDATA").expect("must be exists in Windows environment");
         let mut appdata = Utf8PathBuf::from(appdata);
         appdata.push("ProjectIkarus");
         if !appdata.exists() {
-            std::fs::create_dir_all(&appdata).unwrap();
+            std::fs::create_dir_all(&appdata).expect("must be user owned in Windows environment");
         }
         appdata
     });
@@ -51,7 +51,9 @@ pub async fn register_logger(
 
 pub async fn log(str: impl AsRef<str>) {
     let str = str.as_ref().to_owned();
-    (LOGGER.get().unwrap())(str).await;
+    if let Some(logger) = LOGGER.get() {
+        (logger)(str).await;
+    }
 }
 
 #[frb(init)]

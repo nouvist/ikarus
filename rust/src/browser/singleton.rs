@@ -81,17 +81,21 @@ impl BrowserSingleton {
         }
 
         log("[Sistem] Menjalankan Chrome...").await;
-        let config = BrowserConfig::builder().with_head().build()?;
+        let config = BrowserConfig::builder()
+            .with_head()
+            .viewport(None)
+            .build()?;
         let (mut browser, mut handler) = Browser::launch(config).await?;
         let pid = browser
             .get_mut_child()
             .map(|it| it.inner.id())
             .flatten()
             .ok_or_else(|| BrowserError::PidError)?;
+        let window = Window::from_pid(pid);
 
         lock.browser = Some(browser);
         lock.pid = Some(pid);
-        lock.window = Window::from_pid(pid);
+        lock.window = window;
         drop(lock);
         if let Some(listener) = &*self.listener.read().await {
             (listener)().await;
@@ -106,6 +110,7 @@ impl BrowserSingleton {
                 }
             }
 
+            log("[Sistem] Chrome ditutup...").await;
             let mut lock = rw.write().await;
             lock.browser = None;
             lock.pid = None;
