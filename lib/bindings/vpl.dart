@@ -3,10 +3,14 @@ import 'dart:convert';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
-import 'package:ikarus/screens.dart';
 
+// building blocks
 part 'vpl_blocks.dart';
 part 'vpl_inner.dart';
+
+// dialogs
+part 'vpl_add_dialog.dart';
+part 'vpl_ident_dialog.dart';
 
 class Vpl extends StatefulWidget {
   final List<RawStatement> statements;
@@ -54,7 +58,7 @@ class _VplState extends State<Vpl> {
   }
 
   Future<void> _handleAdd() async {
-    final st = await context.navigator().push(CreateScreen.route());
+    final st = await context.navigator().push(VplAddDialog.route());
     if (!mounted) return;
     if (st == null) return;
     setState(() {

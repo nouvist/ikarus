@@ -45,9 +45,6 @@ class _AppState extends State<App> {
       waitFor: widget.waitFor,
       titlebar: Titlebar(
         menus: [
-          // TitlebarMenu(child: Text('Baru')),
-          // TitlebarMenu(child: Text('Buka')),
-          // TitlebarMenu(child: Text('Simpan')),
           TitlebarMenu(
             onTap: () =>
                 _context.value.navigator().push(SettingsScreen.route()),

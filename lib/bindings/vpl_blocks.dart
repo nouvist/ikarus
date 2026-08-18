@@ -48,7 +48,7 @@ class _VplBindingVariableState extends State<VplBindingVariable> {
     final inherited = _VplInheritedData.of(context);
     inherited.calculateIdents();
     final next = await context.navigator().push(
-      IdentifierScreen.route(
+      VplIdentDialog.route(
         current: widget.data.field0.ident.field0,
         existings: inherited.idents,
       ),

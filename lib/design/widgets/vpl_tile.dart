@@ -1,16 +1,18 @@
 import 'package:ikarus/design.dart';
 
-enum VplBlockTileType { sentinel, scope, assignment, ident, value, call }
+enum VplTileType { sentinel, scope, assignment, ident, value, call }
 
-class VplBlockTile extends StatelessWidget {
+class VplTile extends StatelessWidget {
   final VoidCallback? onTap;
-  final VplBlockTileType type;
+  final VplTileType type;
+  final Widget icon;
   final Widget child;
 
-  const VplBlockTile({
+  const VplTile({
     super.key,
     this.onTap,
     required this.type,
+    required this.icon,
     required this.child,
   });
 
@@ -20,7 +22,7 @@ class VplBlockTile extends StatelessWidget {
       onTap: onTap,
       builder: (context, state, child) => Container(
         height: 48,
-        padding: .symmetric(horizontal: 8),
+        padding: .symmetric(horizontal: 16),
         decoration: BoxDecoration(
           borderRadius: .circular(8),
           color: switch (state) {
@@ -38,23 +40,19 @@ class VplBlockTile extends StatelessWidget {
         ),
       ),
       child: Row(
+        spacing: 8,
         children: [
-          Container(
-            width: 4,
-            height: 32,
-            decoration: BoxDecoration(
-              borderRadius: .circular(2),
-              color: switch (type) {
-                .sentinel => Colors.cStart1,
-                .scope => Colors.cScope1,
-                .assignment => Colors.cVariable1,
-                .ident => Colors.cIdent1,
-                .value => Colors.cValue1,
-                .call => Colors.cCall1,
-              },
-            ),
+          Foreground(
+            color: switch (type) {
+              .sentinel => Colors.cStart1,
+              .scope => Colors.cScope1,
+              .assignment => Colors.cVariable1,
+              .ident => Colors.cIdent1,
+              .value => Colors.cValue1,
+              .call => Colors.cCall1,
+            },
+            child: icon,
           ),
-          Gap(16),
           Expanded(child: child),
         ],
       ),
