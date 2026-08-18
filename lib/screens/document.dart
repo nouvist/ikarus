@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
@@ -12,11 +14,27 @@ class DocumentScreen extends StatefulWidget {
 class _DocumentScreenState extends State<DocumentScreen> {
   final _browser = BrowserSingleton.instance();
   final _statements = <RawStatement>[];
+  var _isRunning = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _browser.registerListener(callback: _handleChange);
+  }
 
   @override
   void dispose() {
     _browser.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleChange() async {
+    final isRunning = await _browser.isRunning();
+    if (_isRunning == isRunning) return;
+    if (!mounted) return;
+    setState(() {
+      _isRunning = isRunning;
+    });
   }
 
   Future<void> _handleLaunchBrowser() async {
@@ -26,52 +44,54 @@ class _DocumentScreenState extends State<DocumentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      child: Padding(
-        padding: .only(left: 8, right: 8, bottom: 8),
-        child: Column(
-          spacing: 8,
-          crossAxisAlignment: .stretch,
-          children: [
-            _buildToolbar(context),
-            Expanded(
-              child: Row(
-                spacing: 8,
-                crossAxisAlignment: .stretch,
-                children: [
-                  Expanded(
-                    child: Column(
-                      spacing: 8,
-                      crossAxisAlignment: .stretch,
-                      children: [
-                        Expanded(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              border: .all(color: Colors.bro),
-                              borderRadius: .circular(8),
-                            ),
-                            child: Vpl(_statements),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 128,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              border: .all(color: Colors.bro),
-                              borderRadius: .circular(8),
-                            ),
-                            child: Console(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(child: _buildChat(context)),
-                ],
-              ),
-            ),
-          ],
-        ),
+      padding: .only(left: 8, right: 8, bottom: 8),
+      child: Column(
+        spacing: 8,
+        crossAxisAlignment: .stretch,
+        children: [
+          _buildToolbar(context),
+          Expanded(child: _buildLayout(context)),
+        ],
       ),
+    );
+  }
+
+  Widget _buildLayout(BuildContext context) {
+    return Row(
+      spacing: 8,
+      crossAxisAlignment: .stretch,
+      children: [
+        Expanded(child: _buildLeftLayout()),
+        Expanded(child: _buildChat(context)),
+      ],
+    );
+  }
+
+  Widget _buildLeftLayout() {
+    return Column(
+      spacing: 8,
+      crossAxisAlignment: .stretch,
+      children: [
+        Expanded(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: .all(color: Colors.bro),
+              borderRadius: .circular(8),
+            ),
+            child: Vpl(_statements),
+          ),
+        ),
+        SizedBox(
+          height: 128,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: .all(color: Colors.bro),
+              borderRadius: .circular(8),
+            ),
+            child: Console(),
+          ),
+        ),
+      ],
     );
   }
 
@@ -113,11 +133,23 @@ class _DocumentScreenState extends State<DocumentScreen> {
         children: [
           _ToolbarButton(
             onTap: _handleLaunchBrowser,
-            child: Icon(FluentIcons.new_24_regular),
+            child: switch (_isRunning) {
+              true => Icon(FluentIcons.position_to_front_24_regular),
+              false => Icon(FluentIcons.new_24_regular),
+            },
           ),
-          _ToolbarButton(child: Icon(FluentIcons.play_24_regular)),
-          _ToolbarButton(child: Icon(FluentIcons.pause_24_regular)),
-          _ToolbarButton(child: Icon(FluentIcons.stop_24_regular)),
+          _ToolbarButton(
+            enabled: _isRunning,
+            child: Icon(FluentIcons.play_24_regular),
+          ),
+          _ToolbarButton(
+            enabled: _isRunning,
+            child: Icon(FluentIcons.pause_24_regular),
+          ),
+          _ToolbarButton(
+            enabled: _isRunning,
+            child: Icon(FluentIcons.stop_24_regular),
+          ),
         ],
       ),
     );
@@ -125,36 +157,46 @@ class _DocumentScreenState extends State<DocumentScreen> {
 }
 
 class _ToolbarButton extends StatelessWidget {
+  final bool enabled;
   final VoidCallback? onTap;
   final Widget child;
 
-  const _ToolbarButton({this.onTap, required this.child});
+  const _ToolbarButton({this.onTap, this.enabled = true, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return ButtonBuilder(
-      onTap: onTap,
-      builder: (context, state, child) => Container(
-        height: 32,
-        width: 32,
-        alignment: .center,
-        decoration: BoxDecoration(
-          borderRadius: .circular(4),
-          color: switch (state) {
-            .rest => null,
-            .hover => Colors.ov1,
-            .tap => Colors.ov2,
+    return IgnorePointer(
+      ignoring: !enabled,
+      child: ButtonBuilder(
+        onTap: onTap,
+        builder: (context, state, child) => Opacity(
+          opacity: switch (enabled) {
+            true => 1,
+            false => 0.5,
           },
+          child: Container(
+            height: 32,
+            width: 32,
+            alignment: .center,
+            decoration: BoxDecoration(
+              borderRadius: .circular(4),
+              color: switch (state) {
+                .rest => null,
+                .hover => Colors.ov1,
+                .tap => Colors.ov2,
+              },
+            ),
+            child: Foreground(
+              color: switch (state) {
+                .hover => Colors.fg0,
+                _ => Colors.fg1,
+              },
+              child: child!,
+            ),
+          ),
         ),
-        child: Foreground(
-          color: switch (state) {
-            .hover => Colors.fg0,
-            _ => Colors.fg1,
-          },
-          child: child!,
-        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }

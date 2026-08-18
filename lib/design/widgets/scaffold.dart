@@ -1,10 +1,12 @@
 import 'package:ikarus/design.dart';
 
 class Scaffold extends SingleChildStatelessWidget {
-  const Scaffold({super.key, super.child});
+  final EdgeInsets? padding;
+
+  const Scaffold({super.key, this.padding, super.child});
 
   @override
   Widget buildWithChild(BuildContext context, Widget? child) {
-    return Container(color: Colors.bg0, child: child!);
+    return Container(color: Colors.bg0, padding: padding, child: child!);
   }
 }

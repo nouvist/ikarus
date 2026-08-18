@@ -20,7 +20,7 @@ class VplVariable extends StatelessWidget {
             .rest => Colors.ov1,
             .hover => Colors.ov2,
             .tap => null,
-          }
+          },
         ),
         child: Foreground(
           color: Colors.fg0,

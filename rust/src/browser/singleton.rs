@@ -1,34 +1,28 @@
 use chromiumoxide::{Browser, BrowserConfig, error::CdpError};
-use flutter_rust_bridge::frb;
+use flutter_rust_bridge::{DartFnFuture, frb};
 use std::{
     borrow::Cow,
     sync::{Arc, OnceLock},
 };
 use thiserror::Error;
-use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 use tokio::task::JoinError;
 use tokio_stream::StreamExt;
 
 use crate::{log, win32::window::Window};
 
 #[frb(ignore)]
-#[derive(Debug)]
 pub struct InnerBrowserSingleton {
     browser: Option<Browser>,
     window: Option<Window>,
-    metadata: Option<BrowserMetadata>,
+    pid: Option<u32>,
 }
 
 #[frb(opaque)]
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct BrowserSingleton {
-    inner: Arc<Mutex<InnerBrowserSingleton>>,
-}
-
-#[frb]
-#[derive(Debug, Clone, Copy)]
-pub struct BrowserMetadata {
-    pub pid: u32,
+    inner: Arc<RwLock<InnerBrowserSingleton>>,
+    listener: Arc<RwLock<Option<Box<dyn Fn() -> DartFnFuture<()> + Send + Sync>>>>,
 }
 
 #[frb]
@@ -66,26 +60,27 @@ impl BrowserSingleton {
     pub fn instance() -> &'static Self {
         static INSTANCE: OnceLock<BrowserSingleton> = OnceLock::new();
         INSTANCE.get_or_init(|| BrowserSingleton {
-            inner: Arc::new(Mutex::new(InnerBrowserSingleton {
+            listener: Arc::new(RwLock::new(None)),
+            inner: Arc::new(RwLock::new(InnerBrowserSingleton {
                 browser: None,
                 window: None,
-                metadata: None,
+                pid: None,
             })),
         })
     }
 
     pub async fn init(&self) -> Result<(), BrowserError> {
-        let mut lock = self.inner.lock().await;
+        let mut lock = self.inner.write().await;
 
         if lock.browser.is_some() {
-            log("Chrome sudah berjalan...").await;
+            log("[Sistem] Menarik Chrome ke depan...").await;
             if let Some(window) = lock.window {
                 window.focus();
             }
             return Ok(());
         }
 
-        log("Menjalankan Chrome...").await;
+        log("[Sistem] Menjalankan Chrome...").await;
         let config = BrowserConfig::builder().with_head().build()?;
         let (mut browser, mut handler) = Browser::launch(config).await?;
         let pid = browser
@@ -95,11 +90,15 @@ impl BrowserSingleton {
             .ok_or_else(|| BrowserError::PidError)?;
 
         lock.browser = Some(browser);
-        lock.metadata = Some(BrowserMetadata { pid: pid });
+        lock.pid = Some(pid);
         lock.window = Window::from_pid(pid);
         drop(lock);
+        if let Some(listener) = &*self.listener.read().await {
+            (listener)().await;
+        }
 
-        let mutex = self.inner.clone();
+        let rw = self.inner.clone();
+        let listener = self.listener.clone();
         tokio::spawn(async move {
             while let Some(h) = handler.next().await {
                 if h.is_err() {
@@ -107,13 +106,32 @@ impl BrowserSingleton {
                 }
             }
 
-            let mut lock = mutex.lock().await;
+            let mut lock = rw.write().await;
             lock.browser = None;
-            lock.metadata = None;
+            lock.pid = None;
             lock.window = None;
             drop(lock);
+            if let Some(listener) = &*listener.read().await {
+                (listener)().await;
+            }
         });
 
         Ok(())
+    }
+
+    pub async fn register_listener(
+        &self,
+        callback: impl Fn() -> DartFnFuture<()> + Send + Sync + 'static,
+    ) {
+        let mut listener = self.listener.write().await;
+        *listener = Some(Box::new(callback));
+    }
+
+    pub async fn is_running(&self) -> bool {
+        self.inner.read().await.browser.is_some()
+    }
+
+    pub async fn pid(&self) -> Option<u32> {
+        self.inner.read().await.pid
     }
 }
