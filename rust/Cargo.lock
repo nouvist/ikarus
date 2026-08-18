@@ -4026,6 +4026,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "libikarus"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "camino",
+ "chromiumoxide",
+ "flutter_rust_bridge",
+ "postcard",
+ "rig",
+ "serde",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "tokio-util",
+ "windows",
+]
+
+[[package]]
 name = "libm"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5665,24 +5683,6 @@ checksum = "e46a2036019fdb888131db7a4c847a1063a7493f971ed94ea82c67eada63ca54"
 dependencies = [
  "serde",
  "serde_derive",
-]
-
-[[package]]
-name = "rust_lib_ikarus"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "camino",
- "chromiumoxide",
- "flutter_rust_bridge",
- "postcard",
- "rig",
- "serde",
- "thiserror",
- "tokio",
- "tokio-stream",
- "tokio-util",
- "windows",
 ]
 
 [[package]]
