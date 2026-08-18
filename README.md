@@ -1,17 +1,13 @@
-# ikarus
+<h1 align="center">
+  <img src="./docs/IkarusLogo.svg" height="64" />
+</h1>
 
-A new Flutter project.
+<p align="center">
+  <img src="./docs/Logo.svg" height="96" />
+</p>
 
-## Getting Started
+Ikarus adalah perangkat lunak otomasi browser melalui bahasa pemrograman visual.
+Ditujukan untuk berusaha mereduksi kewajiban sintaksis dalam memanipulasi DOM.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Dikembangkan dalam rangka penyelesaian skripsi untuk meraih gelar Sarjana Teknik
+Informatika di Institut Sains dan Teknologi Nasional.
