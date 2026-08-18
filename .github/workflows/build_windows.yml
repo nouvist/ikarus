@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -39,10 +39,11 @@ jobs:
       - name: Tar build output
         run: |
           cd build/windows/x64/runner/Release
-          tar -czf ../../../../../app-windows-x64.tar.gz *
+          tar -czf ../../../../../ikarus-windows-x64.tar.gz *
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: windows-x64-build
-          path: app-windows-x64.tar.gz
+          name: ikarus-windows-x64
+          archive: false
+          path: ikarus-windows-x64.tar.gz
