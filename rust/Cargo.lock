@@ -4033,6 +4033,7 @@ dependencies = [
  "camino",
  "chromiumoxide",
  "flutter_rust_bridge",
+ "paste",
  "postcard",
  "rig",
  "serde",

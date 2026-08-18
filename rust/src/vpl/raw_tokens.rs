@@ -1,18 +1,13 @@
 use anyhow::anyhow;
 use flutter_rust_bridge::frb;
 
-use crate::vpl::tokens::{Scope, StCall, StFor, StIf, StVariable, Statement, Variable};
-
-macro_rules! impl_copy {
-    ($type:ty) => {
-        impl $type {
-            #[frb(sync)]
-            pub fn copy(&self) -> Self {
-                self.clone()
-            }
-        }
-    };
-}
+use crate::{
+    impl_copy,
+    vpl::{
+        functions::FnName,
+        tokens::{Scope, StCall, StFor, StIf, StVariable, Statement, Variable},
+    },
+};
 
 #[frb]
 #[derive(Debug, Clone)]
@@ -46,6 +41,17 @@ pub enum RawStatement {
 }
 impl_copy!(RawStatement);
 
+#[frb]
+#[derive(Debug, Clone)]
+pub enum RawStatementVariant {
+    End,
+    If,
+    For,
+    Variable,
+    Call(FnName),
+}
+impl_copy!(RawStatementVariant);
+
 impl RawStatement {
     pub fn variant(&self) -> RawStatementVariant {
         match self {
@@ -53,9 +59,7 @@ impl RawStatement {
             RawStatement::If(_) => RawStatementVariant::If,
             RawStatement::For(_) => RawStatementVariant::For,
             RawStatement::Variable(_) => RawStatementVariant::Variable,
-            RawStatement::Call(it) => RawStatementVariant::Call(match it {
-                StCall::Print(_) => RawCallVariant::Print,
-            }),
+            RawStatement::Call(it) => RawStatementVariant::Call(it.0.name()),
         }
     }
 }
@@ -130,20 +134,3 @@ impl RawScope {
         Ok(Scope(statements))
     }
 }
-
-#[frb]
-#[derive(Debug, Clone)]
-pub enum RawStatementVariant {
-    End,
-    If,
-    For,
-    Variable,
-    Call(RawCallVariant),
-}
-impl_copy!(RawStatementVariant);
-
-#[derive(Debug, Clone)]
-pub enum RawCallVariant {
-    Print,
-}
-impl_copy!(RawCallVariant);

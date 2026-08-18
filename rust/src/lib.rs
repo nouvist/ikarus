@@ -5,6 +5,8 @@ use flutter_rust_bridge::{DartFnFuture, frb};
 
 pub mod frb_generated;
 
+pub mod macros;
+
 pub mod vpl {
     pub mod functions;
     pub mod raw_tokens;
