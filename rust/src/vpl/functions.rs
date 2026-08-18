@@ -1,15 +1,19 @@
+use std::collections::HashMap;
+
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 use crate::vpl::tokens::Variable;
 
-macro_rules! helper {
-    ($([$type:ident] $name:expr => $($arg_type:ident : $arg:expr),+ $(,)?);+ $(;)?) => {
-        #[derive(Debug, Clone, Serialize, Deserialize)]
+macro_rules! impl_fn_call {
+    ($([$type:ident] $name:expr $( => $arg_type:ident : $arg_name:expr),* $(,)?);+ $(;)?) => {
+        #[frb]
+        #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
         pub enum FnName {
             $($type,)+
         }
 
+        #[frb]
         #[derive(Debug, Clone, Serialize, Deserialize)]
         pub enum FnCall {
             $($type(paste::paste!([<FnCall $type>])),)+
@@ -21,6 +25,22 @@ macro_rules! helper {
                 match self {
                     $(FnCall::$type(_) => FnName::$type,)+
                 }
+            }
+
+            #[frb(sync)]
+            pub fn apply(&self, args: HashMap<String, Variable>) -> Result<Self, anyhow::Error> {
+                let mut this = self.clone();
+                match &mut this {
+                    $(FnCall::$type(it) => {
+                        $(it.$arg_type = args
+                            .get($arg_name)
+                            .ok_or_else(|| anyhow::anyhow!("invalid call"))?
+                            .clone();)*
+                        _ = it
+                    },)+
+                }
+
+                Ok(this)
             }
         }
 
@@ -39,7 +59,7 @@ macro_rules! helper {
             #[frb(sync)]
             pub fn to_call(&self) -> FnCall {
                 match self {
-                    $(FnName::$type => FnCall::$type(Default::default()))+
+                    $(FnName::$type => FnCall::$type(Default::default()),)+
                 }
             }
 
@@ -50,17 +70,29 @@ macro_rules! helper {
 
             pub fn args(&self) -> &'static [&'static str] {
                 match self {
-                    $(FnName::$type => &[$($arg,)+])+
+                    $(FnName::$type => &[$($arg_name,)*],)+
                 }
             }
-
         }
     };
 }
 
-helper! {
+impl_fn_call! {
+    [ProgramExit] "Program::Tutup";
+    [ProgramSleep] "Program::Tidur" =>
+        ms: "Milidetik";
     [ConsolePrint] "Konsol::Cetak" =>
-        content: "konten";
+        content: "Konten";
+}
+
+#[frb]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct FnCallProgramExit {}
+
+#[frb]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct FnCallProgramSleep {
+    pub ms: Variable,
 }
 
 #[frb]
