@@ -8,7 +8,7 @@ class Dialog extends StatelessWidget {
     return Center(
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: .circular(16),
+          borderRadius: const .all(.circular(16)),
           color: Colors.bg0,
           border: .all(color: Colors.bro),
           boxShadow: Shadows.s0,
@@ -18,9 +18,9 @@ class Dialog extends StatelessWidget {
             child: Column(
               crossAxisAlignment: .stretch,
               children: [
-                Padding(padding: .all(16), child: Text('Terjadi Galat')),
+                const Padding(padding: .all(16), child: Text('Terjadi Galat')),
                 Container(height: 1, color: Colors.bro),
-                Padding(padding: .all(16), child: Text('galon')),
+                const Padding(padding: .all(16), child: Text('galon')),
               ],
             ),
           ),

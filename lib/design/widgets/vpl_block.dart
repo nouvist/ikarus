@@ -71,15 +71,15 @@ class _VplBlockState extends State<VplBlock> {
                   children: [
                     Container(
                       height: 48,
-                      padding: .only(right: 16),
+                      padding: const .only(right: 16),
                       decoration: BoxDecoration(
-                        borderRadius: .horizontal(right: .circular(6)),
+                        borderRadius: .horizontal(right: const .circular(6)),
                         color: color,
                       ),
                       child: widget.child,
                     ),
                     if (_isShowControls && widget.type != .sentinel) ...[
-                      Gap(16),
+                      const Gap(16),
                       VplControls(
                         onDelete: widget.onDelete,
                         onDuplicate: widget.onDuplicate,

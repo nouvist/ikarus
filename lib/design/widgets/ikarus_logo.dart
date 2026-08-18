@@ -16,7 +16,7 @@ class IkarusLogo extends StatelessWidget {
     return SvgPicture.asset(
       width: width,
       height: height,
-      colorFilter: .mode(color ?? .new(0xffffffff), .srcIn),
+      colorFilter: .mode(color ?? const .new(0xffffffff), .srcIn),
       switch (type) {
         .square => 'assets/images/IkarusSquareLogo.svg',
         _ => 'assets/images/IkarusLogo.svg',

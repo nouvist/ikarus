@@ -57,11 +57,11 @@ class _ContextMenuState extends State<ContextMenu> {
           decoration: BoxDecoration(
             color: Colors.bg1,
             border: .all(color: Colors.bro),
-            borderRadius: .circular(8),
+            borderRadius: const .all(.circular(8)),
             boxShadow: Shadows.s0,
           ),
           child: Padding(
-            padding: .all(4),
+            padding: const .all(4),
             child: IntrinsicWidth(
               child: Inherited<_ContextMenuState>(
                 value: this,
@@ -96,7 +96,7 @@ class ContextMenuItem extends StatelessWidget {
         height: 32,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: .circular(4),
+            borderRadius: const .all(.circular(4)),
             color: switch (state) {
               .rest => Colors.tr,
               .hover => Colors.ov1,
@@ -104,7 +104,7 @@ class ContextMenuItem extends StatelessWidget {
             },
           ),
           child: Padding(
-            padding: .symmetric(horizontal: 12),
+            padding: const .symmetric(horizontal: 12),
             child: Foreground(
               color: switch (state) {
                 .tap => Colors.fg1,

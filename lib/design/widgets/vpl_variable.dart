@@ -12,9 +12,9 @@ class VplVariable extends StatelessWidget {
       builder: (context, state, child) => Container(
         height: 32,
         alignment: .center,
-        padding: .symmetric(horizontal: 8),
+        padding: const .symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          borderRadius: .circular(8),
+          borderRadius: const .all(.circular(8)),
           border: .all(color: Colors.brt),
           color: switch (state) {
             .rest => Colors.ov1,
@@ -25,8 +25,8 @@ class VplVariable extends StatelessWidget {
         child: Foreground(
           color: Colors.fg0,
           child: DefaultTextStyle.merge(
-            style: .new(fontWeight: .bold),
-            child: Text('...'),
+            style: const .new(fontWeight: .bold),
+            child: const Text('...'),
           ),
         ),
       ),

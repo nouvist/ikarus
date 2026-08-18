@@ -70,7 +70,7 @@ class _ConsoleState extends State<Console> implements ConsoleState {
         Positioned.fill(
           child: ListView.builder(
             controller: _scroll,
-            padding: .symmetric(horizontal: 8, vertical: 4),
+            padding: const .symmetric(horizontal: 8, vertical: 4),
             itemCount: _logs.length,
             itemBuilder: _buildItem,
           ),
@@ -82,7 +82,7 @@ class _ConsoleState extends State<Console> implements ConsoleState {
             onTap: clear,
             width: 48,
             padding: .zero,
-            child: Icon(FluentIcons.delete_24_regular),
+            child: const Icon(FluentIcons.delete_24_regular),
           ),
         ),
       ],
@@ -97,21 +97,21 @@ class _ConsoleState extends State<Console> implements ConsoleState {
     final second = item.time.second.toString().padLeft(2, '0');
 
     return Padding(
-      padding: .symmetric(vertical: 4),
+      padding: const .symmetric(vertical: 4),
       child: Row(
         spacing: 8,
         crossAxisAlignment: .start,
         children: [
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.fg0,
-              borderRadius: .circular(6),
+              borderRadius: .all(.circular(6)),
             ),
-            padding: .symmetric(horizontal: 4),
+            padding: const .symmetric(horizontal: 4),
             child: Foreground(
               color: Colors.bg0,
               child: Text(
-                style: .new(fontWeight: .bold),
+                style: const .new(fontWeight: .bold),
                 '$hour:$minute:$second',
               ),
             ),

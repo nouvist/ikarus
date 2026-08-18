@@ -9,7 +9,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await WindowManager.instance.ensureInitialized();
   await WindowManager.instance.waitUntilReadyToShow(
-    .new(title: "Ikarus", titleBarStyle: .hidden, minimumSize: .new(720, 640)),
+    const .new(
+      title: 'Ikarus',
+      titleBarStyle: .hidden,
+      minimumSize: .new(720, 640),
+    ),
   );
   WindowManager.instance.show();
   WindowManager.instance.focus();
@@ -21,7 +25,7 @@ Future<void> main() async {
           RustLib.init(),
           switch (kDebugMode) {
             true => Future.delayed(.zero),
-            false => Future.delayed(.new(seconds: 5)),
+            false => Future.delayed(const .new(seconds: 5)),
           },
         ]),
       ),
@@ -50,12 +54,12 @@ class _AppState extends State<App> {
           TitlebarMenu(
             onTap: () =>
                 _context.value.navigator().push(SettingsScreen.route()),
-            child: Text('Pengaturan'),
+            child: const Text('Pengaturan'),
           ),
           if (kDebugMode) ...[
             TitlebarMenu(
               onTap: () => RestartProvider.of(context).restart(),
-              child: Text('[DEBUG] Mulai Ulang'),
+              child: const Text('[DEBUG] Mulai Ulang'),
             ),
           ],
         ],
@@ -63,7 +67,7 @@ class _AppState extends State<App> {
       home: Builder(
         builder: (context) {
           _context.value = context;
-          return DocumentScreen();
+          return const DocumentScreen();
         },
       ),
     );

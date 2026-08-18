@@ -15,10 +15,10 @@ class Titlebar extends StatelessWidget {
       child: Row(
         crossAxisAlignment: .stretch,
         children: [
-          Gap(16),
-          IkarusLogo(type: .square, width: 24),
+          const Gap(16),
+          const IkarusLogo(type: .square, width: 24),
           if (menus case final it?) ...[
-            Gap(16),
+            const Gap(16),
             Row(
               mainAxisAlignment: .center,
               crossAxisAlignment: .center,
@@ -26,8 +26,8 @@ class Titlebar extends StatelessWidget {
               children: it,
             ),
           ],
-          Expanded(child: DragToMoveArea(child: SizedBox())),
-          TitlebarChrome(),
+          const Expanded(child: DragToMoveArea(child: SizedBox())),
+          const TitlebarChrome(),
         ],
       ),
     );
@@ -39,7 +39,7 @@ class TitlebarChrome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicWidth(
+    return const IntrinsicWidth(
       child: SizedBox(
         height: 48,
         child: Row(
@@ -63,9 +63,9 @@ class TitlebarMenu extends StatelessWidget {
       builder: (context, state, child) => Container(
         height: 32,
         alignment: .center,
-        padding: .symmetric(horizontal: 8),
+        padding: const .symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          borderRadius: .circular(4),
+          borderRadius: const .all(.circular(4)),
           color: switch (state) {
             .rest => null,
             .hover => Colors.ov1,
@@ -144,10 +144,10 @@ class _ChromeState extends State<_Chrome> with WindowListener {
         decoration: BoxDecoration(
           color: switch (state) {
             .hover => switch (widget.type == .close) {
-              true => Color(0xffc42b1c),
+              true => const Color(0xffc42b1c),
               false => Colors.ov1,
             },
-            _ => Color(0x00000000),
+            _ => const Color(0x00000000),
           },
         ),
         child: child,

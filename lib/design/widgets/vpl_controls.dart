@@ -12,8 +12,14 @@ class VplControls extends StatelessWidget {
       child: Row(
         spacing: 8,
         children: [
-          _Button(onTap: onDelete, child: Icon(FluentIcons.delete_24_regular)),
-          _Button(onTap: onDuplicate, child: Icon(FluentIcons.copy_24_regular)),
+          _Button(
+            onTap: onDelete,
+            child: const Icon(FluentIcons.delete_24_regular),
+          ),
+          _Button(
+            onTap: onDuplicate,
+            child: const Icon(FluentIcons.copy_24_regular),
+          ),
         ],
       ),
     );
@@ -32,7 +38,7 @@ class _Button extends StatelessWidget {
       width: 48,
       height: 48,
       child: ClipRRect(
-        borderRadius: .circular(8),
+        borderRadius: const .all(.circular(8)),
         child: BackdropFilter(
           filter: .blur(sigmaX: 8, sigmaY: 8),
           child: Button(

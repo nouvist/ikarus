@@ -13,7 +13,7 @@ class NouvistLogo extends StatelessWidget {
     return SvgPicture.asset(
       width: width,
       height: height,
-      colorFilter: .mode(color ?? .new(0xffffffff), .srcIn),
+      colorFilter: .mode(color ?? const .new(0xffffffff), .srcIn),
       'assets/images/NouvistLogo.svg',
     );
   }

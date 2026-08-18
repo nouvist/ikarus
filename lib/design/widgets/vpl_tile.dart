@@ -22,9 +22,9 @@ class VplTile extends StatelessWidget {
       onTap: onTap,
       builder: (context, state, child) => Container(
         height: 48,
-        padding: .symmetric(horizontal: 16),
+        padding: const .symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          borderRadius: .circular(8),
+          borderRadius: const .all(.circular(8)),
           color: switch (state) {
             .rest => null,
             .hover => Colors.ov1,

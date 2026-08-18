@@ -34,7 +34,7 @@ class Button extends StatelessWidget {
         onDoubleTap: onDoubleTap,
         builder: (context, state, child) => DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: .circular(8),
+            borderRadius: const .all(.circular(8)),
             border: Border(
               bottom: .new(
                 color: switch (state) {
@@ -50,17 +50,17 @@ class Button extends StatelessWidget {
               .rest => BoxDecoration(
                 color: Colors.ov1,
                 border: .all(color: Colors.bro),
-                borderRadius: .circular(8),
+                borderRadius: const .all(.circular(8)),
               ),
               .hover => BoxDecoration(
                 color: Colors.ov2,
                 border: .all(color: Colors.bro),
-                borderRadius: .circular(8),
+                borderRadius: const .all(.circular(8)),
               ),
               .tap => BoxDecoration(
                 color: Colors.ov0,
                 border: .all(color: Colors.bro),
-                borderRadius: .circular(8),
+                borderRadius: const .all(.circular(8)),
               ),
             },
             child: Foreground(

@@ -63,14 +63,14 @@ class _VplState extends State<Vpl> {
     if (st == null) return;
     setState(() {
       widget.statements.add(switch (st) {
-        RawStatementVariant_End() => .end(),
-        RawStatementVariant_If() => .if_(.new(condition: .null_())),
-        RawStatementVariant_For() => .for_(.new(condition: .null_())),
+        RawStatementVariant_End() => const .end(),
+        RawStatementVariant_If() => .if_(.new(condition: const .null_())),
+        RawStatementVariant_For() => .for_(.new(condition: const .null_())),
         RawStatementVariant_Call it => .call(.new(field0: it.field0.toCall())),
         RawStatementVariant_Variable() => .variable(
           .new(
-            ident: .new(field0: "NamaVar"),
-            value: .null_(),
+            ident: .new(field0: 'NamaVar'),
+            value: const .null_(),
           ),
         ),
       });
@@ -99,7 +99,7 @@ class _VplState extends State<Vpl> {
     if (index-- == 0) {
       return KeyedSubtree(
         key: ValueKey(this),
-        child: VplBlock(
+        child: const VplBlock(
           type: .sentinel,
           cutout: .start,
           child: Center(child: Text('Mulai')),
@@ -162,7 +162,7 @@ class _VplState extends State<Vpl> {
           Positioned.fill(
             child: ReorderableList(
               onReorderItem: _handleReorderItem,
-              padding: .all(8),
+              padding: const .all(8),
               itemCount: widget.statements.length + 1,
               itemBuilder: (context, index) =>
                   _buildItem(context, index, _nesteds),
@@ -175,7 +175,7 @@ class _VplState extends State<Vpl> {
               onTap: _handleAdd,
               width: 48,
               padding: .zero,
-              child: Icon(FluentIcons.add_24_filled),
+              child: const Icon(FluentIcons.add_24_filled),
             ),
           ),
         ],

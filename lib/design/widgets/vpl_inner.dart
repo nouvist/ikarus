@@ -18,7 +18,10 @@ class VplInner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 32,
-      decoration: BoxDecoration(color: Colors.fg0, borderRadius: .circular(4)),
+      decoration: const BoxDecoration(
+        color: Colors.fg0,
+        borderRadius: .all(.circular(4)),
+      ),
       child: ButtonBuilder(
         onTap: onTap,
         builder: (context, state, child) => Opacity(
@@ -31,7 +34,7 @@ class VplInner extends StatelessWidget {
         ),
         child: Container(
           height: 32,
-          padding: .symmetric(horizontal: 8),
+          padding: const .symmetric(horizontal: 8),
           alignment: .center,
           decoration: BoxDecoration(
             color: switch (type) {
@@ -44,7 +47,7 @@ class VplInner extends StatelessWidget {
                 .value => Colors.cValue1,
               },
             ),
-            borderRadius: .circular(4),
+            borderRadius: const .all(.circular(4)),
           ),
           child: child,
         ),
@@ -61,7 +64,10 @@ class VplInnerWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.fg0, borderRadius: .circular(6)),
+      decoration: const BoxDecoration(
+        color: Colors.fg0,
+        borderRadius: .all(.circular(6)),
+      ),
       child: ButtonBuilder(
         onTap: onTap,
         builder: (context, state, child) => Opacity(
@@ -74,10 +80,10 @@ class VplInnerWrapper extends StatelessWidget {
         ),
         child: Container(
           height: 42,
-          padding: .symmetric(horizontal: 6),
+          padding: const .symmetric(horizontal: 6),
           decoration: BoxDecoration(
             color: Colors.bg0,
-            borderRadius: .circular(6),
+            borderRadius: const .all(.circular(6)),
             border: .all(color: Colors.bro),
           ),
           child: IgnorePointer(child: Row(children: children)),

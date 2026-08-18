@@ -52,7 +52,7 @@ class _VplScopeStartState extends State<VplScopeStart> {
               left: 0,
               top: 0,
               child: SvgPicture.asset(
-                colorFilter: .mode(Colors.cScope0, .srcIn),
+                colorFilter: const .mode(Colors.cScope0, .srcIn),
                 'assets/paths/VplScopeStart.svg',
               ),
             ),
@@ -63,15 +63,15 @@ class _VplScopeStartState extends State<VplScopeStart> {
                   children: [
                     Container(
                       height: 48,
-                      padding: .only(right: 16),
+                      padding: const .only(right: 16),
                       decoration: BoxDecoration(
-                        borderRadius: .horizontal(right: .circular(6)),
+                        borderRadius: .horizontal(right: const .circular(6)),
                         color: Colors.cScope0,
                       ),
                       child: widget.child,
                     ),
                     if (_isShowControls) ...[
-                      Gap(16),
+                      const Gap(16),
                       VplControls(
                         onDelete: widget.onDelete,
                         onDuplicate: widget.onDuplicate,
@@ -133,13 +133,13 @@ class _VplScopeEndState extends State<VplScopeEnd> {
               child: Row(
                 children: [
                   SvgPicture.asset(
-                    colorFilter: .mode(Colors.cScope0, .srcIn),
+                    colorFilter: const .mode(Colors.cScope0, .srcIn),
                     'assets/paths/VplScopeEnd.svg',
                   ),
                   if (_isShowControls) ...[
-                    Gap(16),
+                    const Gap(16),
                     Transform.translate(
-                      offset: Offset(0, -10),
+                      offset: const Offset(0, -10),
                       child: VplControls(
                         onDelete: widget.onDelete,
                         onDuplicate: widget.onDuplicate,
@@ -149,7 +149,7 @@ class _VplScopeEndState extends State<VplScopeEnd> {
                 ],
               ),
             ),
-            SizedBox(width: 128, height: 48),
+            const SizedBox(width: 128, height: 48),
           ],
         ),
       ),

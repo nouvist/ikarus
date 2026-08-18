@@ -54,7 +54,7 @@ class _InputState extends State<Input>
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: .new(maxHeight: 48),
+      constraints: const .new(maxHeight: 48),
       child: _gesture.buildGestureDetector(
         child: MouseRegion(
           cursor: SystemMouseCursors.text,
@@ -65,21 +65,21 @@ class _InputState extends State<Input>
               decoration: BoxDecoration(
                 border: Border(
                   bottom: switch (_focus.hasFocus) {
-                    true => BorderSide(color: Colors.a0, width: 3),
-                    false => BorderSide(color: Colors.bro, width: 2),
+                    true => const BorderSide(color: Colors.a0, width: 3),
+                    false => const BorderSide(color: Colors.bro, width: 2),
                   },
                 ),
-                borderRadius: .circular(8),
+                borderRadius: const .all(.circular(8)),
               ),
               child: child!,
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 border: .all(color: Colors.bro),
-                borderRadius: .circular(8),
+                borderRadius: const .all(.circular(8)),
               ),
               child: Padding(
-                padding: .symmetric(horizontal: 16, vertical: 4),
+                padding: const .symmetric(horizontal: 16, vertical: 4),
                 child: Center(
                   child: EditableText(
                     key: _key,
@@ -115,15 +115,15 @@ class _InputState extends State<Input>
           menus: [
             ContextMenuItem(
               onTap: () => state.cutSelection(.toolbar),
-              child: Text('Potong'),
+              child: const Text('Potong'),
             ),
             ContextMenuItem(
               onTap: () => state.copySelection(.toolbar),
-              child: Text('Salin'),
+              child: const Text('Salin'),
             ),
             ContextMenuItem(
               onTap: () => state.pasteText(.toolbar),
-              child: Text('Tempel'),
+              child: const Text('Tempel'),
             ),
           ],
         ),

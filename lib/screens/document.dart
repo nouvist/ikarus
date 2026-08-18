@@ -44,7 +44,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      padding: .only(left: 8, right: 8, bottom: 8),
+      padding: const .only(left: 8, right: 8, bottom: 8),
       child: Column(
         spacing: 8,
         crossAxisAlignment: .stretch,
@@ -76,9 +76,13 @@ class _DocumentScreenState extends State<DocumentScreen> {
           child: DecoratedBox(
             decoration: BoxDecoration(
               border: .all(color: Colors.bro),
-              borderRadius: .circular(8),
+              borderRadius: const .all(.circular(8)),
             ),
-            child: Vpl(_statements),
+            child: ClipRRect(
+              clipBehavior: .antiAlias,
+              borderRadius: const .all(.circular(8)),
+              child: Vpl(_statements),
+            ),
           ),
         ),
         SizedBox(
@@ -86,9 +90,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
           child: DecoratedBox(
             decoration: BoxDecoration(
               border: .all(color: Colors.bro),
-              borderRadius: .circular(8),
+              borderRadius: const .all(.circular(8)),
             ),
-            child: Console(),
+            child: const Console(),
           ),
         ),
       ],
@@ -99,14 +103,14 @@ class _DocumentScreenState extends State<DocumentScreen> {
     return DecoratedBox(
       decoration: BoxDecoration(
         border: .all(color: Colors.bro),
-        borderRadius: .circular(8),
+        borderRadius: const .all(.circular(8)),
       ),
       child: Column(
         children: [
           Expanded(
-            child: ListView(padding: .all(8), children: []),
+            child: ListView(padding: const .all(8), children: const []),
           ),
-          Padding(
+          const Padding(
             padding: .all(8),
             child: Row(
               spacing: 8,
@@ -123,10 +127,10 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   Widget _buildToolbar(BuildContext context) {
     return Container(
-      padding: .all(8),
+      padding: const .all(8),
       decoration: BoxDecoration(
         border: .all(color: Colors.bro),
-        borderRadius: .circular(8),
+        borderRadius: const .all(.circular(8)),
       ),
       child: Row(
         spacing: 2,
@@ -134,21 +138,21 @@ class _DocumentScreenState extends State<DocumentScreen> {
           _ToolbarButton(
             onTap: _handleLaunchBrowser,
             child: switch (_isRunning) {
-              true => Icon(FluentIcons.position_to_front_24_regular),
-              false => Icon(FluentIcons.new_24_regular),
+              true => const Icon(FluentIcons.position_to_front_24_regular),
+              false => const Icon(FluentIcons.new_24_regular),
             },
           ),
           _ToolbarButton(
             enabled: _isRunning,
-            child: Icon(FluentIcons.play_24_regular),
+            child: const Icon(FluentIcons.play_24_regular),
           ),
           _ToolbarButton(
             enabled: _isRunning,
-            child: Icon(FluentIcons.pause_24_regular),
+            child: const Icon(FluentIcons.pause_24_regular),
           ),
           _ToolbarButton(
             enabled: _isRunning,
-            child: Icon(FluentIcons.stop_24_regular),
+            child: const Icon(FluentIcons.stop_24_regular),
           ),
         ],
       ),
@@ -179,7 +183,7 @@ class _ToolbarButton extends StatelessWidget {
             width: 32,
             alignment: .center,
             decoration: BoxDecoration(
-              borderRadius: .circular(4),
+              borderRadius: const .all(.circular(4)),
               color: switch (state) {
                 .rest => null,
                 .hover => Colors.ov1,

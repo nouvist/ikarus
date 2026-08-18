@@ -29,7 +29,7 @@ class Root extends StatelessWidget {
       child: DefaultTextStyle(
         style: Typography.body.copyWith(color: Colors.fg0),
         child: IconTheme(
-          data: .new(color: Colors.fg0, size: 24),
+          data: const .new(color: Colors.fg0, size: 24),
           child: _Splash(
             waitFor: waitFor ?? yieldNow(),
             child: Column(
@@ -65,7 +65,7 @@ class _Splash extends StatefulWidget {
 
 class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
   late final _animation = AnimationController(
-    duration: .new(milliseconds: 300),
+    duration: const .new(milliseconds: 300),
     vsync: this,
     value: 0,
   );
@@ -98,7 +98,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
         children: [
           Positioned.fill(child: widget.child),
           Positioned.fill(child: _buildSplash()),
-          Positioned(right: 0, top: 0, child: TitlebarChrome()),
+          const Positioned(right: 0, top: 0, child: TitlebarChrome()),
         ],
       ),
     };
@@ -123,7 +123,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
         ),
         child: Stack(
           children: [
-            Positioned.fill(child: Center(child: IkarusLogo(width: 256))),
+            const Positioned.fill(child: Center(child: IkarusLogo(width: 256))),
             Positioned(
               bottom: 32,
               left: 0,
@@ -131,7 +131,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
               child: SvgPicture.asset(
                 height: 64,
                 alignment: .center,
-                colorFilter: .mode(Colors.fg2, .srcIn),
+                colorFilter: const .mode(Colors.fg2, .srcIn),
                 'assets/images/SplashText.svg',
               ),
             ),
@@ -174,7 +174,7 @@ class DialogRoute<T> extends PageRoute<T> {
   @override
   final maintainState = true;
   @override
-  final transitionDuration = Duration(milliseconds: 300);
+  final transitionDuration = const Duration(milliseconds: 300);
   @override
   final opaque = false;
   @override

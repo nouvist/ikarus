@@ -18,7 +18,7 @@ class VplIndicator extends StatelessWidget {
             width: 32,
             child: switch (type) {
               .editing || .running => null,
-              .selected => Align(
+              .selected => const Align(
                 alignment: .centerLeft,
                 child: Icon(FluentIcons.chevron_right_24_regular),
               ),

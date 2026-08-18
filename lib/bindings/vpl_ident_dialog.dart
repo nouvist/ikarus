@@ -43,13 +43,13 @@ class _VplIdentDialogState extends State<VplIdentDialog> {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: .all(16),
+        padding: const .all(16),
         child: ConstrainedBox(
-          constraints: .new(maxWidth: 400, maxHeight: 500),
+          constraints: const .new(maxWidth: 400, maxHeight: 500),
           child: Container(
             clipBehavior: .antiAlias,
             decoration: BoxDecoration(
-              borderRadius: .circular(16),
+              borderRadius: const .all(.circular(16)),
               color: Colors.bg0,
               border: .all(color: Colors.bro),
               boxShadow: Shadows.s0,
@@ -70,7 +70,7 @@ class _VplIdentDialogState extends State<VplIdentDialog> {
                         ),
                         Button(
                           onTap: _handleSave,
-                          child: Icon(FluentIcons.save_24_regular),
+                          child: const Icon(FluentIcons.save_24_regular),
                         ),
                       ],
                     ),
@@ -82,7 +82,7 @@ class _VplIdentDialogState extends State<VplIdentDialog> {
                     itemBuilder: (context, index) => VplTile(
                       type: .ident,
                       onTap: () => _handleSave(widget.existings[index]),
-                      icon: Icon(FluentIcons.rename_24_regular),
+                      icon: const Icon(FluentIcons.rename_24_regular),
                       child: Text(widget.existings[index]),
                     ),
                   ),

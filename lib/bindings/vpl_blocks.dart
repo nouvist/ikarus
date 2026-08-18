@@ -69,12 +69,12 @@ class _VplBindingVariableState extends State<VplBindingVariable> {
       type: .assignment,
       child: Row(
         children: [
-          Text('Var '),
+          const Text('Var '),
           VplBindingInner.ident(
             onTap: _handleIdentifier,
             data: widget.data.field0.ident,
           ),
-          Text(' sbg '),
+          const Text(' sbg '),
           VplBindingInner(data: widget.data.field0.value),
         ],
       ),
@@ -101,7 +101,7 @@ class VplBindingIf extends StatelessWidget implements VplBinding {
       onDuplicate: onDuplicate,
       child: Row(
         children: [
-          Text('Jika '),
+          const Text('Jika '),
           VplBindingInner(data: data.field0.condition),
         ],
       ),
@@ -128,7 +128,7 @@ class VplBindingFor extends StatelessWidget implements VplBinding {
       onDuplicate: onDuplicate,
       child: Row(
         children: [
-          Text('Selagi '),
+          const Text('Selagi '),
           VplBindingInner(data: data.field0.condition),
         ],
       ),
@@ -148,7 +148,7 @@ class VplBindingEnd extends StatelessWidget implements VplBinding {
   }
 }
 
-class VplBindingCall extends StatelessWidget implements VplBinding {
+class VplBindingCall extends StatefulWidget implements VplBinding {
   final VoidCallback? onDelete;
   final VoidCallback? onDuplicate;
   final RawStatement_Call data;
@@ -161,13 +161,34 @@ class VplBindingCall extends StatelessWidget implements VplBinding {
   });
 
   @override
+  State<VplBindingCall> createState() => _VplBindingCallState();
+}
+
+class _VplBindingCallState extends State<VplBindingCall> {
+  final _map = <String, Variable>{};
+
+  @override
   Widget build(BuildContext context) {
-    final name = data.field0.field0.name();
+    final name = widget.data.field0.field0.name();
+    final args = name.args();
     return VplBlock(
-      onDelete: onDelete,
-      onDuplicate: onDuplicate,
+      onDelete: widget.onDelete,
+      onDuplicate: widget.onDuplicate,
       type: .call,
-      child: Row(children: [Text(name.display())]),
+      child: switch (args.isEmpty) {
+        true => Center(child: Text('${name.display()}()')),
+        false => Row(
+          children: [
+            Text('${name.display()}( '),
+            for (final arg in args) ...[
+              if (arg == arg[0]) const Text(', '),
+              Text('$arg: '),
+              const VplBindingInner(data: .null_()),
+            ],
+            const Text(' )'),
+          ],
+        ),
+      },
     );
   }
 }
