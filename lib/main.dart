@@ -15,12 +15,14 @@ Future<void> main() async {
   WindowManager.instance.focus();
 
   runApp(
-    Nested(
-      children: [RestartProvider()],
+    RestartProvider(
       child: App(
         waitFor: Future.wait([
-          Future.delayed(.new(seconds: 5)),
           RustLib.init(),
+          switch (kDebugMode) {
+            true => Future.delayed(.zero),
+            false => Future.delayed(.new(seconds: 5)),
+          },
         ]),
       ),
     ),
