@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
+import 'package:ikarus/crux/vpl/interpreter.dart';
 import 'package:ikarus/design.dart';
 
 class DocumentScreen extends StatefulWidget {
@@ -115,7 +116,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
             child: Row(
               spacing: 8,
               children: [
-                Expanded(child: Input(controller: .new())), // TODO: yang bener kontrolernya
+                Expanded(
+                  child: Input(controller: .new()),
+                ), // TODO: yang bener kontrolernya
                 Button(child: Icon(FluentIcons.send_24_regular)),
               ],
             ),
@@ -143,17 +146,23 @@ class _DocumentScreenState extends State<DocumentScreen> {
             },
           ),
           _ToolbarButton(
-            enabled: _isRunning,
+            // enabled: _isRunning,
+            onTap: () async {
+              final interpreter = Interpreter();
+              final scope = RawScope(field0: _statements).build();
+              await interpreter.run(scope: scope);
+              interpreter.dispose();
+            },
             child: const Icon(FluentIcons.play_24_regular),
           ),
-          _ToolbarButton(
-            enabled: _isRunning,
-            child: const Icon(FluentIcons.pause_24_regular),
-          ),
-          _ToolbarButton(
-            enabled: _isRunning,
-            child: const Icon(FluentIcons.stop_24_regular),
-          ),
+          // _ToolbarButton(
+          //   enabled: _isRunning,
+          //   child: const Icon(FluentIcons.pause_24_regular),
+          // ),
+          // _ToolbarButton(
+          //   enabled: _isRunning,
+          //   child: const Icon(FluentIcons.stop_24_regular),
+          // ),
         ],
       ),
     );

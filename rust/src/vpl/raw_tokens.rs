@@ -65,6 +65,7 @@ impl RawStatement {
 }
 
 impl RawScope {
+    #[frb(sync)]
     pub fn build(self) -> Result<Scope, anyhow::Error> {
         let default_capacity = self.0.len() / 4;
         let mut statements = Vec::<Statement>::with_capacity(default_capacity * 2);

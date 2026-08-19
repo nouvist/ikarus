@@ -1,10 +1,13 @@
 use flutter_rust_bridge::frb;
 use tokio::task::yield_now;
 
-use crate::vpl::{
-    evaluator::Evaluator,
-    functions::Invoke,
-    tokens::{Scope, VarBoolean, Variable},
+use crate::{
+    log,
+    vpl::{
+        evaluator::Evaluator,
+        functions::Invoke,
+        tokens::{Scope, VarBoolean, Variable},
+    },
 };
 
 use super::tokens::Statement;
@@ -27,7 +30,16 @@ impl Interpreter {
         &mut self.evaluator
     }
 
-    pub async fn run(&mut self, scope: Scope) -> Result<(), anyhow::Error> {
+    pub async fn run(&mut self, scope: Scope) {
+        log("[Sistem] Menjalankan algoritma...").await;
+        let result = self.run_unsafe(scope).await;
+        match result {
+            Ok(_) => log("[Sistem] Selesai.").await,
+            Err(it) => log(&format!("[Sistem] Galat: {it}")).await,
+        }
+    }
+
+    pub async fn run_unsafe(&mut self, scope: Scope) -> Result<(), anyhow::Error> {
         for st in &scope.0 {
             match st {
                 Statement::If(it) => {
@@ -41,9 +53,9 @@ impl Interpreter {
                         continue;
                     }
 
-                    Box::pin(self.run(it.scope.clone())).await?;
+                    Box::pin(self.run_unsafe(it.scope.clone())).await?;
                 }
-                Statement::For(it) => {
+                Statement::For(it) => loop {
                     let condition = self.evaluator.evaluate(it.condition.clone())?;
                     let Variable::Boolean(condition) = condition else {
                         continue;
@@ -54,8 +66,8 @@ impl Interpreter {
                         continue;
                     }
 
-                    Box::pin(self.run(it.scope.clone())).await?;
-                }
+                    Box::pin(self.run_unsafe(it.scope.clone())).await?;
+                },
                 Statement::Variable(it) => {
                     self.evaluator.save(it.ident.clone(), it.value.clone())?;
                 }
