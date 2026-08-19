@@ -22,11 +22,8 @@ Future<void> main() async {
     RestartProvider(
       child: App(
         waitFor: Future.wait([
+          .delayed(const .new(seconds: 5)),
           RustLib.init(),
-          switch (kDebugMode) {
-            true => Future.delayed(.zero),
-            false => Future.delayed(const .new(seconds: 5)),
-          },
         ]),
       ),
     ),

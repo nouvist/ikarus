@@ -12,7 +12,30 @@ class VplAddDialog extends StatefulWidget {
 }
 
 class _VplAddDialogState extends State<VplAddDialog> {
-  void Function() _createVplHandler(RawStatementVariant variant) => () {
+  final _search = TextEditingController();
+  var _searchTimer = null as Timer?;
+
+  @override
+  void initState() {
+    super.initState();
+    _search.addListener(_handleSearch);
+  }
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _handleSearch() {
+    _searchTimer?.cancel();
+    _searchTimer = Timer(const .new(milliseconds: 200), () {
+      if (!mounted) return;
+      markNeedsBuild();
+    });
+  }
+
+  VoidCallback _createVplHandler(RawStatementVariant variant) => () {
     if (!mounted) return;
     context.navigator().pop(variant);
   };
@@ -36,7 +59,7 @@ class _VplAddDialogState extends State<VplAddDialog> {
               children: [
                 Padding(
                   padding: const .all(16),
-                  child: Input(controller: .new()), // TODO: yang bener kontrolernya
+                  child: Input(controller: _search),
                 ),
                 Expanded(child: ListView(children: _buildVpls(context))),
               ],
@@ -48,38 +71,42 @@ class _VplAddDialogState extends State<VplAddDialog> {
   }
 
   List<Widget> _buildVpls(BuildContext context) {
+    final search = _search.text.toLowerCase().trim();
     return [
-      VplTile(
-        onTap: _createVplHandler(const .if_()),
-        type: .scope,
-        icon: const Icon(FluentIcons.document_page_number_24_regular),
-        child: const Text('Jika'),
-      ),
-      VplTile(
-        onTap: _createVplHandler(const .for_()),
-        type: .scope,
-        icon: const Icon(FluentIcons.document_page_number_24_regular),
-        child: const Text('Selagi'),
-      ),
-      VplTile(
-        onTap: _createVplHandler(const .end()),
-        type: .scope,
-        icon: const Icon(FluentIcons.document_page_number_24_regular),
-        child: const Text('Tutup'),
-      ),
-      VplTile(
-        onTap: _createVplHandler(const .variable()),
-        type: .assignment,
-        icon: const Icon(FluentIcons.braces_variable_24_regular),
-        child: const Text('Variabel'),
-      ),
-      for (final fn in FnName.values)
+      if (search.isEmpty) ...[
         VplTile(
-          onTap: _createVplHandler(.call(fn)),
-          type: .call,
-          icon: const Icon(FluentIcons.cube_24_regular),
-          child: Text(fn.display()),
+          onTap: _createVplHandler(const .if_()),
+          type: .scope,
+          icon: const Icon(FluentIcons.document_page_number_24_regular),
+          child: const Text('Jika'),
         ),
+        VplTile(
+          onTap: _createVplHandler(const .for_()),
+          type: .scope,
+          icon: const Icon(FluentIcons.document_page_number_24_regular),
+          child: const Text('Selagi'),
+        ),
+        VplTile(
+          onTap: _createVplHandler(const .end()),
+          type: .scope,
+          icon: const Icon(FluentIcons.document_page_number_24_regular),
+          child: const Text('Tutup'),
+        ),
+        VplTile(
+          onTap: _createVplHandler(const .variable()),
+          type: .assignment,
+          icon: const Icon(FluentIcons.braces_variable_24_regular),
+          child: const Text('Variabel'),
+        ),
+      ],
+      for (final fn in FnName.values)
+        if (fn.display().toLowerCase().contains(search))
+          VplTile(
+            onTap: _createVplHandler(.call(fn)),
+            type: .call,
+            icon: const Icon(FluentIcons.cube_24_regular),
+            child: Text(fn.display()),
+          ),
     ];
   }
 }
