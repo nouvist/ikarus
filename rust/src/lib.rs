@@ -9,6 +9,8 @@ pub mod macros;
 
 pub mod vpl {
     pub mod functions;
+    pub mod interpreter;
+    pub mod evaluator;
     pub mod raw_tokens;
     pub mod tokens;
 }

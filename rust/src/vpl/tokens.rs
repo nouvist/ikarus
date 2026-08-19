@@ -4,27 +4,27 @@ use serde::{Deserialize, Serialize};
 use crate::{impl_copy, vpl::functions::FnCall};
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Ident(#[frb(non_final)] pub String);
 impl_copy!(Ident);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct VarString(#[frb(non_final)] pub String);
 impl_copy!(VarString);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct VarNumber(#[frb(non_final)] pub f64);
 impl_copy!(VarNumber);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct VarBoolean(#[frb(non_final)] pub bool);
 impl_copy!(VarBoolean);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum VarComputedOperation {
     Add,
     Subtract,
@@ -44,7 +44,7 @@ pub enum VarComputedOperation {
 impl_copy!(VarComputedOperation);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct VarComputed {
     #[frb(non_final)]
     pub operation: VarComputedOperation,
@@ -56,7 +56,7 @@ pub struct VarComputed {
 impl_copy!(VarComputed);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Entity {
     Csv,
     Element,
@@ -64,7 +64,7 @@ pub enum Entity {
 impl_copy!(Entity);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Variable {
     Null,
     Ident(Ident),

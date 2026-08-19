@@ -143,7 +143,7 @@ class _VplState extends State<Vpl> {
       key: ValueKey(data),
       index: index + 1,
       child: VplIndicator(
-        type: .editing,
+        type: .editing, // TODO: ini belum di Rust
         child: VplNested(value: nested, child: child),
       ),
     );
