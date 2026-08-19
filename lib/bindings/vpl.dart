@@ -195,6 +195,7 @@ class VplInheritedData extends InheritedWidget {
   final VoidCallback _onCalculateNesteds;
 
   const VplInheritedData({
+    super.key, 
     required super.child,
     required this.idents,
     required this.nesteds,

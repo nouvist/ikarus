@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
-use crate::vpl::{interpreter::Interpreter, tokens::Variable};
+use crate::vpl::{interpreter::Interpreter, tokens::Value};
 
 pub mod console;
 use console::*;
@@ -41,7 +41,7 @@ macro_rules! impl_fn_call {
             }
 
             #[frb(sync)]
-            pub fn apply_args(&self, args: HashMap<String, Variable>) -> Result<Self, anyhow::Error> {
+            pub fn apply_args(&self, args: HashMap<String, Value>) -> Result<Self, anyhow::Error> {
                 let mut this = self.clone();
                 match &mut this {
                     $(FnCall::$type(it) => {
@@ -57,7 +57,7 @@ macro_rules! impl_fn_call {
             }
 
             #[frb(sync)]
-            pub fn to_args(&self) -> HashMap<String, Variable> {
+            pub fn to_args(&self) -> HashMap<String, Value> {
                 match self {
                     $(FnCall::$type(it) => [$(($arg_name.to_owned(), it.$arg_type.clone()),)*]
                         .into_iter()

@@ -2,16 +2,19 @@ part of 'vpl.dart';
 
 class VplBindingInner extends StatelessWidget {
   final VoidCallback? onTap;
-  final Variable data;
+  final Value data;
 
   const VplBindingInner({super.key, this.onTap, required this.data});
 
-  VplBindingInner.ident({Key? key, VoidCallback? onTap, required Ident data})
-    : this(key: key, onTap: onTap, data: .ident(data));
+  VplBindingInner.ident({
+    Key? key,
+    VoidCallback? onTap,
+    required Identifier data,
+  }) : this(key: key, onTap: onTap, data: .ident(data));
 
   @override
   Widget build(BuildContext context) {
-    if (data case Variable_Computed it) {
+    if (data case Value_Computed it) {
       return VplInnerWrapper(
         onTap: onTap,
         children: [
@@ -38,20 +41,20 @@ class VplBindingInner extends StatelessWidget {
     return VplInner(
       onTap: onTap,
       type: switch (data) {
-        Variable_Ident() => .ident,
+        Value_Ident() => .ident,
         _ => .value,
       },
       child: switch (data) {
-        Variable_Null() => const Text('null'),
-        Variable_Ident it => Text(it.field0.field0),
-        Variable_String it => Text(jsonEncode(it.field0.field0)),
-        Variable_Number it => Text(jsonEncode(it.field0.field0)),
-        Variable_Boolean it => Text(switch (it.field0.field0) {
+        Value_Null() => const Text('null'),
+        Value_Ident it => Text(it.field0.field0),
+        Value_String it => Text(jsonEncode(it.field0.field0)),
+        Value_Number it => Text(jsonEncode(it.field0.field0)),
+        Value_Boolean it => Text(switch (it.field0.field0) {
           true => 'Benar',
           false => 'Salah',
         }),
-        Variable_Object() => throw UnimplementedError(),
-        Variable_Computed() => throw UnimplementedError(),
+        Value_Object() => throw UnimplementedError(),
+        Value_Computed() => throw UnimplementedError(),
       },
     );
   }
@@ -59,7 +62,7 @@ class VplBindingInner extends StatelessWidget {
 
 class VplBindingInnerOperation extends StatelessWidget {
   final VoidCallback? onTap;
-  final VarComputedOperation data;
+  final ValueComputedOperation data;
 
   const VplBindingInnerOperation({super.key, this.onTap, required this.data});
 

@@ -3,11 +3,11 @@ use std::collections::HashMap;
 use anyhow::anyhow;
 use flutter_rust_bridge::frb;
 
-use crate::vpl::tokens::{Ident, VarBoolean, VarComputedOperation, VarNumber, VarString, Variable};
+use crate::vpl::tokens::{Identifier, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString, Value};
 
 #[frb(opaque)]
 pub struct Evaluator {
-    pub jar: HashMap<String, Variable>,
+    pub jar: HashMap<String, Value>,
 }
 
 impl Evaluator {
@@ -17,9 +17,9 @@ impl Evaluator {
         }
     }
 
-    pub fn evaluate(&mut self, var: Variable) -> Result<Variable, anyhow::Error> {
+    pub fn evaluate(&mut self, var: Value) -> Result<Value, anyhow::Error> {
         match var {
-            Variable::Ident(ident) => {
+            Value::Ident(ident) => {
                 let resolved = self
                     .jar
                     .get(&ident.0)
@@ -27,7 +27,7 @@ impl Evaluator {
                     .ok_or_else(|| anyhow!("variabel yang dirujuk tidak ditemukan"))?;
                 Ok(resolved)
             }
-            Variable::Computed(it) => {
+            Value::Computed(it) => {
                 let left = self.evaluate(*it.left)?;
                 let right = self.evaluate(*it.right)?;
 
@@ -38,145 +38,145 @@ impl Evaluator {
         }
     }
 
-    pub fn save(&mut self, ident: Ident, var: Variable) -> Result<Variable, anyhow::Error> {
+    pub fn save(&mut self, ident: Identifier, var: Value) -> Result<Value, anyhow::Error> {
         let evaluated = self.evaluate(var)?;
         self.jar.insert(ident.0, evaluated.clone());
         Ok(evaluated)
     }
 
     fn apply(
-        operation: &VarComputedOperation,
-        left: &Variable,
-        right: &Variable,
-    ) -> Option<Variable> {
+        operation: &ValueComputedOperation,
+        left: &Value,
+        right: &Value,
+    ) -> Option<Value> {
         match (operation, left, right) {
             // Add
-            (VarComputedOperation::Add, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Number(VarNumber(left.0 + right.0)))
+            (ValueComputedOperation::Add, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Number(ValueNumber(left.0 + right.0)))
             }
-            (VarComputedOperation::Add, Variable::String(left), Variable::String(right)) => Some(
-                Variable::String(VarString(format!("{}{}", left.0, right.0))),
+            (ValueComputedOperation::Add, Value::String(left), Value::String(right)) => Some(
+                Value::String(ValueString(format!("{}{}", left.0, right.0))),
             ),
-            (VarComputedOperation::Add, Variable::String(left), Variable::Number(right)) => Some(
-                Variable::String(VarString(format!("{}{}", left.0, right.0))),
+            (ValueComputedOperation::Add, Value::String(left), Value::Number(right)) => Some(
+                Value::String(ValueString(format!("{}{}", left.0, right.0))),
             ),
-            (VarComputedOperation::Add, Variable::Number(left), Variable::String(right)) => Some(
-                Variable::String(VarString(format!("{}{}", left.0, right.0))),
+            (ValueComputedOperation::Add, Value::Number(left), Value::String(right)) => Some(
+                Value::String(ValueString(format!("{}{}", left.0, right.0))),
             ),
 
             // Subtract
-            (VarComputedOperation::Subtract, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Number(VarNumber(left.0 - right.0)))
+            (ValueComputedOperation::Subtract, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Number(ValueNumber(left.0 - right.0)))
             }
 
             // Multiply
-            (VarComputedOperation::Multiply, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Number(VarNumber(left.0 * right.0)))
+            (ValueComputedOperation::Multiply, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Number(ValueNumber(left.0 * right.0)))
             }
 
             // Divide
-            (VarComputedOperation::Divide, Variable::Number(left), Variable::Number(right)) => {
+            (ValueComputedOperation::Divide, Value::Number(left), Value::Number(right)) => {
                 if right.0 == 0.0 {
                     None
                 } else {
-                    Some(Variable::Number(VarNumber(left.0 / right.0)))
+                    Some(Value::Number(ValueNumber(left.0 / right.0)))
                 }
             }
 
             // Reminder
-            (VarComputedOperation::Reminder, Variable::Number(left), Variable::Number(right)) => {
+            (ValueComputedOperation::Reminder, Value::Number(left), Value::Number(right)) => {
                 if right.0 == 0.0 {
                     None
                 } else {
-                    Some(Variable::Number(VarNumber(left.0 % right.0)))
+                    Some(Value::Number(ValueNumber(left.0 % right.0)))
                 }
             }
 
             // BoolAnd
-            (VarComputedOperation::BoolAnd, Variable::Number(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 != 0.0 && right.0)))
+            (ValueComputedOperation::BoolAnd, Value::Number(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 != 0.0 && right.0)))
             }
-            (VarComputedOperation::BoolAnd, Variable::Boolean(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 && right.0 != 0.0)))
+            (ValueComputedOperation::BoolAnd, Value::Boolean(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 && right.0 != 0.0)))
             }
-            (VarComputedOperation::BoolAnd, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(
+            (ValueComputedOperation::BoolAnd, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(
                     left.0 != 0.0 && right.0 != 0.0,
                 )))
             }
-            (VarComputedOperation::BoolAnd, Variable::Boolean(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 && right.0)))
+            (ValueComputedOperation::BoolAnd, Value::Boolean(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 && right.0)))
             }
 
             // BoolOr
-            (VarComputedOperation::BoolOr, Variable::Number(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 != 0.0 || right.0)))
+            (ValueComputedOperation::BoolOr, Value::Number(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 != 0.0 || right.0)))
             }
-            (VarComputedOperation::BoolOr, Variable::Boolean(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 || right.0 != 0.0)))
+            (ValueComputedOperation::BoolOr, Value::Boolean(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 || right.0 != 0.0)))
             }
-            (VarComputedOperation::BoolOr, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(
+            (ValueComputedOperation::BoolOr, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(
                     left.0 != 0.0 || right.0 != 0.0,
                 )))
             }
-            (VarComputedOperation::BoolOr, Variable::Boolean(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 || right.0)))
+            (ValueComputedOperation::BoolOr, Value::Boolean(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 || right.0)))
             }
 
             // BoolEq
-            (VarComputedOperation::BoolEq, Variable::Boolean(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 == right.0)))
+            (ValueComputedOperation::BoolEq, Value::Boolean(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 == right.0)))
             }
-            (VarComputedOperation::BoolEq, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 == right.0)))
+            (ValueComputedOperation::BoolEq, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 == right.0)))
             }
-            (VarComputedOperation::BoolEq, Variable::String(left), Variable::String(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 == right.0)))
+            (ValueComputedOperation::BoolEq, Value::String(left), Value::String(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 == right.0)))
             }
 
             // BoolLt
-            (VarComputedOperation::BoolLt, Variable::Boolean(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(!left.0 && right.0)))
+            (ValueComputedOperation::BoolLt, Value::Boolean(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(!left.0 && right.0)))
             }
-            (VarComputedOperation::BoolLt, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 < right.0)))
+            (ValueComputedOperation::BoolLt, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 < right.0)))
             }
-            (VarComputedOperation::BoolLt, Variable::String(left), Variable::String(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 < right.0)))
+            (ValueComputedOperation::BoolLt, Value::String(left), Value::String(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 < right.0)))
             }
 
             // BoolLe
-            (VarComputedOperation::BoolLe, Variable::Boolean(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(!left.0 || right.0)))
+            (ValueComputedOperation::BoolLe, Value::Boolean(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(!left.0 || right.0)))
             }
-            (VarComputedOperation::BoolLe, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 <= right.0)))
+            (ValueComputedOperation::BoolLe, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 <= right.0)))
             }
-            (VarComputedOperation::BoolLe, Variable::String(left), Variable::String(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 <= right.0)))
+            (ValueComputedOperation::BoolLe, Value::String(left), Value::String(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 <= right.0)))
             }
 
             // BoolGt
-            (VarComputedOperation::BoolGt, Variable::Boolean(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 && !right.0)))
+            (ValueComputedOperation::BoolGt, Value::Boolean(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 && !right.0)))
             }
-            (VarComputedOperation::BoolGt, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 > right.0)))
+            (ValueComputedOperation::BoolGt, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 > right.0)))
             }
-            (VarComputedOperation::BoolGt, Variable::String(left), Variable::String(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 > right.0)))
+            (ValueComputedOperation::BoolGt, Value::String(left), Value::String(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 > right.0)))
             }
 
             // BoolGe
-            (VarComputedOperation::BoolGe, Variable::Boolean(left), Variable::Boolean(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 || !right.0)))
+            (ValueComputedOperation::BoolGe, Value::Boolean(left), Value::Boolean(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 || !right.0)))
             }
-            (VarComputedOperation::BoolGe, Variable::Number(left), Variable::Number(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 >= right.0)))
+            (ValueComputedOperation::BoolGe, Value::Number(left), Value::Number(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 >= right.0)))
             }
-            (VarComputedOperation::BoolGe, Variable::String(left), Variable::String(right)) => {
-                Some(Variable::Boolean(VarBoolean(left.0 >= right.0)))
+            (ValueComputedOperation::BoolGe, Value::String(left), Value::String(right)) => {
+                Some(Value::Boolean(ValueBoolean(left.0 >= right.0)))
             }
 
             _ => None,
@@ -193,72 +193,72 @@ mod tests {
         let mut evaluator = Evaluator::new();
         assert_eq!(
             evaluator
-                .save(Ident("a".into()), Variable::Number(VarNumber(10.0)))
+                .save(Identifier("a".into()), Value::Number(ValueNumber(10.0)))
                 .unwrap(),
-            Variable::Number(VarNumber(10.0))
+            Value::Number(ValueNumber(10.0))
         );
         assert_eq!(
             evaluator
-                .save(Ident("b".into()), Variable::Number(VarNumber(5.0)))
+                .save(Identifier("b".into()), Value::Number(ValueNumber(5.0)))
                 .unwrap(),
-            Variable::Number(VarNumber(5.0))
+            Value::Number(ValueNumber(5.0))
         );
 
         let sum = Evaluator::apply(
-            &VarComputedOperation::Add,
-            &Variable::Number(VarNumber(10.0)),
-            &Variable::Number(VarNumber(5.0)),
+            &ValueComputedOperation::Add,
+            &Value::Number(ValueNumber(10.0)),
+            &Value::Number(ValueNumber(5.0)),
         );
-        assert_eq!(sum, Some(Variable::Number(VarNumber(15.0))));
+        assert_eq!(sum, Some(Value::Number(ValueNumber(15.0))));
 
         let product = Evaluator::apply(
-            &VarComputedOperation::Multiply,
-            &Variable::Number(VarNumber(3.0)),
-            &Variable::Number(VarNumber(4.0)),
+            &ValueComputedOperation::Multiply,
+            &Value::Number(ValueNumber(3.0)),
+            &Value::Number(ValueNumber(4.0)),
         );
-        assert_eq!(product, Some(Variable::Number(VarNumber(12.0))));
+        assert_eq!(product, Some(Value::Number(ValueNumber(12.0))));
 
         let comparison = Evaluator::apply(
-            &VarComputedOperation::BoolGt,
-            &Variable::Number(VarNumber(12.0)),
-            &Variable::Number(VarNumber(5.0)),
+            &ValueComputedOperation::BoolGt,
+            &Value::Number(ValueNumber(12.0)),
+            &Value::Number(ValueNumber(5.0)),
         );
-        assert_eq!(comparison, Some(Variable::Boolean(VarBoolean(true))));
+        assert_eq!(comparison, Some(Value::Boolean(ValueBoolean(true))));
     }
 
     #[test]
     fn evaluates_nested_computed_variable() {
         let mut evaluator = Evaluator::new();
         evaluator
-            .save(Ident("x".into()), Variable::Number(VarNumber(2.0)))
+            .save(Identifier("x".into()), Value::Number(ValueNumber(2.0)))
             .unwrap();
         evaluator
-            .save(Ident("y".into()), Variable::Number(VarNumber(3.0)))
+            .save(Identifier("y".into()), Value::Number(ValueNumber(3.0)))
             .unwrap();
 
         let result = Evaluator::apply(
-            &VarComputedOperation::Add,
-            &Variable::Number(VarNumber(2.0)),
-            &Variable::Number(VarNumber(3.0)),
+            &ValueComputedOperation::Add,
+            &Value::Number(ValueNumber(2.0)),
+            &Value::Number(ValueNumber(3.0)),
         );
-        assert_eq!(result, Some(Variable::Number(VarNumber(5.0))));
+        assert_eq!(result, Some(Value::Number(ValueNumber(5.0))));
     }
 
     #[test]
     fn rejects_division_by_zero_and_invalid_operands() {
         assert!(
             Evaluator::apply(
-                &VarComputedOperation::Divide,
-                &Variable::Number(VarNumber(1.0)),
-                &Variable::Number(VarNumber(0.0))
+                &ValueComputedOperation::Divide,
+                &Value::Number(ValueNumber(1.0)),
+                &Value::Number(ValueNumber(0.0))
             )
             .is_none()
         );
         assert!(
             Evaluator::apply(
-                &VarComputedOperation::Subtract,
-                &Variable::String(VarString("a".into())),
-                &Variable::Number(VarNumber(1.0)),
+                &ValueComputedOperation::Subtract,
+                &Value::String(ValueString("a".into())),
+                &Value::Number(ValueNumber(1.0)),
             )
             .is_none()
         );

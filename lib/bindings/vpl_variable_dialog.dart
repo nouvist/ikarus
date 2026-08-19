@@ -1,12 +1,12 @@
 part of 'vpl.dart';
 
 class VplVariableDialog extends StatefulWidget {
-  final Variable data;
+  final Value data;
 
   const VplVariableDialog({super.key, required this.data});
 
-  static PageRoute<Variable?> route({
-    required Variable data,
+  static PageRoute<Value?> route({
+    required Value data,
     required VplInheritedData parent,
   }) {
     return DialogRoute(
@@ -38,22 +38,22 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
   }
 
   void _handleSave() {
-    if (_data case Variable_String it) {
+    if (_data case Value_String it) {
       it.field0.field0 = _string.text;
-    } else if (_data case Variable_Number it) {
+    } else if (_data case Value_Number it) {
       it.field0.field0 = double.parse(_number.text);
     }
 
     context.navigator().pop(_data);
   }
 
-  VoidCallback _createTypeHandler(Variable next) => () {
+  VoidCallback _createTypeHandler(Value next) => () {
     setState(() {
       _data = next;
     });
   };
 
-  VoidCallback _handleIdent(Variable_Ident it) => () async {
+  VoidCallback _handleIdent(Value_Ident it) => () async {
     final inherited = VplInheritedData.of(context);
     inherited.calculateIdents();
 
@@ -72,7 +72,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
     });
   };
 
-  VoidCallback _createComputedLeftHandler(Variable_Computed data) => () async {
+  VoidCallback _createComputedLeftHandler(Value_Computed data) => () async {
     final next = await context.navigator().push(
       VplVariableDialog.route(data: data.field0.left, parent: .of(context)),
     );
@@ -84,7 +84,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
     });
   };
 
-  VoidCallback _createComputedRightHandler(Variable_Computed data) => () async {
+  VoidCallback _createComputedRightHandler(Value_Computed data) => () async {
     final next = await context.navigator().push(
       VplVariableDialog.route(data: data.field0.right, parent: .of(context)),
     );
@@ -116,11 +116,11 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
               children: [
                 _buildTitle(const Text('Jenis Data:')),
                 ..._buildSelector(),
-                if (_data is Variable_String) ...[
+                if (_data is Value_String) ...[
                   _buildSeparator(),
                   _buildTitle(const Text('Nilai:')),
                   Input(controller: _string),
-                ] else if (_data is Variable_Number) ...[
+                ] else if (_data is Value_Number) ...[
                   _buildSeparator(),
                   _buildTitle(const Text('Nilai:')),
                   Input(
@@ -128,15 +128,15 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
                     type: .number,
                     formatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
-                ] else if (_data case Variable_Boolean it) ...[
+                ] else if (_data case Value_Boolean it) ...[
                   _buildSeparator(),
                   _buildTitle(const Text('Nilai:')),
                   _buildBoolean(it),
-                ] else if (_data case Variable_Ident it) ...[
+                ] else if (_data case Value_Ident it) ...[
                   _buildSeparator(),
                   _buildTitle(const Text('Nilai:')),
                   VplBindingInner(onTap: _handleIdent(it), data: it),
-                ] else if (_data case Variable_Computed it) ...[
+                ] else if (_data case Value_Computed it) ...[
                   _buildSeparator(),
                   _buildTitle(const Text('Kiri:')),
                   VplBindingInner(
@@ -201,31 +201,29 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
         children: [
           Expanded(
             child: ToggleButton(
-              onTap: _createTypeHandler(const Variable.null_()),
-              active: _data is Variable_Null,
+              onTap: _createTypeHandler(const .null_()),
+              active: _data is Value_Null,
               child: const Text('Null'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: _createTypeHandler(
-                Variable.string(.new(field0: _string.text)),
-              ),
-              active: _data is Variable_String,
+              onTap: _createTypeHandler(.string(.new(field0: _string.text))),
+              active: _data is Value_String,
               child: const Text('String'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: _createTypeHandler(Variable.number(.new(field0: 0))),
-              active: _data is Variable_Number,
+              onTap: _createTypeHandler(.number(.new(field0: 0))),
+              active: _data is Value_Number,
               child: const Text('Angka'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: _createTypeHandler(Variable.boolean(.new(field0: true))),
-              active: _data is Variable_Boolean,
+              onTap: _createTypeHandler(.boolean(.new(field0: true))),
+              active: _data is Value_Boolean,
               child: const Text('Boolean'),
             ),
           ),
@@ -237,17 +235,15 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
         children: [
           Expanded(
             child: ToggleButton(
-              onTap: _createTypeHandler(
-                Variable.ident(.new(field0: 'NamaVar')),
-              ),
-              active: _data is Variable_Ident,
+              onTap: _createTypeHandler(.ident(.new(field0: 'NamaVar'))),
+              active: _data is Value_Ident,
               child: const Text('Variabel'),
             ),
           ),
           Expanded(
             child: ToggleButton(
               onTap: _createTypeHandler(
-                Variable.computed(
+                .computed(
                   .new(
                     operation: .add,
                     left: const .null_(),
@@ -255,14 +251,14 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
                   ),
                 ),
               ),
-              active: _data is Variable_Computed,
+              active: _data is Value_Computed,
               child: const Text('Komputasi'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: _createTypeHandler(const Variable.object(.element)),
-              active: _data is Variable_Object,
+              onTap: _createTypeHandler(const .object(.element)),
+              active: _data is Value_Object,
               child: const Text('Objek'),
             ),
           ),
@@ -271,7 +267,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
     ];
   }
 
-  List<Widget> _buildComputedOperation(Variable_Computed data) {
+  List<Widget> _buildComputedOperation(Value_Computed data) {
     return [
       Row(
         spacing: 8,
@@ -395,7 +391,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
     ];
   }
 
-  Widget _buildBoolean(Variable_Boolean data) {
+  Widget _buildBoolean(Value_Boolean data) {
     return Row(
       spacing: 8,
       children: [

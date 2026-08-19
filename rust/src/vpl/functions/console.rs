@@ -4,13 +4,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     log,
-    vpl::{functions::Invoke, interpreter::Interpreter, tokens::Variable},
+    vpl::{functions::Invoke, interpreter::Interpreter, tokens::Value},
 };
 
 #[frb]
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct FnCallConsolePrint {
-    pub content: Variable,
+    pub content: Value,
 }
 
 #[async_trait]
@@ -18,14 +18,14 @@ impl Invoke for FnCallConsolePrint {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), anyhow::Error> {
         let evaluated = interpreter.evaluator().evaluate(self.content.clone())?;
         let display = match evaluated {
-            Variable::Null => "null".to_string(),
-            Variable::String(it) => it.0.clone(),
-            Variable::Number(it) => it.0.to_string(),
-            Variable::Boolean(it) => match it.0 {
+            Value::Null => "null".to_string(),
+            Value::String(it) => it.0.clone(),
+            Value::Number(it) => it.0.to_string(),
+            Value::Boolean(it) => match it.0 {
                 true => "Benar".to_string(),
                 false => "Salah".to_string(),
             },
-            Variable::Object(_it) => "[Objek]".to_string(),
+            Value::Object(_it) => "[Objek]".to_string(),
             _ => unreachable!(),
         };
 

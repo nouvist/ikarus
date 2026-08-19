@@ -5,7 +5,7 @@ use crate::{
     impl_copy,
     vpl::{
         functions::FnName,
-        tokens::{Scope, StCall, StFor, StIf, StVariable, Statement, Variable},
+        tokens::{Scope, StatementCall, StatementFor, StatementIf, StatementVariable, Statement, Value},
     },
 };
 
@@ -18,7 +18,7 @@ impl_copy!(RawScope);
 #[derive(Debug, Clone)]
 pub struct RawIf {
     #[frb(non_final)]
-    pub condition: Variable,
+    pub condition: Value,
 }
 impl_copy!(RawIf);
 
@@ -26,7 +26,7 @@ impl_copy!(RawIf);
 #[derive(Debug, Clone)]
 pub struct RawFor {
     #[frb(non_final)]
-    pub condition: Variable,
+    pub condition: Value,
 }
 impl_copy!(RawFor);
 
@@ -36,8 +36,8 @@ pub enum RawStatement {
     End,
     If(RawIf),
     For(RawFor),
-    Call(StCall),
-    Variable(StVariable),
+    Call(StatementCall),
+    Variable(StatementVariable),
 }
 impl_copy!(RawStatement);
 
@@ -101,7 +101,7 @@ impl RawScope {
                     push_at_depth(
                         &mut statements,
                         depth,
-                        Statement::If(StIf {
+                        Statement::If(StatementIf {
                             condition: it.condition,
                             scope: Scope(Vec::with_capacity(default_capacity)),
                         }),
@@ -112,7 +112,7 @@ impl RawScope {
                     push_at_depth(
                         &mut statements,
                         depth,
-                        Statement::For(StFor {
+                        Statement::For(StatementFor {
                             condition: it.condition,
                             scope: Scope(Vec::with_capacity(default_capacity)),
                         }),

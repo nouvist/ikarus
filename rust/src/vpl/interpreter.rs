@@ -6,7 +6,7 @@ use crate::{
     vpl::{
         evaluator::Evaluator,
         functions::Invoke,
-        tokens::{Scope, VarBoolean, Variable},
+        tokens::{Scope, ValueBoolean, Value},
     },
 };
 
@@ -44,11 +44,11 @@ impl Interpreter {
             match st {
                 Statement::If(it) => {
                     let condition = self.evaluator.evaluate(it.condition.clone())?;
-                    let Variable::Boolean(condition) = condition else {
+                    let Value::Boolean(condition) = condition else {
                         continue;
                     };
 
-                    let VarBoolean(condition) = condition;
+                    let ValueBoolean(condition) = condition;
                     if !condition {
                         continue;
                     }
@@ -57,11 +57,11 @@ impl Interpreter {
                 }
                 Statement::For(it) => loop {
                     let condition = self.evaluator.evaluate(it.condition.clone())?;
-                    let Variable::Boolean(condition) = condition else {
+                    let Value::Boolean(condition) = condition else {
                         continue;
                     };
 
-                    let VarBoolean(condition) = condition;
+                    let ValueBoolean(condition) = condition;
                     if !condition {
                         continue;
                     }

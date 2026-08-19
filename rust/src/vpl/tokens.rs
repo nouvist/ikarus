@@ -5,27 +5,29 @@ use crate::{impl_copy, vpl::functions::FnCall};
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub struct Ident(#[frb(non_final)] pub String);
-impl_copy!(Ident);
+pub struct Identifier(#[frb(non_final)] pub String);
+impl_copy!(Identifier);
+
+type ValueIdentifier = Identifier;
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub struct VarString(#[frb(non_final)] pub String);
-impl_copy!(VarString);
+pub struct ValueString(#[frb(non_final)] pub String);
+impl_copy!(ValueString);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct VarNumber(#[frb(non_final)] pub f64);
-impl_copy!(VarNumber);
+pub struct ValueNumber(#[frb(non_final)] pub f64);
+impl_copy!(ValueNumber);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub struct VarBoolean(#[frb(non_final)] pub bool);
-impl_copy!(VarBoolean);
+pub struct ValueBoolean(#[frb(non_final)] pub bool);
+impl_copy!(ValueBoolean);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub enum VarComputedOperation {
+pub enum ValueComputedOperation {
     Add,
     Subtract,
     Multiply,
@@ -41,19 +43,19 @@ pub enum VarComputedOperation {
     BoolGt,
     BoolGe,
 }
-impl_copy!(VarComputedOperation);
+impl_copy!(ValueComputedOperation);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct VarComputed {
+pub struct ValueComputed {
     #[frb(non_final)]
-    pub operation: VarComputedOperation,
+    pub operation: ValueComputedOperation,
     #[frb(non_final)]
-    pub left: Box<Variable>,
+    pub left: Box<Value>,
     #[frb(non_final)]
-    pub right: Box<Variable>,
+    pub right: Box<Value>,
 }
-impl_copy!(VarComputed);
+impl_copy!(ValueComputed);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -65,18 +67,18 @@ impl_copy!(VarObject);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum Variable {
+pub enum Value {
     Null,
-    Ident(Ident),
-    String(VarString),
-    Number(VarNumber),
-    Boolean(VarBoolean),
+    Ident(Identifier),
+    String(ValueString),
+    Number(ValueNumber),
+    Boolean(ValueBoolean),
     Object(VarObject),
-    Computed(Box<VarComputed>),
+    Computed(Box<ValueComputed>),
 }
-impl_copy!(Variable);
+impl_copy!(Value);
 
-impl Default for Variable {
+impl Default for Value {
     fn default() -> Self {
         Self::Null
     }
@@ -84,38 +86,38 @@ impl Default for Variable {
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StVariable {
+pub struct StatementVariable {
     #[frb(non_final)]
-    pub ident: Ident,
+    pub ident: Identifier,
     #[frb(non_final)]
-    pub value: Variable,
+    pub value: Value,
 }
-impl_copy!(StVariable);
+impl_copy!(StatementVariable);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StCall(#[frb(non_final)] pub FnCall);
-impl_copy!(StCall);
+pub struct StatementCall(#[frb(non_final)] pub FnCall);
+impl_copy!(StatementCall);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StIf {
+pub struct StatementIf {
     #[frb(non_final)]
-    pub condition: Variable,
+    pub condition: Value,
     #[frb(non_final)]
     pub scope: Scope,
 }
-impl_copy!(StIf);
+impl_copy!(StatementIf);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StFor {
+pub struct StatementFor {
     #[frb(non_final)]
-    pub condition: Variable,
+    pub condition: Value,
     #[frb(non_final)]
     pub scope: Scope,
 }
-impl_copy!(StFor);
+impl_copy!(StatementFor);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -125,9 +127,9 @@ impl_copy!(Scope);
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Statement {
-    If(StIf),
-    For(StFor),
-    Call(StCall),
-    Variable(StVariable),
+    If(StatementIf),
+    For(StatementFor),
+    Call(StatementCall),
+    Variable(StatementVariable),
 }
 impl_copy!(Statement);
