@@ -101,7 +101,7 @@ class _VplBindingVariableState extends State<VplBindingVariable> {
   }
 }
 
-class VplBindingIf extends StatelessWidget implements VplBinding {
+class VplBindingIf extends StatefulWidget implements VplBinding {
   final VoidCallback? onDelete;
   final VoidCallback? onDuplicate;
   final RawStatement_If data;
@@ -114,21 +114,44 @@ class VplBindingIf extends StatelessWidget implements VplBinding {
   });
 
   @override
+  State<VplBindingIf> createState() => _VplBindingIfState();
+}
+
+class _VplBindingIfState extends State<VplBindingIf> {
+  Future<void> _handleVariable() async {
+    final next = await context.navigator().push(
+      VplVariableDialog.route(
+        data: widget.data.field0.condition,
+        parent: .of(context),
+      ),
+    );
+
+    if (next == null) return;
+    if (!mounted) return;
+    setState(() {
+      widget.data.field0.condition = next;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return VplScopeStart(
-      onDelete: onDelete,
-      onDuplicate: onDuplicate,
+      onDelete: widget.onDelete,
+      onDuplicate: widget.onDuplicate,
       child: Row(
         children: [
           const Text('Jika '),
-          VplBindingInner(data: data.field0.condition),
+          VplBindingInner(
+            onTap: _handleVariable,
+            data: widget.data.field0.condition,
+          ),
         ],
       ),
     );
   }
 }
 
-class VplBindingFor extends StatelessWidget implements VplBinding {
+class VplBindingFor extends StatefulWidget implements VplBinding {
   final VoidCallback? onDelete;
   final VoidCallback? onDuplicate;
   final RawStatement_For data;
@@ -141,14 +164,37 @@ class VplBindingFor extends StatelessWidget implements VplBinding {
   });
 
   @override
+  State<VplBindingFor> createState() => _VplBindingForState();
+}
+
+class _VplBindingForState extends State<VplBindingFor> {
+  Future<void> _handleVariable() async {
+    final next = await context.navigator().push(
+      VplVariableDialog.route(
+        data: widget.data.field0.condition,
+        parent: .of(context),
+      ),
+    );
+
+    if (next == null) return;
+    if (!mounted) return;
+    setState(() {
+      widget.data.field0.condition = next;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return VplScopeStart(
-      onDelete: onDelete,
-      onDuplicate: onDuplicate,
+      onDelete: widget.onDelete,
+      onDuplicate: widget.onDuplicate,
       child: Row(
         children: [
           const Text('Selagi '),
-          VplBindingInner(data: data.field0.condition),
+          VplBindingInner(
+            onTap: _handleVariable,
+            data: widget.data.field0.condition,
+          ),
         ],
       ),
     );
@@ -186,6 +232,23 @@ class VplBindingCall extends StatefulWidget implements VplBinding {
 class _VplBindingCallState extends State<VplBindingCall> {
   final _map = <String, Variable>{};
 
+  VoidCallback _createVariableHandler(String arg) => () async {
+    final next = await context.navigator().push(
+      VplVariableDialog.route(
+        data: _map[arg] ?? const .null_(),
+        parent: .of(context),
+      ),
+    );
+
+    if (next == null) return;
+    if (!mounted) return;
+    setState(() {
+      _map[arg] = next;
+      final applied = widget.data.field0.field0.apply(args: _map);
+      widget.data.field0.field0 = applied;
+    });
+  };
+
   @override
   Widget build(BuildContext context) {
     final name = widget.data.field0.field0.name();
@@ -202,7 +265,10 @@ class _VplBindingCallState extends State<VplBindingCall> {
             for (final arg in args) ...[
               if (arg == arg[0]) const Text(', '),
               Text('$arg: '),
-              const VplBindingInner(data: .null_()),
+              VplBindingInner(
+                onTap: _createVariableHandler(arg),
+                data: _map[arg] ?? const .null_(),
+              ),
             ],
             const Text(' )'),
           ],

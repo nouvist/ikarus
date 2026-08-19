@@ -72,6 +72,30 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
     });
   };
 
+  VoidCallback _createComputedLeftHandler(Variable_Computed data) => () async {
+    final next = await context.navigator().push(
+      VplVariableDialog.route(data: data.field0.left, parent: .of(context)),
+    );
+
+    if (next == null) return;
+    if (!mounted) return;
+    setState(() {
+      data.field0.left = next;
+    });
+  };
+
+  VoidCallback _createComputedRightHandler(Variable_Computed data) => () async {
+    final next = await context.navigator().push(
+      VplVariableDialog.route(data: data.field0.right, parent: .of(context)),
+    );
+
+    if (next == null) return;
+    if (!mounted) return;
+    setState(() {
+      data.field0.right = next;
+    });
+  };
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -91,7 +115,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
             child: ListView(
               children: [
                 _buildTitle(const Text('Jenis Data:')),
-                _buildSelector(),
+                ..._buildSelector(),
                 if (_data is Variable_String) ...[
                   _buildSeparator(),
                   _buildTitle(const Text('Nilai:')),
@@ -111,30 +135,26 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
                 ] else if (_data case Variable_Ident it) ...[
                   _buildSeparator(),
                   _buildTitle(const Text('Nilai:')),
-                  VplInner(
-                    onTap: _handleIdent(it),
-                    type: .ident,
-                    child: Text(it.field0.field0),
+                  VplBindingInner(onTap: _handleIdent(it), data: it),
+                ] else if (_data case Variable_Computed it) ...[
+                  _buildSeparator(),
+                  _buildTitle(const Text('Kiri:')),
+                  VplBindingInner(
+                    onTap: _createComputedLeftHandler(it),
+                    data: it.field0.left,
+                  ),
+                  const Gap(12),
+                  _buildTitle(const Text('Operasi:')),
+                  ..._buildComputedOperation(it),
+                  const Gap(12),
+                  _buildTitle(const Text('Kanan:')),
+                  VplBindingInner(
+                    onTap: _createComputedRightHandler(it),
+                    data: it.field0.right,
                   ),
                 ],
                 _buildSeparator(),
-                Row(
-                  spacing: 8,
-                  children: [
-                    Expanded(
-                      child: Button(
-                        onTap: _handleCancel,
-                        child: const Text('Batal'),
-                      ),
-                    ),
-                    Expanded(
-                      child: Button(
-                        onTap: _handleSave,
-                        child: const Text('Simpan'),
-                      ),
-                    ),
-                  ],
-                ),
+                _buildControls(),
               ],
             ),
           ),
@@ -160,83 +180,219 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
     );
   }
 
-  Widget _buildSelector() {
-    return Column(
+  Widget _buildControls() {
+    return Row(
       spacing: 8,
       children: [
-        Row(
-          spacing: 8,
-          children: [
-            Expanded(
-              child: ToggleButton(
-                onTap: _createTypeHandler(const Variable.null_()),
-                active: _data is Variable_Null,
-                child: const Text('Null'),
-              ),
-            ),
-            Expanded(
-              child: ToggleButton(
-                onTap: _createTypeHandler(
-                  Variable.string(.new(field0: _string.text)),
-                ),
-                active: _data is Variable_String,
-                child: const Text('String'),
-              ),
-            ),
-            Expanded(
-              child: ToggleButton(
-                onTap: _createTypeHandler(Variable.number(.new(field0: 0))),
-                active: _data is Variable_Number,
-                child: const Text('Angka'),
-              ),
-            ),
-            Expanded(
-              child: ToggleButton(
-                onTap: _createTypeHandler(Variable.boolean(.new(field0: true))),
-                active: _data is Variable_Boolean,
-                child: const Text('Boolean'),
-              ),
-            ),
-          ],
+        Expanded(
+          child: Button(onTap: _handleCancel, child: const Text('Batal')),
         ),
-        Row(
-          spacing: 8,
-          children: [
-            Expanded(
-              child: ToggleButton(
-                onTap: _createTypeHandler(
-                  Variable.ident(.new(field0: 'NamaVar')),
-                ),
-                active: _data is Variable_Ident,
-                child: const Text('Variabel'),
-              ),
-            ),
-            Expanded(
-              child: ToggleButton(
-                onTap: _createTypeHandler(
-                  Variable.computed(
-                    .new(
-                      operation: .add,
-                      left: const .null_(),
-                      right: const .null_(),
-                    ),
-                  ),
-                ),
-                active: _data is Variable_Computed,
-                child: const Text('Komputasi'),
-              ),
-            ),
-            Expanded(
-              child: ToggleButton(
-                onTap: _createTypeHandler(const Variable.entity(.element)),
-                active: _data is Variable_Entity,
-                child: const Text('Objek'),
-              ),
-            ),
-          ],
+        Expanded(
+          child: Button(onTap: _handleSave, child: const Text('Simpan')),
         ),
       ],
     );
+  }
+
+  List<Widget> _buildSelector() {
+    return [
+      Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: ToggleButton(
+              onTap: _createTypeHandler(const Variable.null_()),
+              active: _data is Variable_Null,
+              child: const Text('Null'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: _createTypeHandler(
+                Variable.string(.new(field0: _string.text)),
+              ),
+              active: _data is Variable_String,
+              child: const Text('String'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: _createTypeHandler(Variable.number(.new(field0: 0))),
+              active: _data is Variable_Number,
+              child: const Text('Angka'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: _createTypeHandler(Variable.boolean(.new(field0: true))),
+              active: _data is Variable_Boolean,
+              child: const Text('Boolean'),
+            ),
+          ),
+        ],
+      ),
+      const Gap(8),
+      Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: ToggleButton(
+              onTap: _createTypeHandler(
+                Variable.ident(.new(field0: 'NamaVar')),
+              ),
+              active: _data is Variable_Ident,
+              child: const Text('Variabel'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: _createTypeHandler(
+                Variable.computed(
+                  .new(
+                    operation: .add,
+                    left: const .null_(),
+                    right: const .null_(),
+                  ),
+                ),
+              ),
+              active: _data is Variable_Computed,
+              child: const Text('Komputasi'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: _createTypeHandler(const Variable.entity(.element)),
+              active: _data is Variable_Entity,
+              child: const Text('Objek'),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> _buildComputedOperation(Variable_Computed data) {
+    return [
+      Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .add;
+              }),
+              active: data.field0.operation == .add,
+              child: const Text('+'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .subtract;
+              }),
+              active: data.field0.operation == .subtract,
+              child: const Text('-'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .multiply;
+              }),
+              active: data.field0.operation == .multiply,
+              child: const Text('*'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .divide;
+              }),
+              active: data.field0.operation == .divide,
+              child: const Text('/'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .reminder;
+              }),
+              active: data.field0.operation == .reminder,
+              child: const Text('%'),
+            ),
+          ),
+        ],
+      ),
+      const Gap(8),
+      Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .boolAnd;
+              }),
+              active: data.field0.operation == .boolAnd,
+              child: const Text('&&'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .boolOr;
+              }),
+              active: data.field0.operation == .boolOr,
+              child: const Text('||'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .boolEq;
+              }),
+              active: data.field0.operation == .boolEq,
+              child: const Text('=='),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .boolLt;
+              }),
+              active: data.field0.operation == .boolLt,
+              child: const Text('<'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .boolLe;
+              }),
+              active: data.field0.operation == .boolLe,
+              child: const Text('<='),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .boolGt;
+              }),
+              active: data.field0.operation == .boolGt,
+              child: const Text('>'),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() {
+                data.field0.operation = .boolGe;
+              }),
+              active: data.field0.operation == .boolGe,
+              child: const Text('>='),
+            ),
+          ),
+        ],
+      ),
+    ];
   }
 
   Widget _buildBoolean(Variable_Boolean data) {

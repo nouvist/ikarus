@@ -15,7 +15,7 @@ class VplBindingInner extends StatelessWidget {
       return VplInnerWrapper(
         onTap: onTap,
         children: [
-          IgnorePointer(child: VplBindingInner(data: it.field0.left)),
+          VplBindingInner(data: it.field0.left),
           Text(switch (it.field0.operation) {
             .add => ' + ',
             .subtract => ' - ',
@@ -30,7 +30,7 @@ class VplBindingInner extends StatelessWidget {
             .boolGt => ' > ',
             .boolGe => ' >= ',
           }),
-          IgnorePointer(child: VplBindingInner(data: it.field0.right)),
+          VplBindingInner(data: it.field0.right),
         ],
       );
     }
@@ -53,6 +53,47 @@ class VplBindingInner extends StatelessWidget {
         Variable_Entity() => throw UnimplementedError(),
         Variable_Computed() => throw UnimplementedError(),
       },
+    );
+  }
+}
+
+class VplBindingInnerOperation extends StatelessWidget {
+  final VoidCallback? onTap;
+  final VarComputedOperation data;
+
+  const VplBindingInnerOperation({super.key, this.onTap, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return VplInnerOperation(
+      type: switch (data) {
+        .add => .add,
+        .subtract => .subtract,
+        .multiply => .multiply,
+        .divide => .divide,
+        .reminder => .reminder,
+        .boolAnd => .boolAnd,
+        .boolOr => .boolOr,
+        .boolEq => .boolEq,
+        .boolLt => .boolLt,
+        .boolLe => .boolLe,
+        .boolGt => .boolGt,
+        .boolGe => .boolGe,
+      },
+      child: Text(switch (data) {
+        .add => '+',
+        .subtract => '-',
+        .multiply => '*',
+        .divide => '/',
+        .reminder => '%',
+        .boolAnd => '&&',
+        .boolOr => '||',
+        .boolEq => '==',
+        .boolLt => '<',
+        .boolLe => '<=',
+        .boolGt => '>',
+        .boolGe => '>=',
+      }),
     );
   }
 }

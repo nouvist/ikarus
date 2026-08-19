@@ -5,11 +5,11 @@ import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
 
-// building blocks
+// dialogs
 part 'vpl_blocks.dart';
 part 'vpl_inner.dart';
 
-// dialogs
+// building blocks
 part 'vpl_add_dialog.dart';
 part 'vpl_identifier_dialog.dart';
 part 'vpl_variable_dialog.dart';

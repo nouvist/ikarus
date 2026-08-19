@@ -63,11 +63,16 @@ class VplInnerWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final parent = context.findAncestorWidgetOfExactType<VplInnerWrapper>();
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.fg0,
-        borderRadius: .all(.circular(6)),
-      ),
+      decoration: switch (parent != null) {
+        true => null,
+        false => const BoxDecoration(
+          color: Colors.fg0,
+          borderRadius: .all(.circular(8)),
+        ),
+      },
       child: ButtonBuilder(
         onTap: onTap,
         builder: (context, state, child) => Opacity(
@@ -80,13 +85,89 @@ class VplInnerWrapper extends StatelessWidget {
         ),
         child: Container(
           height: 42,
-          padding: const .symmetric(horizontal: 6),
-          decoration: BoxDecoration(
-            color: Colors.bg0,
-            borderRadius: const .all(.circular(6)),
-            border: .all(color: Colors.bro),
+          padding: switch (parent != null) {
+            true => .zero,
+            false => const .symmetric(horizontal: 6),
+          },
+          decoration: switch (parent != null) {
+            true => null,
+            false => BoxDecoration(
+              color: Colors.bg0,
+              borderRadius: const .all(.circular(6)),
+              border: .all(color: Colors.bro),
+            ),
+          },
+          child: IgnorePointer(
+            child: Row(
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
+              children: switch (parent != null) {
+                false => children,
+                true => [const Text('( '), ...children, const Text(' )')],
+              },
+            ),
           ),
-          child: Row(children: children),
+        ),
+      ),
+    );
+  }
+}
+
+enum VplInnerOperationType {
+  add,
+  subtract,
+  multiply,
+  divide,
+  reminder,
+  boolAnd,
+  boolOr,
+  boolEq,
+  boolLt,
+  boolLe,
+  boolGt,
+  boolGe,
+}
+
+class VplInnerOperation extends StatelessWidget {
+  final VoidCallback? onTap;
+  final VplInnerOperationType type;
+  final Widget child;
+
+  const VplInnerOperation({
+    super.key,
+    this.onTap,
+    required this.type,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 32,
+      decoration: const BoxDecoration(
+        color: Colors.fg0,
+        borderRadius: .all(.circular(4)),
+      ),
+      child: ButtonBuilder(
+        onTap: onTap,
+        builder: (context, state, child) => Opacity(
+          opacity: switch (state) {
+            .rest => 1,
+            .hover => 0.9,
+            .tap => 0.95,
+          },
+          child: child!,
+        ),
+        child: Container(
+          height: 32,
+          padding: const .symmetric(horizontal: 8),
+          alignment: .center,
+          decoration: BoxDecoration(
+            color: Colors.cScope0,
+            border: .all(color: Colors.cScope1),
+            borderRadius: const .all(.circular(4)),
+          ),
+          child: child,
         ),
       ),
     );
