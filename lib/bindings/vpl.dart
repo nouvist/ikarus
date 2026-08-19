@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
@@ -10,7 +11,8 @@ part 'vpl_inner.dart';
 
 // dialogs
 part 'vpl_add_dialog.dart';
-part 'vpl_ident_dialog.dart';
+part 'vpl_identifier_dialog.dart';
+part 'vpl_variable_dialog.dart';
 
 class Vpl extends StatefulWidget {
   final List<RawStatement> statements;
@@ -151,7 +153,7 @@ class _VplState extends State<Vpl> {
     _calculateNesteds();
     _calculateIdents();
 
-    return _VplInheritedData(
+    return VplInheritedData(
       idents: _idents,
       nesteds: _nesteds,
       statements: widget.statements,
@@ -184,14 +186,14 @@ class _VplState extends State<Vpl> {
   }
 }
 
-class _VplInheritedData extends InheritedWidget {
+class VplInheritedData extends InheritedWidget {
   final List<String> idents;
   final List<int> nesteds;
   final List<RawStatement> statements;
   final VoidCallback _onCalculateIdents;
   final VoidCallback _onCalculateNesteds;
 
-  const _VplInheritedData({
+  const VplInheritedData({
     required super.child,
     required this.idents,
     required this.nesteds,
@@ -200,6 +202,15 @@ class _VplInheritedData extends InheritedWidget {
     required this._onCalculateNesteds,
   });
 
+  VplInheritedData.inherit({
+    required VplInheritedData parent,
+    required super.child,
+  }) : idents = parent.idents,
+       nesteds = parent.nesteds,
+       statements = parent.statements,
+       _onCalculateIdents = parent._onCalculateIdents,
+       _onCalculateNesteds = parent._onCalculateNesteds;
+
   @pragma('vm:prefer-inline')
   void calculateIdents() => _onCalculateIdents();
 
@@ -207,17 +218,17 @@ class _VplInheritedData extends InheritedWidget {
   void calculateNesteds() => _onCalculateNesteds();
 
   @pragma('vm:prefer-inline')
-  static _VplInheritedData? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<_VplInheritedData>();
+  static VplInheritedData? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<VplInheritedData>();
   }
 
   @pragma('vm:prefer-inline')
-  static _VplInheritedData of(BuildContext context) {
+  static VplInheritedData of(BuildContext context) {
     return maybeOf(context)!;
   }
 
   @override
-  bool updateShouldNotify(_VplInheritedData oldWidget) {
+  bool updateShouldNotify(VplInheritedData oldWidget) {
     return idents != oldWidget.idents || statements != oldWidget.statements;
   }
 }

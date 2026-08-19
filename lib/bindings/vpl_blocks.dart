@@ -45,12 +45,13 @@ class VplBindingVariable extends StatefulWidget implements VplBinding {
 
 class _VplBindingVariableState extends State<VplBindingVariable> {
   Future<void> _handleIdentifier() async {
-    final inherited = _VplInheritedData.of(context);
+    final inherited = VplInheritedData.of(context);
     inherited.calculateIdents();
     final next = await context.navigator().push(
-      VplIdentDialog.route(
+      VplIdentifierDialog.route(
         current: widget.data.field0.ident.field0,
         existings: inherited.idents,
+        parent: .of(context),
       ),
     );
 
@@ -58,6 +59,21 @@ class _VplBindingVariableState extends State<VplBindingVariable> {
     if (!mounted) return;
     setState(() {
       widget.data.field0.ident.field0 = next;
+    });
+  }
+
+  Future<void> _handleVariable() async {
+    final next = await context.navigator().push(
+      VplVariableDialog.route(
+        data: widget.data.field0.value,
+        parent: .of(context),
+      ),
+    );
+
+    if (next == null) return;
+    if (!mounted) return;
+    setState(() {
+      widget.data.field0.value = next;
     });
   }
 
@@ -75,7 +91,10 @@ class _VplBindingVariableState extends State<VplBindingVariable> {
             data: widget.data.field0.ident,
           ),
           const Text(' sbg '),
-          VplBindingInner(data: widget.data.field0.value),
+          VplBindingInner(
+            onTap: _handleVariable,
+            data: widget.data.field0.value,
+          ),
         ],
       ),
     );

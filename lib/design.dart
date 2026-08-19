@@ -35,6 +35,7 @@ export 'package:ikarus/design/widgets/vpl_tile.dart';
 export 'package:ikarus/design/widgets/button_builder.dart';
 export 'package:ikarus/design/widgets/input.dart';
 export 'package:ikarus/design/widgets/button.dart';
+export 'package:ikarus/design/widgets/toggle_button.dart';
 
 export 'package:ikarus/design/widgets/context_menu.dart';
 

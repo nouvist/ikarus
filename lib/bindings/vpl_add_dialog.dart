@@ -34,7 +34,10 @@ class _VplAddDialogState extends State<VplAddDialog> {
             ),
             child: Column(
               children: [
-                const Padding(padding: .all(16), child: Input()),
+                Padding(
+                  padding: const .all(16),
+                  child: Input(controller: .new()), // TODO: yang bener kontrolernya
+                ),
                 Expanded(child: ListView(children: _buildVpls(context))),
               ],
             ),

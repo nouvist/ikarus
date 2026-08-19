@@ -1,10 +1,10 @@
 part of 'vpl.dart';
 
-class VplIdentDialog extends StatefulWidget {
+class VplIdentifierDialog extends StatefulWidget {
   final String current;
   final List<String> existings;
 
-  const VplIdentDialog({
+  const VplIdentifierDialog({
     super.key,
     required this.current,
     required this.existings,
@@ -13,18 +13,21 @@ class VplIdentDialog extends StatefulWidget {
   static PageRoute<String?> route({
     required String current,
     required List<String> existings,
+    required VplInheritedData parent,
   }) {
     return DialogRoute(
-      builder: (context) =>
-          VplIdentDialog(current: current, existings: existings),
+      builder: (context) => VplInheritedData.inherit(
+        parent: parent,
+        child: VplIdentifierDialog(current: current, existings: existings),
+      ),
     );
   }
 
   @override
-  State<VplIdentDialog> createState() => _VplIdentDialogState();
+  State<VplIdentifierDialog> createState() => _VplIdentifierDialogState();
 }
 
-class _VplIdentDialogState extends State<VplIdentDialog> {
+class _VplIdentifierDialogState extends State<VplIdentifierDialog> {
   late final _input = TextEditingController()..text = widget.current;
 
   @override

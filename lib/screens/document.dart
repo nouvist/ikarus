@@ -110,12 +110,12 @@ class _DocumentScreenState extends State<DocumentScreen> {
           Expanded(
             child: ListView(padding: const .all(8), children: const []),
           ),
-          const Padding(
+          Padding(
             padding: .all(8),
             child: Row(
               spacing: 8,
               children: [
-                Expanded(child: Input()),
+                Expanded(child: Input(controller: .new())), // TODO: yang bener kontrolernya
                 Button(child: Icon(FluentIcons.send_24_regular)),
               ],
             ),

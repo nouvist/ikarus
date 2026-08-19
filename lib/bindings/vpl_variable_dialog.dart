@@ -1,0 +1,267 @@
+part of 'vpl.dart';
+
+class VplVariableDialog extends StatefulWidget {
+  final Variable data;
+
+  const VplVariableDialog({super.key, required this.data});
+
+  static PageRoute<Variable?> route({
+    required Variable data,
+    required VplInheritedData parent,
+  }) {
+    return DialogRoute(
+      builder: (context) => VplInheritedData.inherit(
+        parent: parent,
+        child: VplVariableDialog(data: data),
+      ),
+    );
+  }
+
+  @override
+  State<VplVariableDialog> createState() => _VplVariableDialogState();
+}
+
+class _VplVariableDialogState extends State<VplVariableDialog> {
+  late var _data = widget.data.copy();
+  final _string = TextEditingController();
+  final _number = TextEditingController();
+
+  @override
+  void dispose() {
+    _string.dispose();
+    _number.dispose();
+    super.dispose();
+  }
+
+  void _handleCancel() {
+    context.navigator().pop();
+  }
+
+  void _handleSave() {
+    if (_data case Variable_String it) {
+      it.field0.field0 = _string.text;
+    } else if (_data case Variable_Number it) {
+      it.field0.field0 = double.parse(_number.text);
+    }
+
+    context.navigator().pop(_data);
+  }
+
+  VoidCallback _createTypeHandler(Variable next) => () {
+    setState(() {
+      _data = next;
+    });
+  };
+
+  VoidCallback _handleIdent(Variable_Ident it) => () async {
+    final inherited = VplInheritedData.of(context);
+    inherited.calculateIdents();
+
+    final next = await context.navigator().push(
+      VplIdentifierDialog.route(
+        current: it.field0.field0,
+        existings: inherited.idents,
+        parent: .of(context),
+      ),
+    );
+
+    if (next == null) return;
+    if (!mounted) return;
+    setState(() {
+      it.field0.field0 = next;
+    });
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const .all(16),
+        child: ConstrainedBox(
+          constraints: const .new(maxWidth: 400, maxHeight: 500),
+          child: Container(
+            clipBehavior: .antiAlias,
+            padding: const .all(16),
+            decoration: BoxDecoration(
+              borderRadius: const .all(.circular(16)),
+              color: Colors.bg0,
+              border: .all(color: Colors.bro),
+              boxShadow: Shadows.s0,
+            ),
+            child: ListView(
+              children: [
+                _buildTitle(const Text('Jenis Data:')),
+                _buildSelector(),
+                if (_data is Variable_String) ...[
+                  _buildSeparator(),
+                  _buildTitle(const Text('Nilai:')),
+                  Input(controller: _string),
+                ] else if (_data is Variable_Number) ...[
+                  _buildSeparator(),
+                  _buildTitle(const Text('Nilai:')),
+                  Input(
+                    controller: _number,
+                    type: .number,
+                    formatters: [FilteringTextInputFormatter.digitsOnly],
+                  ),
+                ] else if (_data case Variable_Boolean it) ...[
+                  _buildSeparator(),
+                  _buildTitle(const Text('Nilai:')),
+                  _buildBoolean(it),
+                ] else if (_data case Variable_Ident it) ...[
+                  _buildSeparator(),
+                  _buildTitle(const Text('Nilai:')),
+                  VplInner(
+                    onTap: _handleIdent(it),
+                    type: .ident,
+                    child: Text(it.field0.field0),
+                  ),
+                ],
+                _buildSeparator(),
+                Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                      child: Button(
+                        onTap: _handleCancel,
+                        child: const Text('Batal'),
+                      ),
+                    ),
+                    Expanded(
+                      child: Button(
+                        onTap: _handleSave,
+                        child: const Text('Simpan'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitle(Text child) {
+    return Padding(
+      padding: const .only(bottom: 10),
+      child: DefaultTextStyle.merge(
+        style: const .new(fontWeight: .bold),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _buildSeparator() {
+    return Padding(
+      padding: const .symmetric(vertical: 16),
+      child: Container(height: 1, color: Colors.bro),
+    );
+  }
+
+  Widget _buildSelector() {
+    return Column(
+      spacing: 8,
+      children: [
+        Row(
+          spacing: 8,
+          children: [
+            Expanded(
+              child: ToggleButton(
+                onTap: _createTypeHandler(const Variable.null_()),
+                active: _data is Variable_Null,
+                child: const Text('Null'),
+              ),
+            ),
+            Expanded(
+              child: ToggleButton(
+                onTap: _createTypeHandler(
+                  Variable.string(.new(field0: _string.text)),
+                ),
+                active: _data is Variable_String,
+                child: const Text('String'),
+              ),
+            ),
+            Expanded(
+              child: ToggleButton(
+                onTap: _createTypeHandler(Variable.number(.new(field0: 0))),
+                active: _data is Variable_Number,
+                child: const Text('Angka'),
+              ),
+            ),
+            Expanded(
+              child: ToggleButton(
+                onTap: _createTypeHandler(Variable.boolean(.new(field0: true))),
+                active: _data is Variable_Boolean,
+                child: const Text('Boolean'),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          spacing: 8,
+          children: [
+            Expanded(
+              child: ToggleButton(
+                onTap: _createTypeHandler(
+                  Variable.ident(.new(field0: 'NamaVar')),
+                ),
+                active: _data is Variable_Ident,
+                child: const Text('Variabel'),
+              ),
+            ),
+            Expanded(
+              child: ToggleButton(
+                onTap: _createTypeHandler(
+                  Variable.computed(
+                    .new(
+                      operation: .add,
+                      left: const .null_(),
+                      right: const .null_(),
+                    ),
+                  ),
+                ),
+                active: _data is Variable_Computed,
+                child: const Text('Komputasi'),
+              ),
+            ),
+            Expanded(
+              child: ToggleButton(
+                onTap: _createTypeHandler(const Variable.entity(.element)),
+                active: _data is Variable_Entity,
+                child: const Text('Objek'),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBoolean(Variable_Boolean data) {
+    return Row(
+      spacing: 8,
+      children: [
+        Expanded(
+          child: ToggleButton(
+            active: data.field0.field0,
+            onTap: () => setState(() {
+              data.field0.field0 = true;
+            }),
+            child: const Text('Benar'),
+          ),
+        ),
+        Expanded(
+          child: ToggleButton(
+            active: !data.field0.field0,
+            onTap: () => setState(() {
+              data.field0.field0 = false;
+            }),
+            child: const Text('Salah'),
+          ),
+        ),
+      ],
+    );
+  }
+}

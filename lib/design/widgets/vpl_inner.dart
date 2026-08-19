@@ -86,7 +86,7 @@ class VplInnerWrapper extends StatelessWidget {
             borderRadius: const .all(.circular(6)),
             border: .all(color: Colors.bro),
           ),
-          child: IgnorePointer(child: Row(children: children)),
+          child: Row(children: children),
         ),
       ),
     );

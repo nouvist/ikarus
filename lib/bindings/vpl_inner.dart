@@ -15,7 +15,7 @@ class VplBindingInner extends StatelessWidget {
       return VplInnerWrapper(
         onTap: onTap,
         children: [
-          VplBindingInner(data: it.field0.left),
+          IgnorePointer(child: VplBindingInner(data: it.field0.left)),
           Text(switch (it.field0.operation) {
             .add => ' + ',
             .subtract => ' - ',
@@ -30,7 +30,7 @@ class VplBindingInner extends StatelessWidget {
             .boolGt => ' > ',
             .boolGe => ' >= ',
           }),
-          VplBindingInner(data: it.field0.right),
+          IgnorePointer(child: VplBindingInner(data: it.field0.right)),
         ],
       );
     }
@@ -45,9 +45,13 @@ class VplBindingInner extends StatelessWidget {
         Variable_Null() => const Text('null'),
         Variable_Ident it => Text(it.field0.field0),
         Variable_String it => Text(jsonEncode(it.field0.field0)),
-        Variable_Number it => Text(it.field0.field0.toString()),
-        Variable_Boolean it => Text(it.field0.field0.toString()),
-        _ => throw UnimplementedError(),
+        Variable_Number it => Text(jsonEncode(it.field0.field0)),
+        Variable_Boolean it => Text(switch (it.field0.field0) {
+          true => 'Benar',
+          false => 'Salah',
+        }),
+        Variable_Entity() => throw UnimplementedError(),
+        Variable_Computed() => throw UnimplementedError(),
       },
     );
   }

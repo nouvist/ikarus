@@ -3,17 +3,18 @@ import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
 
 class Input extends StatefulWidget {
+  final TextEditingController controller;
   final bool obscure;
   final TextInputType? type;
-  final TextEditingController? controller;
+final List<TextInputFormatter>? formatters;
   final ValueChanged<String>? onSubmit;
 
   const Input({
     super.key,
+    required this.controller,
     this.obscure = false,
-    this.type,
-    this.controller,
-    this.onSubmit,
+    this.type,this.formatters,
+    this.onSubmit, 
   });
 
   @override
@@ -22,7 +23,6 @@ class Input extends StatefulWidget {
 
 class _InputState extends State<Input>
     implements TextSelectionGestureDetectorBuilderDelegate {
-  late final _controller = widget.controller ?? TextEditingController();
   final _key = GlobalKey<EditableTextState>();
   final _focus = FocusNode();
   late final _gesture = TextSelectionGestureDetectorBuilder(delegate: this);
@@ -37,12 +37,6 @@ class _InputState extends State<Input>
   @override
   bool get selectionEnabled => true;
 
-  @override
-  void dispose() {
-    if (_controller != widget.controller) _controller.dispose();
-    super.dispose();
-  }
-
   void _handleHover(PointerHoverEvent event) {
     _position = event.position;
   }
@@ -54,6 +48,7 @@ class _InputState extends State<Input>
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
+      key: ValueKey(_key),
       constraints: const .new(maxHeight: 48),
       child: _gesture.buildGestureDetector(
         child: MouseRegion(
@@ -83,11 +78,12 @@ class _InputState extends State<Input>
                 child: Center(
                   child: EditableText(
                     key: _key,
-                    controller: _controller,
+                    controller: widget.controller,
                     onTapUpOutside: _handleTapOutside,
                     onSubmitted: widget.onSubmit,
                     focusNode: _focus,
                     keyboardType: widget.type,
+                    inputFormatters: widget.formatters,
                     obscureText: widget.obscure,
                     style: DefaultTextStyle.of(context).style,
                     cursorColor: Colors.fg0,
