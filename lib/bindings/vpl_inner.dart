@@ -50,7 +50,7 @@ class VplBindingInner extends StatelessWidget {
           true => 'Benar',
           false => 'Salah',
         }),
-        Variable_Entity() => throw UnimplementedError(),
+        Variable_Object() => throw UnimplementedError(),
         Variable_Computed() => throw UnimplementedError(),
       },
     );

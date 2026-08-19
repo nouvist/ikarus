@@ -57,11 +57,11 @@ impl_copy!(VarComputed);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum Entity {
+pub enum VarObject {
     Csv,
     Element,
 }
-impl_copy!(Entity);
+impl_copy!(VarObject);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -71,7 +71,7 @@ pub enum Variable {
     String(VarString),
     Number(VarNumber),
     Boolean(VarBoolean),
-    Entity(Entity),
+    Object(VarObject),
     Computed(Box<VarComputed>),
 }
 impl_copy!(Variable);

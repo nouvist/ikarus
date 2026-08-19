@@ -188,53 +188,77 @@ impl Evaluator {
 mod tests {
     use super::*;
 
-    fn number(value: f64) -> Variable {
-        Variable::Number(VarNumber(value))
-    }
-
     #[test]
     fn evaluates_several_computed_variables() {
         let mut evaluator = Evaluator::new();
         assert_eq!(
-            evaluator.save(Ident("a".into()), number(10.0)).unwrap(),
-            number(10.0)
+            evaluator
+                .save(Ident("a".into()), Variable::Number(VarNumber(10.0)))
+                .unwrap(),
+            Variable::Number(VarNumber(10.0))
         );
         assert_eq!(
-            evaluator.save(Ident("b".into()), number(5.0)).unwrap(),
-            number(5.0)
+            evaluator
+                .save(Ident("b".into()), Variable::Number(VarNumber(5.0)))
+                .unwrap(),
+            Variable::Number(VarNumber(5.0))
         );
 
-        let sum = Evaluator::apply(&VarComputedOperation::Add, &number(10.0), &number(5.0));
-        assert_eq!(sum, Some(number(15.0)));
+        let sum = Evaluator::apply(
+            &VarComputedOperation::Add,
+            &Variable::Number(VarNumber(10.0)),
+            &Variable::Number(VarNumber(5.0)),
+        );
+        assert_eq!(sum, Some(Variable::Number(VarNumber(15.0))));
 
-        let product = Evaluator::apply(&VarComputedOperation::Multiply, &number(3.0), &number(4.0));
-        assert_eq!(product, Some(number(12.0)));
+        let product = Evaluator::apply(
+            &VarComputedOperation::Multiply,
+            &Variable::Number(VarNumber(3.0)),
+            &Variable::Number(VarNumber(4.0)),
+        );
+        assert_eq!(product, Some(Variable::Number(VarNumber(12.0))));
 
-        let comparison =
-            Evaluator::apply(&VarComputedOperation::BoolGt, &number(12.0), &number(5.0));
+        let comparison = Evaluator::apply(
+            &VarComputedOperation::BoolGt,
+            &Variable::Number(VarNumber(12.0)),
+            &Variable::Number(VarNumber(5.0)),
+        );
         assert_eq!(comparison, Some(Variable::Boolean(VarBoolean(true))));
     }
 
     #[test]
     fn evaluates_nested_computed_variable() {
         let mut evaluator = Evaluator::new();
-        evaluator.save(Ident("x".into()), number(2.0)).unwrap();
-        evaluator.save(Ident("y".into()), number(3.0)).unwrap();
+        evaluator
+            .save(Ident("x".into()), Variable::Number(VarNumber(2.0)))
+            .unwrap();
+        evaluator
+            .save(Ident("y".into()), Variable::Number(VarNumber(3.0)))
+            .unwrap();
 
-        let result = Evaluator::apply(&VarComputedOperation::Add, &number(2.0), &number(3.0));
-        assert_eq!(result, Some(number(5.0)));
+        let result = Evaluator::apply(
+            &VarComputedOperation::Add,
+            &Variable::Number(VarNumber(2.0)),
+            &Variable::Number(VarNumber(3.0)),
+        );
+        assert_eq!(result, Some(Variable::Number(VarNumber(5.0))));
     }
 
     #[test]
     fn rejects_division_by_zero_and_invalid_operands() {
         assert!(
-            Evaluator::apply(&VarComputedOperation::Divide, &number(1.0), &number(0.0)).is_none()
+            Evaluator::apply(
+                &VarComputedOperation::Divide,
+                &Variable::Number(VarNumber(1.0)),
+                &Variable::Number(VarNumber(0.0))
+            )
+            .is_none()
         );
         assert!(
             Evaluator::apply(
                 &VarComputedOperation::Subtract,
                 &Variable::String(VarString("a".into())),
-                &number(1.0),
+                &Variable::Number(VarNumber(1.0)),
             )
             .is_none()
         );

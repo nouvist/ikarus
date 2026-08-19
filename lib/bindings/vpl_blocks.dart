@@ -230,7 +230,8 @@ class VplBindingCall extends StatefulWidget implements VplBinding {
 }
 
 class _VplBindingCallState extends State<VplBindingCall> {
-  final _map = <String, Variable>{};
+  late final _map = widget.data.field0.field0.toArgs();
+
 
   VoidCallback _createVariableHandler(String arg) => () async {
     final next = await context.navigator().push(
@@ -244,7 +245,7 @@ class _VplBindingCallState extends State<VplBindingCall> {
     if (!mounted) return;
     setState(() {
       _map[arg] = next;
-      final applied = widget.data.field0.field0.apply(args: _map);
+      final applied = widget.data.field0.field0.applyArgs(args: _map);
       widget.data.field0.field0 = applied;
     });
   };

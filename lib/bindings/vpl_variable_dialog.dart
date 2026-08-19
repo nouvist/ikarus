@@ -261,8 +261,8 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
           ),
           Expanded(
             child: ToggleButton(
-              onTap: _createTypeHandler(const Variable.entity(.element)),
-              active: _data is Variable_Entity,
+              onTap: _createTypeHandler(const Variable.object(.element)),
+              active: _data is Variable_Object,
               child: const Text('Objek'),
             ),
           ),

@@ -1,9 +1,13 @@
 use std::collections::HashMap;
 
+use async_trait::async_trait;
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
-use crate::vpl::tokens::Variable;
+use crate::vpl::{interpreter::Interpreter, tokens::Variable};
+
+pub mod console;
+use console::*;
 
 macro_rules! impl_fn_call {
     ($([$type:ident] $name:expr $( => $arg_type:ident : $arg_name:expr),* $(,)?);+ $(;)?) => {
@@ -27,8 +31,17 @@ macro_rules! impl_fn_call {
                 }
             }
 
+            pub fn args(&self) -> &'static [&'static str] {
+                self.name().args()
+            }
+
             #[frb(sync)]
-            pub fn apply(&self, args: HashMap<String, Variable>) -> Result<Self, anyhow::Error> {
+            pub fn frb_override_args(&self) -> Vec<String> {
+                self.args().iter().map(|it| it.to_string()).collect()
+            }
+
+            #[frb(sync)]
+            pub fn apply_args(&self, args: HashMap<String, Variable>) -> Result<Self, anyhow::Error> {
                 let mut this = self.clone();
                 match &mut this {
                     $(FnCall::$type(it) => {
@@ -41,6 +54,15 @@ macro_rules! impl_fn_call {
                 }
 
                 Ok(this)
+            }
+
+            #[frb(sync)]
+            pub fn to_args(&self) -> HashMap<String, Variable> {
+                match self {
+                    $(FnCall::$type(it) => [$(($arg_name.to_owned(), it.$arg_type.clone()),)*]
+                        .into_iter()
+                        .collect(),)+
+                }
             }
         }
 
@@ -74,29 +96,26 @@ macro_rules! impl_fn_call {
                 }
             }
         }
+
+        #[async_trait]
+        impl Invoke for FnCall {
+            async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), anyhow::Error> {
+                match self {
+                    $(FnCall::$type(it) => it.invoke(interpreter).await?,)+
+                }
+                Ok(())
+            }
+        }
     };
 }
 
 impl_fn_call! {
-    [ProgramExit] "Program::Tutup";
-    [ProgramSleep] "Program::Tidur" =>
-        ms: "Milidetik";
     [ConsolePrint] "Konsol::Cetak" =>
         content: "Konten";
 }
 
-#[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct FnCallProgramExit {}
-
-#[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct FnCallProgramSleep {
-    pub ms: Variable,
-}
-
-#[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct FnCallConsolePrint {
-    pub content: Variable,
+#[frb(ignore)]
+#[async_trait]
+pub trait Invoke {
+    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), anyhow::Error>;
 }
