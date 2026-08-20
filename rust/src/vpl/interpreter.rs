@@ -32,6 +32,7 @@ impl Interpreter {
 
     pub async fn run(&mut self, scope: Scope) {
         log("[Sistem] Menjalankan algoritma...").await;
+        self.evaluator.clear();
         let result = self.run_unsafe(scope).await;
         match result {
             Ok(_) => log("[Sistem] Selesai.").await,
@@ -39,7 +40,7 @@ impl Interpreter {
         }
     }
 
-    pub async fn run_unsafe(&mut self, scope: Scope) -> Result<(), anyhow::Error> {
+    async fn run_unsafe(&mut self, scope: Scope) -> Result<(), anyhow::Error> {
         for st in &scope.0 {
             match st {
                 Statement::If(it) => {

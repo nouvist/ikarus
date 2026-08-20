@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
@@ -53,12 +52,6 @@ class _AppState extends State<App> {
                 _context.value.navigator().push(SettingsScreen.route()),
             child: const Text('Pengaturan'),
           ),
-          if (kDebugMode) ...[
-            TitlebarMenu(
-              onTap: () => RestartProvider.of(context).restart(),
-              child: const Text('[DEBUG] Mulai Ulang'),
-            ),
-          ],
         ],
       ),
       home: Builder(

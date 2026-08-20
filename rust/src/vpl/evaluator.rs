@@ -11,12 +11,20 @@ pub struct Evaluator {
 }
 
 impl Evaluator {
+    #[frb(sync)]
     pub fn new() -> Self {
         Self {
             jar: HashMap::with_capacity(256),
         }
     }
 
+    #[inline]
+    #[frb(sync)]
+    pub fn clear(&mut self) {
+        self.jar.clear();
+    }
+
+    #[frb(sync)]
     pub fn evaluate(&mut self, var: Value) -> Result<Value, anyhow::Error> {
         match var {
             Value::Ident(ident) => {
@@ -38,12 +46,14 @@ impl Evaluator {
         }
     }
 
+    #[frb(sync)]
     pub fn save(&mut self, ident: Identifier, var: Value) -> Result<Value, anyhow::Error> {
         let evaluated = self.evaluate(var)?;
         self.jar.insert(ident.0, evaluated.clone());
         Ok(evaluated)
     }
 
+    #[frb(sync)]
     fn apply(
         operation: &ValueComputedOperation,
         left: &Value,

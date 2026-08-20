@@ -13,6 +13,7 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
+  final _interpreter = Interpreter();
   final _browser = BrowserSingleton.instance();
   final _statements = <RawStatement>[];
   var _isRunning = false;
@@ -25,8 +26,14 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   @override
   void dispose() {
+    _interpreter.dispose();
     _browser.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleStart() async {
+    final scope = RawScope(field0: _statements).build();
+    _interpreter.run(scope: scope);
   }
 
   Future<void> _handleChange() async {
@@ -74,6 +81,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
       crossAxisAlignment: .stretch,
       children: [
         Expanded(
+          flex: 2,
           child: DecoratedBox(
             decoration: BoxDecoration(
               border: .all(color: Colors.bro),
@@ -86,8 +94,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
             ),
           ),
         ),
-        SizedBox(
-          height: 128,
+        Expanded(
+          flex: 1,
           child: DecoratedBox(
             decoration: BoxDecoration(
               border: .all(color: Colors.bro),
@@ -112,6 +120,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
             child: ListView(padding: const .all(8), children: const []),
           ),
           Padding(
+            // ignore: prefer_const_constructors
             padding: .all(8),
             child: Row(
               spacing: 8,
@@ -119,7 +128,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 Expanded(
                   child: Input(controller: .new()),
                 ), // TODO: yang bener kontrolernya
-                Button(child: Icon(FluentIcons.send_24_regular)),
+                const Button(child: Icon(FluentIcons.send_24_regular)),
               ],
             ),
           ),
@@ -147,21 +156,17 @@ class _DocumentScreenState extends State<DocumentScreen> {
           ),
           _ToolbarButton(
             // enabled: _isRunning,
-            onTap: () async {
-              final interpreter = Interpreter();
-              final scope = RawScope(field0: _statements).build();
-              await interpreter.run(scope: scope);
-              interpreter.dispose();
-            },
+            onTap: _handleStart,
             child: const Icon(FluentIcons.play_24_regular),
           ),
           // _ToolbarButton(
-          //   enabled: _isRunning,
-          //   child: const Icon(FluentIcons.pause_24_regular),
+          //   // enabled: _isRunning,
+          //   onTap: _handleStop,
+          //   child: const Icon(FluentIcons.stop_24_regular),
           // ),
           // _ToolbarButton(
           //   enabled: _isRunning,
-          //   child: const Icon(FluentIcons.stop_24_regular),
+          //   child: const Icon(FluentIcons.pause_24_regular),
           // ),
         ],
       ),

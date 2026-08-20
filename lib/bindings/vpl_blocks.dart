@@ -232,7 +232,6 @@ class VplBindingCall extends StatefulWidget implements VplBinding {
 class _VplBindingCallState extends State<VplBindingCall> {
   late final _map = widget.data.field0.field0.toArgs();
 
-
   VoidCallback _createVariableHandler(String arg) => () async {
     final next = await context.navigator().push(
       VplVariableDialog.route(

@@ -2,15 +2,16 @@ use std::{env, sync::OnceLock};
 
 use camino::{Utf8Path, Utf8PathBuf};
 use flutter_rust_bridge::{DartFnFuture, frb};
+use tokio::spawn;
 
 pub mod frb_generated;
 
 pub mod macros;
 
 pub mod vpl {
+    pub mod evaluator;
     pub mod functions;
     pub mod interpreter;
-    pub mod evaluator;
     pub mod raw_tokens;
     pub mod tokens;
 }
@@ -56,7 +57,7 @@ pub async fn register_logger(
 pub async fn log(str: impl AsRef<str>) {
     let str = str.as_ref().to_owned();
     if let Some(logger) = LOGGER.get() {
-        (logger)(str).await;
+        spawn((logger)(str));
     }
 }
 
