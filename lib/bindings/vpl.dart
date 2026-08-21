@@ -13,7 +13,7 @@ part 'vpl_value.dart';
 // building blocks
 part 'vpl_add_dialog.dart';
 part 'vpl_identifier_dialog.dart';
-part 'vpl_variable_dialog.dart';
+part 'vpl_value_dialog.dart';
 
 class Vpl extends StatefulWidget {
   final List<RawStatement> statements;

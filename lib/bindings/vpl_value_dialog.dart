@@ -29,6 +29,16 @@ class _VplValueDialogState extends State<VplValueDialog> {
   final _number = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.data case Value_String it) {
+      _string.text = it.field0.field0;
+    } else if (widget.data case Value_Number it) {
+      _number.text = it.field0.field0.toString();
+    }
+  }
+
+  @override
   void dispose() {
     _string.dispose();
     _number.dispose();
@@ -136,11 +146,11 @@ class _VplValueDialogState extends State<VplValueDialog> {
               ),
               child: Column(
                 children: [
-                  _buildTitle(const Text('Jenis Data:')),
+                  _buildTitle(const Text('Jenis Data')),
                   ..._buildSelector(),
                   if (_data is Value_String) ...[
                     _buildSeparator(),
-                    _buildTitle(const Text('Nilai:')),
+                    _buildTitle(const Text('Nilai')),
                     Input(onSubmit: (_) => _handleSave(), controller: _string),
                   ] else if (_data is Value_Number) ...[
                     _buildSeparator(),
@@ -153,24 +163,24 @@ class _VplValueDialogState extends State<VplValueDialog> {
                     ),
                   ] else if (_data case Value_Boolean it) ...[
                     _buildSeparator(),
-                    _buildTitle(const Text('Nilai:')),
+                    _buildTitle(const Text('Nilai')),
                     _buildBoolean(it),
                   ] else if (_data case Value_Ident it) ...[
                     _buildSeparator(),
-                    _buildTitle(const Text('Nilai:')),
+                    _buildTitle(const Text('Nilai')),
                     VplBindingValue(onTap: _handleIdent(it), data: it),
                   ] else if (_data case Value_Computed it) ...[
                     _buildSeparator(),
-                    _buildTitle(const Text('Kiri:')),
+                    _buildTitle(const Text('Operan Kiri')),
                     VplBindingValue(
                       onTap: _createComputedLeftHandler(it),
                       data: it.field0.left,
                     ),
                     const Gap(12),
-                    _buildTitle(const Text('Operasi:')),
+                    _buildTitle(const Text('Operasi')),
                     ..._buildComputedOperation(it),
                     const Gap(12),
-                    _buildTitle(const Text('Kanan:')),
+                    _buildTitle(const Text('Operan Kanan')),
                     VplBindingValue(
                       onTap: _createComputedRightHandler(it),
                       data: it.field0.right,
