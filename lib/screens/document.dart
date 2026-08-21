@@ -20,6 +20,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
   final _statements = <RawStatement>[];
   var _isBrowserRunning = false;
   var _isInterpreterRunning = false;
+  var _pid = null as int?;
 
   @override
   void initState() {
@@ -57,10 +58,12 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   Future<void> _handleBrowserChange() async {
     final isRunning = await _browser.isRunning();
+    final pid = await _browser.pid();
     if (_isBrowserRunning == isRunning) return;
     if (!mounted) return;
     setState(() {
       _isBrowserRunning = isRunning;
+      _pid = pid;
     });
   }
 
@@ -217,6 +220,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
             onTap: _handleStop,
             child: const Icon(FluentIcons.stop_24_regular),
           ),
+          const Spacer(),
+          if (_pid case final it?) Text('Pid: $it'),
+          const Gap(8),
           // _ToolbarButton(
           //   enabled: _isRunning,
           //   child: const Icon(FluentIcons.pause_24_regular),

@@ -6,8 +6,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::vpl::{interpreter::Interpreter, tokens::Value};
 
-pub mod console;
-use console::*;
+pub mod system;
+use system::*;
 
 macro_rules! impl_fn_call {
     ($([$type:ident] $name:expr $( => $arg_type:ident : $arg_name:expr),* $(,)?);+ $(;)?) => {
@@ -110,8 +110,10 @@ macro_rules! impl_fn_call {
 }
 
 impl_fn_call! {
-    [ConsolePrint] "Konsol::Cetak" =>
+    [SystemPrint] "Sistem::Cetak" =>
         content: "Konten";
+    [SystemSleep] "Sistem::Tidur" =>
+        ms: "Milidetik";
 }
 
 #[frb(ignore)]

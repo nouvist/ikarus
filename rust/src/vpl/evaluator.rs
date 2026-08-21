@@ -7,21 +7,20 @@ use crate::vpl::tokens::{
     Identifier, Value, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString,
 };
 
-#[frb(opaque)]
+#[frb(ignore)]
 pub struct Evaluator {
     pub jar: HashMap<String, Value>,
 }
 
+#[frb(ignore)]
 impl Evaluator {
-    #[frb(sync)]
     pub fn new() -> Self {
         Self {
             jar: HashMap::with_capacity(256),
         }
     }
 
-    #[frb(sync)]
-    pub fn evaluate(&mut self, var: Value) -> Result<Value, anyhow::Error> {
+    pub fn evaluate(&mut self, var: &Value) -> Result<Value, anyhow::Error> {
         match var {
             Value::Ident(ident) => {
                 let resolved = self
@@ -32,8 +31,8 @@ impl Evaluator {
                 Ok(resolved)
             }
             Value::Computed(it) => {
-                let left = self.evaluate(*it.left)?;
-                let right = self.evaluate(*it.right)?;
+                let left = self.evaluate(&it.left)?;
+                let right = self.evaluate(&it.right)?;
 
                 Evaluator::apply(&it.operation, &left, &right)
                     .ok_or_else(|| anyhow!("variabel tidak valid untuk dievaluasi"))
@@ -42,20 +41,16 @@ impl Evaluator {
         }
     }
 
-    #[frb(sync)]
-    pub fn save(&mut self, ident: Identifier, var: Value) -> Result<Value, anyhow::Error> {
+    pub fn store(&mut self, ident: &Identifier, var: &Value) -> Result<Value, anyhow::Error> {
         let evaluated = self.evaluate(var)?;
-        self.jar.insert(ident.0, evaluated.clone());
+        self.jar.insert(ident.0.clone(), evaluated.clone());
         Ok(evaluated)
     }
 
-    #[inline]
-    #[frb(sync)]
     pub fn clear(&mut self) {
         self.jar.clear();
     }
 
-    #[frb(sync)]
     fn apply(operation: &ValueComputedOperation, left: &Value, right: &Value) -> Option<Value> {
         match (operation, left, right) {
             // Add
@@ -197,13 +192,19 @@ mod tests {
         let mut evaluator = Evaluator::new();
         assert_eq!(
             evaluator
-                .save(Identifier("a".into()), Value::Number(ValueNumber(10.0)))
+                .store(
+                    &Identifier("a".to_owned()),
+                    &Value::Number(ValueNumber(10.0))
+                )
                 .unwrap(),
             Value::Number(ValueNumber(10.0))
         );
         assert_eq!(
             evaluator
-                .save(Identifier("b".into()), Value::Number(ValueNumber(5.0)))
+                .store(
+                    &Identifier("b".to_owned()),
+                    &Value::Number(ValueNumber(5.0))
+                )
                 .unwrap(),
             Value::Number(ValueNumber(5.0))
         );
@@ -234,10 +235,16 @@ mod tests {
     fn evaluates_nested_computed_variable() {
         let mut evaluator = Evaluator::new();
         evaluator
-            .save(Identifier("x".into()), Value::Number(ValueNumber(2.0)))
+            .store(
+                &Identifier("x".to_owned()),
+                &Value::Number(ValueNumber(2.0)),
+            )
             .unwrap();
         evaluator
-            .save(Identifier("y".into()), Value::Number(ValueNumber(3.0)))
+            .store(
+                &Identifier("y".to_owned()),
+                &Value::Number(ValueNumber(3.0)),
+            )
             .unwrap();
 
         let result = Evaluator::apply(
@@ -261,7 +268,7 @@ mod tests {
         assert!(
             Evaluator::apply(
                 &ValueComputedOperation::Subtract,
-                &Value::String(ValueString("a".into())),
+                &Value::String(ValueString("a".to_owned())),
                 &Value::Number(ValueNumber(1.0)),
             )
             .is_none()

@@ -1,5 +1,5 @@
 use flutter_rust_bridge::frb;
-use std::{sync::Arc, time::Duration};
+use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
 use tokio::time::sleep;
 use tokio_util::sync::CancellationToken;
 
@@ -8,7 +8,7 @@ use crate::{
     vpl::{
         evaluator::Evaluator,
         functions::Invoke,
-        tokens::{Scope, Value, ValueBoolean},
+        tokens::{Identifier, Scope, Value, ValueBoolean},
     },
 };
 
@@ -32,9 +32,13 @@ impl InterpreterAbortController {
 
 impl_copy!(InterpreterAbortController);
 
+#[frb(ignore)]
+type InterpreterPointer = Box<dyn Any + Send + Sync>;
+
 #[frb(opaque)]
 pub struct Interpreter {
     evaluator: Evaluator,
+    pointer: HashMap<String, InterpreterPointer>,
 }
 
 impl Interpreter {
@@ -42,17 +46,40 @@ impl Interpreter {
     pub fn new() -> Self {
         Self {
             evaluator: Evaluator::new(),
+            pointer: HashMap::with_capacity(256),
         }
     }
 
+    #[inline]
     #[frb(sync)]
-    pub fn evaluator(&mut self) -> &mut Evaluator {
-        &mut self.evaluator
+    pub fn evaluate_variable(&mut self, value: &Value) -> Result<Value, anyhow::Error> {
+        self.evaluator.evaluate(value)
+    }
+
+    #[inline]
+    #[frb(sync)]
+    pub fn store_variable(
+        &mut self,
+        ident: &Identifier,
+        value: &Value,
+    ) -> Result<Value, anyhow::Error> {
+        self.evaluator.store(ident, value)
+    }
+
+    #[inline]
+    #[frb(ignore)]
+    pub fn get_pointer(&mut self, str: &str) -> Option<&InterpreterPointer> {
+        self.pointer.get(str)
+    }
+
+    #[inline]
+    #[frb(ignore)]
+    pub fn store_pointer(&mut self, str: String, pointer: InterpreterPointer) {
+        self.pointer.insert(str, pointer);
     }
 
     pub async fn run(&mut self, scope: Scope, abort: InterpreterAbortController) {
-        log(&format!("[Sistem] Program dijalankan...")).await;
-
+        self.pointer.clear();
         self.evaluator.clear();
         let result = abort.0.run_until_cancelled(self.run_unsafe(scope)).await;
 
@@ -63,16 +90,19 @@ impl Interpreter {
 
         if let Err(err) = result {
             log(&format!("[Sistem] Galat: {err}")).await;
-        } else {
-            log(&format!("[Sistem] Program selesai.")).await;
         }
     }
 
     async fn run_unsafe(&mut self, scope: Scope) -> Result<(), anyhow::Error> {
         for st in &scope.0 {
+            sleep(Duration::from_millis(5)).await;
             match st {
+                Statement::Call(it) => it.0.invoke(self).await?,
+                Statement::Variable(it) => {
+                    self.store_variable(&it.ident, &it.value)?;
+                }
                 Statement::If(it) => {
-                    let condition = self.evaluator.evaluate(it.condition.clone())?;
+                    let condition = self.evaluate_variable(&it.condition)?;
                     let Value::Boolean(condition) = condition else {
                         continue;
                     };
@@ -85,7 +115,7 @@ impl Interpreter {
                     Box::pin(self.run_unsafe(it.scope.clone())).await?;
                 }
                 Statement::For(it) => loop {
-                    let condition = self.evaluator.evaluate(it.condition.clone())?;
+                    let condition = self.evaluate_variable(&it.condition)?;
                     let Value::Boolean(condition) = condition else {
                         break;
                     };
@@ -97,13 +127,7 @@ impl Interpreter {
 
                     Box::pin(self.run_unsafe(it.scope.clone())).await?;
                 },
-                Statement::Variable(it) => {
-                    self.evaluator.save(it.ident.clone(), it.value.clone())?;
-                }
-                Statement::Call(it) => it.0.invoke(self).await?,
             }
-
-            sleep(Duration::from_millis(5)).await;
         }
 
         Ok(())

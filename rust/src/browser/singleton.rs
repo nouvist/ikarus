@@ -5,7 +5,7 @@ use std::{
     sync::{Arc, OnceLock},
 };
 use thiserror::Error;
-use tokio::sync::RwLock;
+use tokio::sync::{RwLock, RwLockReadGuard};
 use tokio::task::JoinError;
 use tokio_stream::StreamExt;
 
@@ -13,9 +13,9 @@ use crate::{log, win32::window::Window};
 
 #[frb(ignore)]
 pub struct InnerBrowserSingleton {
-    browser: Option<Browser>,
-    window: Option<Window>,
-    pid: Option<u32>,
+    pub browser: Option<Browser>,
+    pub window: Option<Window>,
+    pub pid: Option<u32>,
 }
 
 #[frb(opaque)]
@@ -138,5 +138,11 @@ impl BrowserSingleton {
 
     pub async fn pid(&self) -> Option<u32> {
         self.inner.read().await.pid
+    }
+
+    #[inline]
+    #[frb(ignore)]
+    pub async fn inner(&self) -> RwLockReadGuard<'_, InnerBrowserSingleton> {
+        self.inner.read().await
     }
 }
