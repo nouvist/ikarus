@@ -1,8 +1,10 @@
 use flutter_rust_bridge::frb;
-use tokio::task::yield_now;
+use std::{sync::Arc, time::Duration};
+use tokio::time::sleep;
+use tokio_util::sync::CancellationToken;
 
 use crate::{
-    log,
+    impl_copy, log,
     vpl::{
         evaluator::Evaluator,
         functions::Invoke,
@@ -11,6 +13,24 @@ use crate::{
 };
 
 use super::tokens::Statement;
+
+#[frb(opaque)]
+#[derive(Clone)]
+pub struct InterpreterAbortController(Arc<CancellationToken>);
+
+impl InterpreterAbortController {
+    #[frb(sync)]
+    pub fn new() -> Self {
+        Self(Arc::new(CancellationToken::new()))
+    }
+
+    #[frb(sync)]
+    pub fn abort(&self) {
+        self.0.cancel();
+    }
+}
+
+impl_copy!(InterpreterAbortController);
 
 #[frb(opaque)]
 pub struct Interpreter {
@@ -30,11 +50,21 @@ impl Interpreter {
         &mut self.evaluator
     }
 
-    pub async fn run(&mut self, scope: Scope) {
+    pub async fn run(&mut self, scope: Scope, abort: InterpreterAbortController) {
+        log(&format!("[Sistem] Program dijalankan...")).await;
+
         self.evaluator.clear();
-        let result = self.run_unsafe(scope).await;
+        let result = abort.0.run_until_cancelled(self.run_unsafe(scope)).await;
+
+        let Some(result) = result else {
+            log(&format!("[Sistem] Program dihentikan.")).await;
+            return ();
+        };
+
         if let Err(err) = result {
             log(&format!("[Sistem] Galat: {err}")).await;
+        } else {
+            log(&format!("[Sistem] Program selesai.")).await;
         }
     }
 
@@ -73,7 +103,7 @@ impl Interpreter {
                 Statement::Call(it) => it.0.invoke(self).await?,
             }
 
-            yield_now().await;
+            sleep(Duration::from_millis(5)).await;
         }
 
         Ok(())

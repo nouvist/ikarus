@@ -15,7 +15,7 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
-  final _interpreter = Interpreter();
+  var _abort = null as InterpreterAbortController?;
   final _browser = BrowserSingleton.instance();
   final _statements = <RawStatement>[];
   var _isBrowserRunning = false;
@@ -29,17 +29,30 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   @override
   void dispose() {
-    _interpreter.dispose();
-    _browser.dispose();
+    // _abort.dispose();
+    // _browser.dispose();
     super.dispose();
   }
 
   Future<void> _handleStart() async {
     if (_isInterpreterRunning) return;
     final scope = RawScope(field0: _statements).build();
+    final interpreter = Interpreter();
+    final abort = InterpreterAbortController();
+    _abort = abort.copy();
+
     setState(() => _isInterpreterRunning = true);
-    await _interpreter.run(scope: scope);
+    await interpreter.run(scope: scope, abort: abort);
     setState(() => _isInterpreterRunning = false);
+
+    interpreter.dispose();
+    abort.dispose();
+    _abort = null;
+  }
+
+  Future<void> _handleStop() async {
+    if (!_isInterpreterRunning) return;
+    _abort?.abort();
   }
 
   Future<void> _handleBrowserChange() async {
@@ -199,11 +212,11 @@ class _DocumentScreenState extends State<DocumentScreen> {
             onTap: _handleStart,
             child: const Icon(FluentIcons.play_24_regular),
           ),
-          // _ToolbarButton(
-          //   // enabled: _isRunning,
-          //   onTap: _handleStop,
-          //   child: const Icon(FluentIcons.stop_24_regular),
-          // ),
+          _ToolbarButton(
+            // enabled: _isRunning,
+            onTap: _handleStop,
+            child: const Icon(FluentIcons.stop_24_regular),
+          ),
           // _ToolbarButton(
           //   enabled: _isRunning,
           //   child: const Icon(FluentIcons.pause_24_regular),
