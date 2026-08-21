@@ -1,5 +1,6 @@
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
+import 'package:ikarus/helpers.dart';
 
 class ConsoleItem {
   final DateTime time;

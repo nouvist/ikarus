@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_svg/svg.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
+import 'package:ikarus/helpers.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Root extends StatelessWidget {

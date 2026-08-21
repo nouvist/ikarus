@@ -1,6 +1,7 @@
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions/build_context.dart';
+import 'package:ikarus/helpers.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

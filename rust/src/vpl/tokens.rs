@@ -8,8 +8,6 @@ use crate::{impl_copy, vpl::functions::FnCall};
 pub struct Identifier(#[frb(non_final)] pub String);
 impl_copy!(Identifier);
 
-type ValueIdentifier = Identifier;
-
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ValueString(#[frb(non_final)] pub String);
@@ -59,11 +57,11 @@ impl_copy!(ValueComputed);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum VarObject {
+pub enum ValueObject {
     Csv,
     Element,
 }
-impl_copy!(VarObject);
+impl_copy!(ValueObject);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -73,7 +71,7 @@ pub enum Value {
     String(ValueString),
     Number(ValueNumber),
     Boolean(ValueBoolean),
-    Object(VarObject),
+    Object(ValueObject),
     Computed(Box<ValueComputed>),
 }
 impl_copy!(Value);
