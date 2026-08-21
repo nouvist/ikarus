@@ -1,6 +1,6 @@
 use flutter_rust_bridge::frb;
 use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
-use tokio::time::sleep;
+use tokio::{task::yield_now, time::sleep};
 use tokio_util::sync::CancellationToken;
 
 use crate::{
@@ -95,7 +95,7 @@ impl Interpreter {
 
     async fn run_unsafe(&mut self, scope: Scope) -> Result<(), anyhow::Error> {
         for st in &scope.0 {
-            sleep(Duration::from_millis(5)).await;
+            yield_now().await;
             match st {
                 Statement::Call(it) => it.0.invoke(self).await?,
                 Statement::Variable(it) => {

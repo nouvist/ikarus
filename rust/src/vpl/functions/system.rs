@@ -34,6 +34,7 @@ impl Invoke for FnCallSystemPrint {
         };
 
         log(display).await;
+        sleep(Duration::from_millis(5)).await;
         Ok(())
     }
 }
