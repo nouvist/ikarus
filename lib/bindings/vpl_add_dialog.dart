@@ -42,9 +42,10 @@ class _VplAddDialogState extends State<VplAddDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: .topCenter,
       child: Padding(
-        padding: const .all(16),
+        padding: const .only(top: 64, left: 16, right: 16, bottom: 16),
         child: ConstrainedBox(
           constraints: const .new(maxWidth: 400, maxHeight: 500),
           child: Container(

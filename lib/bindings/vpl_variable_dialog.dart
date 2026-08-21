@@ -1,18 +1,20 @@
 part of 'vpl.dart';
 
 class VplVariableDialog extends StatefulWidget {
+  final int nested;
   final Value data;
 
-  const VplVariableDialog({super.key, required this.data});
+  const VplVariableDialog({super.key, this.nested = 0, required this.data});
 
   static PageRoute<Value?> route({
+    int nested = 0,
     required Value data,
     required VplInheritedData parent,
   }) {
     return DialogRoute(
       builder: (context) => VplInheritedData.inherit(
         parent: parent,
-        child: VplVariableDialog(data: data),
+        child: VplVariableDialog(nested: nested, data: data),
       ),
     );
   }
@@ -59,6 +61,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
 
     final next = await context.navigator().push(
       VplIdentifierDialog.route(
+        nested: widget.nested + 1,
         current: it.field0.field0,
         existings: inherited.idents,
         parent: .of(context),
@@ -74,7 +77,11 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
 
   VoidCallback _createComputedLeftHandler(Value_Computed data) => () async {
     final next = await context.navigator().push(
-      VplVariableDialog.route(data: data.field0.left, parent: .of(context)),
+      VplVariableDialog.route(
+        nested: widget.nested + 1,
+        data: data.field0.left,
+        parent: .of(context),
+      ),
     );
 
     if (next == null) return;
@@ -86,7 +93,11 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
 
   VoidCallback _createComputedRightHandler(Value_Computed data) => () async {
     final next = await context.navigator().push(
-      VplVariableDialog.route(data: data.field0.right, parent: .of(context)),
+      VplVariableDialog.route(
+        nested: widget.nested + 1,
+        data: data.field0.right,
+        parent: .of(context),
+      ),
     );
 
     if (next == null) return;
@@ -101,10 +112,19 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
     return Align(
       alignment: .topLeft,
       child: Padding(
-        padding: const .all(16),
+        padding: .only(
+          top: 64,
+          left: 16 + (widget.nested * 32),
+          right: 16,
+          bottom: 16,
+        ),
         child: IntrinsicHeight(
           child: ConstrainedBox(
-            constraints: const .new(maxWidth: 400, minHeight: 352 ,maxHeight: 600),
+            constraints: const .new(
+              maxWidth: 400,
+              minHeight: 352,
+              maxHeight: 600,
+            ),
             child: Container(
               clipBehavior: .antiAlias,
               padding: const .all(16),

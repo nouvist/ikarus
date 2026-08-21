@@ -1,16 +1,19 @@
 part of 'vpl.dart';
 
 class VplIdentifierDialog extends StatefulWidget {
+  final int nested;
   final String current;
   final List<String> existings;
 
   const VplIdentifierDialog({
     super.key,
+    this.nested = 0,
     required this.current,
     required this.existings,
   });
 
   static PageRoute<String?> route({
+    int nested = 0,
     required String current,
     required List<String> existings,
     required VplInheritedData parent,
@@ -18,7 +21,11 @@ class VplIdentifierDialog extends StatefulWidget {
     return DialogRoute(
       builder: (context) => VplInheritedData.inherit(
         parent: parent,
-        child: VplIdentifierDialog(current: current, existings: existings),
+        child: VplIdentifierDialog(
+          nested: nested,
+          current: current,
+          existings: existings,
+        ),
       ),
     );
   }
@@ -44,9 +51,15 @@ class _VplIdentifierDialogState extends State<VplIdentifierDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: .topLeft,
       child: Padding(
-        padding: const .all(16),
+        padding: .only(
+          top: 64,
+          left: 16 + (widget.nested * 32),
+          right: 16,
+          bottom: 16,
+        ),
         child: ConstrainedBox(
           constraints: const .new(maxWidth: 400, maxHeight: 500),
           child: Container(
