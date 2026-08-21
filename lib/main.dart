@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/screens.dart';
@@ -20,7 +21,7 @@ Future<void> main() async {
     RestartProvider(
       child: App(
         waitFor: Future.wait([
-          .delayed(const .new(seconds: 5)),
+          if (kReleaseMode) .delayed(const .new(seconds: 5)),
           RustLib.init(),
         ]),
       ),

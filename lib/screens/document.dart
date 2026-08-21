@@ -18,12 +18,13 @@ class _DocumentScreenState extends State<DocumentScreen> {
   final _interpreter = Interpreter();
   final _browser = BrowserSingleton.instance();
   final _statements = <RawStatement>[];
-  var _isRunning = false;
+  var _isBrowserRunning = false;
+  var _isInterpreterRunning = false;
 
   @override
   void initState() {
     super.initState();
-    _browser.registerListener(callback: _handleChange);
+    _browser.registerListener(callback: _handleBrowserChange);
   }
 
   @override
@@ -34,16 +35,19 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Future<void> _handleStart() async {
+    if (_isInterpreterRunning) return;
     final scope = RawScope(field0: _statements).build();
-    _interpreter.run(scope: scope);
+    setState(() => _isInterpreterRunning = true);
+    await _interpreter.run(scope: scope);
+    setState(() => _isInterpreterRunning = false);
   }
 
-  Future<void> _handleChange() async {
+  Future<void> _handleBrowserChange() async {
     final isRunning = await _browser.isRunning();
-    if (_isRunning == isRunning) return;
+    if (_isBrowserRunning == isRunning) return;
     if (!mounted) return;
     setState(() {
-      _isRunning = isRunning;
+      _isBrowserRunning = isRunning;
     });
   }
 
@@ -136,7 +140,16 @@ class _DocumentScreenState extends State<DocumentScreen> {
             child: ClipRRect(
               clipBehavior: .antiAlias,
               borderRadius: const .all(.circular(8)),
-              child: Vpl(_statements),
+              child: IgnorePointer(
+                ignoring: _isInterpreterRunning,
+                child: Opacity(
+                  opacity: switch (_isInterpreterRunning) {
+                    true => 0.6,
+                    false => 1,
+                  },
+                  child: Vpl(_statements),
+                ),
+              ),
             ),
           ),
         ),
@@ -160,29 +173,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         border: .all(color: Colors.bro),
         borderRadius: const .all(.circular(8)),
       ),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const .all(8),
-              children: [ChatBubble(type: .assistant)],
-            ),
-          ),
-          Padding(
-            // ignore: prefer_const_constructors
-            padding: .all(8),
-            child: Row(
-              spacing: 8,
-              children: [
-                Expanded(
-                  child: Input(controller: .new()),
-                ), // TODO: yang bener kontrolernya
-                const Button(child: Icon(FluentIcons.send_24_regular)),
-              ],
-            ),
-          ),
-        ],
-      ),
+      child: Chat(),
     );
   }
 
@@ -198,7 +189,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         children: [
           _ToolbarButton(
             onTap: _handleLaunchBrowser,
-            child: switch (_isRunning) {
+            child: switch (_isBrowserRunning) {
               true => const Icon(FluentIcons.position_to_front_24_regular),
               false => const Icon(FluentIcons.new_24_regular),
             },
@@ -239,7 +230,7 @@ class _ToolbarButton extends StatelessWidget {
         builder: (context, state, child) => Opacity(
           opacity: switch (enabled) {
             true => 1,
-            false => 0.5,
+            false => 0.6,
           },
           child: Container(
             height: 32,
