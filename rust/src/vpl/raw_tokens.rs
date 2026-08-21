@@ -2,9 +2,7 @@ use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error::Error,
-    impl_copy,
-    vpl::{
+    error::Error, impl_copy, log, vpl::{
         functions::FnName,
         tokens::{
             Scope, Statement, StatementCall, StatementFor, StatementIf, StatementVariable, Value,
@@ -94,6 +92,15 @@ impl RawStatement {
 }
 
 impl RawScope {
+    pub async fn frb_override_build(self) -> Result<Scope, Error> {
+        let result = self.build();
+        if let Err(err) = &result {
+            log(format!("[Sistem] Galat: {err}.")).await;
+        }
+
+        result
+    }
+
     #[frb(sync)]
     pub fn build(self) -> Result<Scope, Error> {
         let default_capacity = self.0.len() / 4;

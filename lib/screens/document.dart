@@ -37,7 +37,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   Future<void> _handleStart() async {
     if (_isInterpreterRunning) return;
-    final scope = RawScope(field0: _statements).build();
+    final scope = await RawScope(field0: _statements).build();
     final interpreter = Interpreter();
     final abort = InterpreterAbortController();
     _abort = abort.copy();

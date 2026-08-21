@@ -75,10 +75,10 @@ impl Interpreter {
         self.pointer.insert(str, pointer);
     }
 
-    pub async fn run(&mut self, scope: Scope, abort: InterpreterAbortController) {
+    pub async fn frb_override_run(&mut self, scope: Scope, abort: InterpreterAbortController) {
         self.pointer.clear();
         self.evaluator.clear();
-        let result = abort.0.run_until_cancelled(self.run_unsafe(scope)).await;
+        let result = abort.0.run_until_cancelled(self.run(scope)).await;
 
         let Some(result) = result else {
             log(&format!("[Sistem] Program dihentikan.")).await;
@@ -90,7 +90,7 @@ impl Interpreter {
         }
     }
 
-    async fn run_unsafe(&mut self, scope: Scope) -> Result<(), Error> {
+    async fn run(&mut self, scope: Scope) -> Result<(), Error> {
         for st in &scope.0 {
             yield_now().await;
             match st {
@@ -114,7 +114,7 @@ impl Interpreter {
                         continue;
                     }
 
-                    Box::pin(self.run_unsafe(it.scope.clone())).await?;
+                    Box::pin(self.run(it.scope.clone())).await?;
                 }
                 Statement::For(it) => loop {
                     let condition = self.evaluate_variable(&it.condition)?;
@@ -127,7 +127,7 @@ impl Interpreter {
                         break;
                     }
 
-                    Box::pin(self.run_unsafe(it.scope.clone())).await?;
+                    Box::pin(self.run(it.scope.clone())).await?;
                 },
             }
         }

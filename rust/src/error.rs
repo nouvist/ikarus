@@ -11,7 +11,7 @@ pub enum Error {
     SerializeError,
     #[error("gagal mendeserialisasi data")]
     DeserializeError,
-    #[error("lingkup bersarang tidak memiliki penutup yang valid")]
+    #[error("lingkup tidak memiliki pembuka/penutup yang valid")]
     VplInvalidNested,
 
     #[error("variabel yang dituju tidak ditemukan")]
