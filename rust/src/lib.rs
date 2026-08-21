@@ -28,6 +28,8 @@ pub mod win32 {
     pub mod window;
 }
 
+pub mod error;
+
 #[frb]
 pub fn home() -> &'static Utf8Path {
     static INSTANCE: OnceLock<Utf8PathBuf> = OnceLock::new();

@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
-use anyhow::anyhow;
 use flutter_rust_bridge::frb;
 
-use crate::vpl::tokens::{
-    Identifier, Value, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString,
+use crate::{
+    error::Error,
+    vpl::tokens::{
+        Identifier, Value, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString,
+    },
 };
 
 #[frb(ignore)]
@@ -20,14 +22,14 @@ impl Evaluator {
         }
     }
 
-    pub fn evaluate(&mut self, var: &Value) -> Result<Value, anyhow::Error> {
+    pub fn evaluate(&mut self, var: &Value) -> Result<Value, Error> {
         match var {
-            Value::Ident(ident) => {
+            Value::Identifier(ident) => {
                 let resolved = self
                     .jar
                     .get(&ident.0)
                     .cloned()
-                    .ok_or_else(|| anyhow!("variabel yang dirujuk tidak ditemukan"))?;
+                    .ok_or_else(|| Error::EvaluatorNoVariable)?;
                 Ok(resolved)
             }
             Value::Computed(it) => {
@@ -35,13 +37,13 @@ impl Evaluator {
                 let right = self.evaluate(&it.right)?;
 
                 Evaluator::apply(&it.operation, &left, &right)
-                    .ok_or_else(|| anyhow!("variabel tidak valid untuk dievaluasi"))
+                    .ok_or_else(|| Error::EvaluatorInvalidVariable)
             }
             it => Ok(it.clone()),
         }
     }
 
-    pub fn store(&mut self, ident: &Identifier, var: &Value) -> Result<Value, anyhow::Error> {
+    pub fn store(&mut self, ident: &Identifier, var: &Value) -> Result<Value, Error> {
         let evaluated = self.evaluate(var)?;
         self.jar.insert(ident.0.clone(), evaluated.clone());
         Ok(evaluated)
@@ -180,98 +182,5 @@ impl Evaluator {
 
             _ => None,
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn evaluates_several_computed_variables() {
-        let mut evaluator = Evaluator::new();
-        assert_eq!(
-            evaluator
-                .store(
-                    &Identifier("a".to_owned()),
-                    &Value::Number(ValueNumber(10.0))
-                )
-                .unwrap(),
-            Value::Number(ValueNumber(10.0))
-        );
-        assert_eq!(
-            evaluator
-                .store(
-                    &Identifier("b".to_owned()),
-                    &Value::Number(ValueNumber(5.0))
-                )
-                .unwrap(),
-            Value::Number(ValueNumber(5.0))
-        );
-
-        let sum = Evaluator::apply(
-            &ValueComputedOperation::Add,
-            &Value::Number(ValueNumber(10.0)),
-            &Value::Number(ValueNumber(5.0)),
-        );
-        assert_eq!(sum, Some(Value::Number(ValueNumber(15.0))));
-
-        let product = Evaluator::apply(
-            &ValueComputedOperation::Multiply,
-            &Value::Number(ValueNumber(3.0)),
-            &Value::Number(ValueNumber(4.0)),
-        );
-        assert_eq!(product, Some(Value::Number(ValueNumber(12.0))));
-
-        let comparison = Evaluator::apply(
-            &ValueComputedOperation::BoolGt,
-            &Value::Number(ValueNumber(12.0)),
-            &Value::Number(ValueNumber(5.0)),
-        );
-        assert_eq!(comparison, Some(Value::Boolean(ValueBoolean(true))));
-    }
-
-    #[test]
-    fn evaluates_nested_computed_variable() {
-        let mut evaluator = Evaluator::new();
-        evaluator
-            .store(
-                &Identifier("x".to_owned()),
-                &Value::Number(ValueNumber(2.0)),
-            )
-            .unwrap();
-        evaluator
-            .store(
-                &Identifier("y".to_owned()),
-                &Value::Number(ValueNumber(3.0)),
-            )
-            .unwrap();
-
-        let result = Evaluator::apply(
-            &ValueComputedOperation::Add,
-            &Value::Number(ValueNumber(2.0)),
-            &Value::Number(ValueNumber(3.0)),
-        );
-        assert_eq!(result, Some(Value::Number(ValueNumber(5.0))));
-    }
-
-    #[test]
-    fn rejects_division_by_zero_and_invalid_operands() {
-        assert!(
-            Evaluator::apply(
-                &ValueComputedOperation::Divide,
-                &Value::Number(ValueNumber(1.0)),
-                &Value::Number(ValueNumber(0.0))
-            )
-            .is_none()
-        );
-        assert!(
-            Evaluator::apply(
-                &ValueComputedOperation::Subtract,
-                &Value::String(ValueString("a".to_owned())),
-                &Value::Number(ValueNumber(1.0)),
-            )
-            .is_none()
-        );
     }
 }

@@ -86,7 +86,7 @@ class _VplBindingVariableState extends State<VplBindingVariable> {
       child: Row(
         children: [
           const Text('Var '),
-          VplBindingValue.ident(
+          VplBindingValue.identifier(
             onTap: _handleIdentifier,
             data: widget.data.field0.ident,
           ),

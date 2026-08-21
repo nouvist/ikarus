@@ -2,7 +2,7 @@ use flutter_rust_bridge::frb;
 use rig::serde::{Deserialize, Serialize};
 use tokio::fs;
 
-use crate::home;
+use crate::{error::Error, home};
 
 #[derive(Debug, Clone)]
 pub struct AiSettings {
@@ -46,7 +46,7 @@ impl AiSettings {
         file.to_raw()
     }
 
-    pub async fn update(self) -> Result<(), anyhow::Error> {
+    pub async fn update(self) -> Result<(), Error> {
         let mut instance = Self::current().await;
 
         instance.text_url = self.text_url;
@@ -58,7 +58,8 @@ impl AiSettings {
         instance.embed_model = self.embed_model;
         instance.embed_dimensions = self.embed_dimensions;
 
-        let buf = postcard::to_allocvec(&AiSettingsSerde::new(&instance))?;
+        let buf = postcard::to_allocvec(&AiSettingsSerde::new(&instance))
+            .map_err(|_| Error::SerializeError)?;
         fs::write(home().join("ai.dat"), buf).await?;
 
         Ok(())

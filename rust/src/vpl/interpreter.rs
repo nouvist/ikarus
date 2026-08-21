@@ -1,9 +1,10 @@
 use flutter_rust_bridge::frb;
-use std::{any::Any, collections::HashMap, sync::Arc, time::Duration};
-use tokio::{task::yield_now, time::sleep};
+use std::{any::Any, collections::HashMap, sync::Arc};
+use tokio::task::yield_now;
 use tokio_util::sync::CancellationToken;
 
 use crate::{
+    error::Error,
     impl_copy, log,
     vpl::{
         evaluator::Evaluator,
@@ -12,7 +13,7 @@ use crate::{
     },
 };
 
-use super::tokens::Statement;
+use super::{functions::FnCall, tokens::Statement};
 
 #[frb(opaque)]
 #[derive(Clone)]
@@ -52,17 +53,13 @@ impl Interpreter {
 
     #[inline]
     #[frb(sync)]
-    pub fn evaluate_variable(&mut self, value: &Value) -> Result<Value, anyhow::Error> {
+    pub fn evaluate_variable(&mut self, value: &Value) -> Result<Value, Error> {
         self.evaluator.evaluate(value)
     }
 
     #[inline]
     #[frb(sync)]
-    pub fn store_variable(
-        &mut self,
-        ident: &Identifier,
-        value: &Value,
-    ) -> Result<Value, anyhow::Error> {
+    pub fn store_variable(&mut self, ident: &Identifier, value: &Value) -> Result<Value, Error> {
         self.evaluator.store(ident, value)
     }
 
@@ -89,15 +86,20 @@ impl Interpreter {
         };
 
         if let Err(err) = result {
-            log(&format!("[Sistem] Galat: {err}")).await;
+            log(&format!("[Sistem] Galat: {err}.")).await;
         }
     }
 
-    async fn run_unsafe(&mut self, scope: Scope) -> Result<(), anyhow::Error> {
+    async fn run_unsafe(&mut self, scope: Scope) -> Result<(), Error> {
         for st in &scope.0 {
             yield_now().await;
             match st {
-                Statement::Call(it) => it.0.invoke(self).await?,
+                Statement::Call(it) => {
+                    match &it.0 {
+                        FnCall::SystemStop(_) => return Ok(()),
+                        it => it.invoke(self).await,
+                    }?;
+                }
                 Statement::Variable(it) => {
                     self.store_variable(&it.ident, &it.value)?;
                 }

@@ -65,7 +65,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
     });
   };
 
-  VoidCallback _handleIdent(Value_Ident it) => () async {
+  VoidCallback _handleIdent(Value_Identifier it) => () async {
     final inherited = VplInheritedData.of(context);
     inherited.calculateIdents();
 
@@ -154,7 +154,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
                     Input(onSubmit: (_) => _handleSave(), controller: _string),
                   ] else if (_data is Value_Number) ...[
                     _buildSeparator(),
-                    _buildTitle(const Text('Nilai:')),
+                    _buildTitle(const Text('Nilai')),
                     Input(
                       onSubmit: (_) => _handleSave(),
                       controller: _number,
@@ -165,7 +165,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai')),
                     _buildBoolean(it),
-                  ] else if (_data case Value_Ident it) ...[
+                  ] else if (_data case Value_Identifier it) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai')),
                     VplBindingValue(onTap: _handleIdent(it), data: it),
@@ -269,8 +269,8 @@ class _VplValueDialogState extends State<VplValueDialog> {
         children: [
           Expanded(
             child: ToggleButton(
-              onTap: _createTypeHandler(.ident(.new(field0: 'NamaVar'))),
-              active: _data is Value_Ident,
+              onTap: _createTypeHandler(.identifier(.new(field0: 'NamaVar'))),
+              active: _data is Value_Identifier,
               child: const Text('Variabel'),
             ),
           ),

@@ -4,7 +4,10 @@ use async_trait::async_trait;
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
-use crate::vpl::{interpreter::Interpreter, tokens::Value};
+use crate::{
+    error::Error,
+    vpl::{interpreter::Interpreter, tokens::Value},
+};
 
 pub mod system;
 use system::*;
@@ -41,13 +44,13 @@ macro_rules! impl_fn_call {
             }
 
             #[frb(sync)]
-            pub fn apply_args(&self, args: HashMap<String, Value>) -> Result<Self, anyhow::Error> {
+            pub fn apply_args(&self, args: HashMap<String, Value>) -> Result<Self, Error> {
                 let mut this = self.clone();
                 match &mut this {
                     $(FnCall::$type(it) => {
                         $(it.$arg_type = args
                             .get($arg_name)
-                            .ok_or_else(|| anyhow::anyhow!("invalid call"))?
+                            .ok_or_else(|| Error::FunctionInvalidDeserialize)?
                             .clone();)*
                         _ = it
                     },)+
@@ -59,7 +62,7 @@ macro_rules! impl_fn_call {
             #[frb(sync)]
             pub fn to_args(&self) -> HashMap<String, Value> {
                 match self {
-                    $(FnCall::$type(it) => [$(($arg_name.to_owned(), it.$arg_type.clone()),)*]
+                    $(FnCall::$type(_it) => [$(($arg_name.to_owned(), _it.$arg_type.clone()),)*]
                         .into_iter()
                         .collect(),)+
                 }
@@ -99,7 +102,7 @@ macro_rules! impl_fn_call {
 
         #[async_trait]
         impl Invoke for FnCall {
-            async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), anyhow::Error> {
+            async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
                 match self {
                     $(FnCall::$type(it) => it.invoke(interpreter).await?,)+
                 }
@@ -110,6 +113,7 @@ macro_rules! impl_fn_call {
 }
 
 impl_fn_call! {
+    [SystemStop] "Sistem::Berhenti";
     [SystemPrint] "Sistem::Cetak" =>
         content: "Konten";
     [SystemSleep] "Sistem::Tidur" =>
@@ -119,5 +123,5 @@ impl_fn_call! {
 #[frb(ignore)]
 #[async_trait]
 pub trait Invoke {
-    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), anyhow::Error>;
+    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error>;
 }

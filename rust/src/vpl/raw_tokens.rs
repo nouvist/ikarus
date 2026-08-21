@@ -1,8 +1,8 @@
-use anyhow::anyhow;
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    error::Error,
     impl_copy,
     vpl::{
         functions::FnName,
@@ -19,26 +19,26 @@ impl_copy!(RawScope);
 
 impl RawScope {
     #[frb(sync)]
-    pub fn from_binary(binary: Vec<u8>) -> Result<Self, anyhow::Error> {
-        let result = postcard::from_bytes::<Self>(&binary)?;
+    pub fn from_binary(binary: Vec<u8>) -> Result<Self, Error> {
+        let result = postcard::from_bytes::<Self>(&binary).map_err(|_| Error::DeserializeError)?;
         Ok(result)
     }
 
     #[frb(sync)]
-    pub fn from_json(json: String) -> Result<Self, anyhow::Error> {
-        let result = serde_json::from_str(&json)?;
+    pub fn from_json(json: String) -> Result<Self, Error> {
+        let result = serde_json::from_str(&json).map_err(|_| Error::DeserializeError)?;
         Ok(result)
     }
 
     #[frb(sync)]
-    pub fn to_binary(&self) -> Result<Vec<u8>, anyhow::Error> {
-        let result = postcard::to_allocvec(self)?;
+    pub fn to_binary(&self) -> Result<Vec<u8>, Error> {
+        let result = postcard::to_allocvec(self).map_err(|_| Error::SerializeError)?;
         Ok(result)
     }
 
     #[frb(sync)]
-    pub fn to_json(&self) -> Result<String, anyhow::Error> {
-        let result = serde_json::to_string(self)?;
+    pub fn to_json(&self) -> Result<String, Error> {
+        let result = serde_json::to_string(self).map_err(|_| Error::SerializeError)?;
         Ok(result)
     }
 }
@@ -95,26 +95,22 @@ impl RawStatement {
 
 impl RawScope {
     #[frb(sync)]
-    pub fn build(self) -> Result<Scope, anyhow::Error> {
+    pub fn build(self) -> Result<Scope, Error> {
         let default_capacity = self.0.len() / 4;
         let mut statements = Vec::<Statement>::with_capacity(default_capacity * 2);
         let mut depth = 0i32;
 
-        fn push_at_depth(
-            scope: &mut Vec<Statement>,
-            depth: i32,
-            next: Statement,
-        ) -> Result<(), anyhow::Error> {
+        fn push(scope: &mut Vec<Statement>, depth: i32, next: Statement) -> Result<(), Error> {
             if depth == 0 {
                 scope.push(next);
                 return Ok(());
             }
 
             match scope.last_mut() {
-                None => Err(anyhow!("invalid nested scopes")),
-                Some(Statement::If(it)) => push_at_depth(&mut it.scope.0, depth - 1, next),
-                Some(Statement::For(it)) => push_at_depth(&mut it.scope.0, depth - 1, next),
-                _ => Err(anyhow!("invalid nested scopes")),
+                None => Err(Error::VplInvalidNested),
+                Some(Statement::If(it)) => push(&mut it.scope.0, depth - 1, next),
+                Some(Statement::For(it)) => push(&mut it.scope.0, depth - 1, next),
+                _ => Err(Error::VplInvalidNested),
             }
         }
 
@@ -123,11 +119,11 @@ impl RawScope {
                 RawStatement::End => {
                     depth -= 1;
                     if depth < 0 {
-                        return Err(anyhow!("invalid nested scopes"));
+                        return Err(Error::VplInvalidNested);
                     }
                 }
                 RawStatement::If(it) => {
-                    push_at_depth(
+                    push(
                         &mut statements,
                         depth,
                         Statement::If(StatementIf {
@@ -138,7 +134,7 @@ impl RawScope {
                     depth += 1;
                 }
                 RawStatement::For(it) => {
-                    push_at_depth(
+                    push(
                         &mut statements,
                         depth,
                         Statement::For(StatementFor {
@@ -149,16 +145,16 @@ impl RawScope {
                     depth += 1;
                 }
                 RawStatement::Call(it) => {
-                    push_at_depth(&mut statements, depth, Statement::Call(it))?;
+                    push(&mut statements, depth, Statement::Call(it))?;
                 }
                 RawStatement::Variable(it) => {
-                    push_at_depth(&mut statements, depth, Statement::Variable(it))?;
+                    push(&mut statements, depth, Statement::Variable(it))?;
                 }
             }
         }
 
         if depth != 0 {
-            return Err(anyhow!("invalid nested scopes"));
+            return Err(Error::VplInvalidNested);
         }
 
         Ok(Scope(statements))

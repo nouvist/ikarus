@@ -6,11 +6,11 @@ class VplBindingValue extends StatelessWidget {
 
   const VplBindingValue({super.key, this.onTap, required this.data});
 
-  VplBindingValue.ident({
+  VplBindingValue.identifier({
     Key? key,
     VoidCallback? onTap,
     required Identifier data,
-  }) : this(key: key, onTap: onTap, data: .ident(data));
+  }) : this(key: key, onTap: onTap, data: .identifier(data));
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +41,12 @@ class VplBindingValue extends StatelessWidget {
     return VplValue(
       onTap: onTap,
       type: switch (data) {
-        Value_Ident() => .ident,
+        Value_Identifier() => .ident,
         _ => .value,
       },
       child: switch (data) {
         Value_Null() => const Text('null'),
-        Value_Ident it => Text(it.field0.field0),
+        Value_Identifier it => Text(it.field0.field0),
         Value_String it => Text(jsonEncode(it.field0.field0)),
         Value_Number it => Text(jsonEncode(it.field0.field0)),
         Value_Boolean it => Text(switch (it.field0.field0) {

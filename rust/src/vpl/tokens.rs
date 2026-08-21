@@ -8,6 +8,8 @@ use crate::{impl_copy, vpl::functions::FnCall};
 pub struct Identifier(#[frb(non_final)] pub String);
 impl_copy!(Identifier);
 
+pub type ValueIdentifier = Identifier;
+
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ValueString(#[frb(non_final)] pub String);
@@ -67,7 +69,7 @@ impl_copy!(ValueObject);
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Value {
     Null,
-    Ident(Identifier),
+    Identifier(ValueIdentifier),
     String(ValueString),
     Number(ValueNumber),
     Boolean(ValueBoolean),
@@ -75,6 +77,31 @@ pub enum Value {
     Computed(Box<ValueComputed>),
 }
 impl_copy!(Value);
+
+macro_rules! impl_as_value {
+    ($($identifier:ident => $type:ty),+$(,)?) => {
+        #[frb(ignore)]
+        impl Value {
+            paste::paste! {
+                $(pub fn [<as_ $identifier>](&self) -> Option<&[<Value $type>]> {
+                    match self {
+                        Value::$type(it) => Some(&it),
+                        _ => None,
+                    }
+                })+
+            }
+        }
+    };
+}
+
+impl_as_value! {
+    identifier => Identifier,
+    string => String,
+    number => Number,
+    boolean => Boolean,
+    object => Object,
+    computed => Computed,
+}
 
 impl Default for Value {
     fn default() -> Self {

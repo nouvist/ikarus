@@ -7,7 +7,6 @@ edition = "2024"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-anyhow = "1.0.104"
 async-trait = "0.1.92"
 camino = "1.2.5"
 chromiumoxide = "0.9.1"
