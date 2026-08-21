@@ -41,18 +41,19 @@ class _ConsoleState extends State<Console> implements ConsoleState {
     _scroll.dispose();
   }
 
-  void _push(ConsoleItem item) {
+  Future<void> _push(ConsoleItem item) async {
     if (!mounted) return;
     setState(() {
-      if (_logs.length >= 100) _logs.removeAt(0);
-      _logs.add(item);
+      if (_logs.length >= 100) _logs.removeLast();
+      _logs.insert(0, item);
     });
 
-    yieldNow(() {
-      if (!mounted) return;
-      final max = _scroll.position.maxScrollExtent;
-      _scroll.position.jumpTo(max);
-    });
+    await yieldNow();
+    if (!mounted) return;
+    final max = _scroll.position.maxScrollExtent;
+
+    // await Future.delayed(const .new(milliseconds: 100));
+    // _scroll.position.jumpTo(max);
   }
 
   @override
@@ -71,6 +72,7 @@ class _ConsoleState extends State<Console> implements ConsoleState {
         Positioned.fill(
           child: ListView.builder(
             controller: _scroll,
+            reverse: true,
             padding: const .symmetric(horizontal: 8, vertical: 4),
             itemCount: _logs.length,
             itemBuilder: _buildItem,
