@@ -6,7 +6,7 @@ use crate::{
     vpl::{
         evaluator::Evaluator,
         functions::Invoke,
-        tokens::{Scope, ValueBoolean, Value},
+        tokens::{Scope, Value, ValueBoolean},
     },
 };
 
@@ -31,12 +31,10 @@ impl Interpreter {
     }
 
     pub async fn run(&mut self, scope: Scope) {
-        log("[Sistem] Menjalankan algoritma...").await;
         self.evaluator.clear();
         let result = self.run_unsafe(scope).await;
-        match result {
-            Ok(_) => log("[Sistem] Selesai.").await,
-            Err(it) => log(&format!("[Sistem] Galat: {it}")).await,
+        if let Err(err) = result {
+            log(&format!("[Sistem] Galat: {err}")).await;
         }
     }
 

@@ -7,10 +7,9 @@ import 'package:window_manager/window_manager.dart';
 
 class Root extends StatelessWidget {
   final Future<void>? waitFor;
-  final Widget? titlebar;
   final Widget home;
 
-  const Root({super.key, this.waitFor, this.titlebar, required this.home});
+  const Root({super.key, this.waitFor, required this.home});
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +29,7 @@ class Root extends StatelessWidget {
         style: Typography.body.copyWith(color: Colors.fg0),
         child: IconTheme(
           data: const .new(color: Colors.fg0, size: 24),
-          child: _Splash(
-            waitFor: waitFor ?? yieldNow(),
-            child: Column(
-              crossAxisAlignment: .stretch,
-              children: [
-                ?titlebar,
-                Expanded(child: child!),
-              ],
-            ),
-          ),
+          child: _Splash(waitFor: waitFor ?? yieldNow(), child: child!),
         ),
       ),
     );

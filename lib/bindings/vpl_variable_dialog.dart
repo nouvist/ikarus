@@ -98,64 +98,68 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: .topLeft,
       child: Padding(
         padding: const .all(16),
-        child: ConstrainedBox(
-          constraints: const .new(maxWidth: 400, maxHeight: 500),
-          child: Container(
-            clipBehavior: .antiAlias,
-            padding: const .all(16),
-            decoration: BoxDecoration(
-              borderRadius: const .all(.circular(16)),
-              color: Colors.bg0,
-              border: .all(color: Colors.bro),
-              boxShadow: Shadows.s0,
-            ),
-            child: ListView(
-              children: [
-                _buildTitle(const Text('Jenis Data:')),
-                ..._buildSelector(),
-                if (_data is Value_String) ...[
+        child: IntrinsicHeight(
+          child: ConstrainedBox(
+            constraints: const .new(maxWidth: 400, minHeight: 352 ,maxHeight: 600),
+            child: Container(
+              clipBehavior: .antiAlias,
+              padding: const .all(16),
+              decoration: BoxDecoration(
+                borderRadius: const .all(.circular(16)),
+                color: Colors.bg0,
+                border: .all(color: Colors.bro),
+                boxShadow: Shadows.s0,
+              ),
+              child: Column(
+                children: [
+                  _buildTitle(const Text('Jenis Data:')),
+                  ..._buildSelector(),
+                  if (_data is Value_String) ...[
+                    _buildSeparator(),
+                    _buildTitle(const Text('Nilai:')),
+                    Input(onSubmit: (_) => _handleSave(), controller: _string),
+                  ] else if (_data is Value_Number) ...[
+                    _buildSeparator(),
+                    _buildTitle(const Text('Nilai:')),
+                    Input(
+                      onSubmit: (_) => _handleSave(),
+                      controller: _number,
+                      type: .number,
+                      formatters: [FilteringTextInputFormatter.digitsOnly],
+                    ),
+                  ] else if (_data case Value_Boolean it) ...[
+                    _buildSeparator(),
+                    _buildTitle(const Text('Nilai:')),
+                    _buildBoolean(it),
+                  ] else if (_data case Value_Ident it) ...[
+                    _buildSeparator(),
+                    _buildTitle(const Text('Nilai:')),
+                    VplBindingInner(onTap: _handleIdent(it), data: it),
+                  ] else if (_data case Value_Computed it) ...[
+                    _buildSeparator(),
+                    _buildTitle(const Text('Kiri:')),
+                    VplBindingInner(
+                      onTap: _createComputedLeftHandler(it),
+                      data: it.field0.left,
+                    ),
+                    const Gap(12),
+                    _buildTitle(const Text('Operasi:')),
+                    ..._buildComputedOperation(it),
+                    const Gap(12),
+                    _buildTitle(const Text('Kanan:')),
+                    VplBindingInner(
+                      onTap: _createComputedRightHandler(it),
+                      data: it.field0.right,
+                    ),
+                  ],
                   _buildSeparator(),
-                  _buildTitle(const Text('Nilai:')),
-                  Input(controller: _string),
-                ] else if (_data is Value_Number) ...[
-                  _buildSeparator(),
-                  _buildTitle(const Text('Nilai:')),
-                  Input(
-                    controller: _number,
-                    type: .number,
-                    formatters: [FilteringTextInputFormatter.digitsOnly],
-                  ),
-                ] else if (_data case Value_Boolean it) ...[
-                  _buildSeparator(),
-                  _buildTitle(const Text('Nilai:')),
-                  _buildBoolean(it),
-                ] else if (_data case Value_Ident it) ...[
-                  _buildSeparator(),
-                  _buildTitle(const Text('Nilai:')),
-                  VplBindingInner(onTap: _handleIdent(it), data: it),
-                ] else if (_data case Value_Computed it) ...[
-                  _buildSeparator(),
-                  _buildTitle(const Text('Kiri:')),
-                  VplBindingInner(
-                    onTap: _createComputedLeftHandler(it),
-                    data: it.field0.left,
-                  ),
-                  const Gap(12),
-                  _buildTitle(const Text('Operasi:')),
-                  ..._buildComputedOperation(it),
-                  const Gap(12),
-                  _buildTitle(const Text('Kanan:')),
-                  VplBindingInner(
-                    onTap: _createComputedRightHandler(it),
-                    data: it.field0.right,
-                  ),
+                  _buildControls(),
                 ],
-                _buildSeparator(),
-                _buildControls(),
-              ],
+              ),
             ),
           ),
         ),

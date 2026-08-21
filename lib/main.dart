@@ -1,6 +1,5 @@
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
-import 'package:ikarus/extensions.dart';
 import 'package:ikarus/screens.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -39,27 +38,8 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final _context = RefCell<BuildContext>();
-
   @override
   Widget build(BuildContext context) {
-    return Root(
-      waitFor: widget.waitFor,
-      titlebar: Titlebar(
-        menus: [
-          TitlebarMenu(
-            onTap: () =>
-                _context.value.navigator().push(SettingsScreen.route()),
-            child: const Text('Pengaturan'),
-          ),
-        ],
-      ),
-      home: Builder(
-        builder: (context) {
-          _context.value = context;
-          return const DocumentScreen();
-        },
-      ),
-    );
+    return Root(waitFor: widget.waitFor, home: const DocumentScreen());
   }
 }

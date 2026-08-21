@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use anyhow::anyhow;
 use flutter_rust_bridge::frb;
 
-use crate::vpl::tokens::{Identifier, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString, Value};
+use crate::vpl::tokens::{
+    Identifier, Value, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString,
+};
 
 #[frb(opaque)]
 pub struct Evaluator {
@@ -16,12 +18,6 @@ impl Evaluator {
         Self {
             jar: HashMap::with_capacity(256),
         }
-    }
-
-    #[inline]
-    #[frb(sync)]
-    pub fn clear(&mut self) {
-        self.jar.clear();
     }
 
     #[frb(sync)]
@@ -53,26 +49,28 @@ impl Evaluator {
         Ok(evaluated)
     }
 
+    #[inline]
     #[frb(sync)]
-    fn apply(
-        operation: &ValueComputedOperation,
-        left: &Value,
-        right: &Value,
-    ) -> Option<Value> {
+    pub fn clear(&mut self) {
+        self.jar.clear();
+    }
+
+    #[frb(sync)]
+    fn apply(operation: &ValueComputedOperation, left: &Value, right: &Value) -> Option<Value> {
         match (operation, left, right) {
             // Add
             (ValueComputedOperation::Add, Value::Number(left), Value::Number(right)) => {
                 Some(Value::Number(ValueNumber(left.0 + right.0)))
             }
-            (ValueComputedOperation::Add, Value::String(left), Value::String(right)) => Some(
-                Value::String(ValueString(format!("{}{}", left.0, right.0))),
-            ),
-            (ValueComputedOperation::Add, Value::String(left), Value::Number(right)) => Some(
-                Value::String(ValueString(format!("{}{}", left.0, right.0))),
-            ),
-            (ValueComputedOperation::Add, Value::Number(left), Value::String(right)) => Some(
-                Value::String(ValueString(format!("{}{}", left.0, right.0))),
-            ),
+            (ValueComputedOperation::Add, Value::String(left), Value::String(right)) => {
+                Some(Value::String(ValueString(format!("{}{}", left.0, right.0))))
+            }
+            (ValueComputedOperation::Add, Value::String(left), Value::Number(right)) => {
+                Some(Value::String(ValueString(format!("{}{}", left.0, right.0))))
+            }
+            (ValueComputedOperation::Add, Value::Number(left), Value::String(right)) => {
+                Some(Value::String(ValueString(format!("{}{}", left.0, right.0))))
+            }
 
             // Subtract
             (ValueComputedOperation::Subtract, Value::Number(left), Value::Number(right)) => {
@@ -109,11 +107,9 @@ impl Evaluator {
             (ValueComputedOperation::BoolAnd, Value::Boolean(left), Value::Number(right)) => {
                 Some(Value::Boolean(ValueBoolean(left.0 && right.0 != 0.0)))
             }
-            (ValueComputedOperation::BoolAnd, Value::Number(left), Value::Number(right)) => {
-                Some(Value::Boolean(ValueBoolean(
-                    left.0 != 0.0 && right.0 != 0.0,
-                )))
-            }
+            (ValueComputedOperation::BoolAnd, Value::Number(left), Value::Number(right)) => Some(
+                Value::Boolean(ValueBoolean(left.0 != 0.0 && right.0 != 0.0)),
+            ),
             (ValueComputedOperation::BoolAnd, Value::Boolean(left), Value::Boolean(right)) => {
                 Some(Value::Boolean(ValueBoolean(left.0 && right.0)))
             }
@@ -125,11 +121,9 @@ impl Evaluator {
             (ValueComputedOperation::BoolOr, Value::Boolean(left), Value::Number(right)) => {
                 Some(Value::Boolean(ValueBoolean(left.0 || right.0 != 0.0)))
             }
-            (ValueComputedOperation::BoolOr, Value::Number(left), Value::Number(right)) => {
-                Some(Value::Boolean(ValueBoolean(
-                    left.0 != 0.0 || right.0 != 0.0,
-                )))
-            }
+            (ValueComputedOperation::BoolOr, Value::Number(left), Value::Number(right)) => Some(
+                Value::Boolean(ValueBoolean(left.0 != 0.0 || right.0 != 0.0)),
+            ),
             (ValueComputedOperation::BoolOr, Value::Boolean(left), Value::Boolean(right)) => {
                 Some(Value::Boolean(ValueBoolean(left.0 || right.0)))
             }

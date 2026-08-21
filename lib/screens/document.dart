@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
-import 'package:ikarus/crux/vpl/interpreter.dart';
 import 'package:ikarus/design.dart';
+import 'package:ikarus/extensions.dart';
+import 'package:ikarus/screens.dart';
 
 class DocumentScreen extends StatefulWidget {
   const DocumentScreen({super.key});
@@ -49,10 +52,54 @@ class _DocumentScreenState extends State<DocumentScreen> {
     await _browser.init();
   }
 
+  void _handleNew() {
+    setState(() {
+      _statements.clear();
+    });
+  }
+
+  Future<void> _handleOpen() async {
+    final file = await FilePicker.pickFile(
+      type: FileType.custom,
+      allowedExtensions: ['ikp'],
+    );
+
+    if (file == null) return;
+    final buffer = await file.readAsBytes();
+    final next = RawScope.fromBinary(binary: buffer);
+
+    if (!mounted) return;
+    setState(() {
+      _statements.clear();
+      _statements.addAll(next.field0);
+    });
+  }
+
+  Future<void> _handleSave() async {
+    final buffer = RawScope(field0: _statements).toBinary();
+    await FilePicker.saveFile(
+      type: FileType.custom,
+      allowedExtensions: ['ikp'],
+      fileName: 'Dokumen Ikarus.ikp',
+      bytes: buffer,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       padding: const .only(left: 8, right: 8, bottom: 8),
+      titlebar: Titlebar(
+        menus: [
+          TitlebarMenu(onTap: _handleNew, child: const Text('Baru')),
+          TitlebarMenu(onTap: _handleOpen, child: const Text('Buka')),
+          TitlebarMenu(onTap: _handleSave, child: const Text('Simpan')),
+          TitlebarMenu(
+            onTap: () => context.navigator().push(SettingsScreen.route()),
+            child: const Text('Pengaturan'),
+          ),
+        ],
+      ),
       child: Column(
         spacing: 8,
         crossAxisAlignment: .stretch,
@@ -117,7 +164,10 @@ class _DocumentScreenState extends State<DocumentScreen> {
       child: Column(
         children: [
           Expanded(
-            child: ListView(padding: const .all(8), children: const []),
+            child: ListView(
+              padding: const .all(8),
+              children: [ChatBubble(type: .assistant)],
+            ),
           ),
           Padding(
             // ignore: prefer_const_constructors

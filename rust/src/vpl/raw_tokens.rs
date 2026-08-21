@@ -1,21 +1,50 @@
 use anyhow::anyhow;
 use flutter_rust_bridge::frb;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     impl_copy,
     vpl::{
         functions::FnName,
-        tokens::{Scope, StatementCall, StatementFor, StatementIf, StatementVariable, Statement, Value},
+        tokens::{
+            Scope, Statement, StatementCall, StatementFor, StatementIf, StatementVariable, Value,
+        },
     },
 };
 
 #[frb]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RawScope(#[frb(non_final)] pub Vec<RawStatement>);
 impl_copy!(RawScope);
 
+impl RawScope {
+    #[frb(sync)]
+    pub fn from_binary(binary: Vec<u8>) -> Result<Self, anyhow::Error> {
+        let result = postcard::from_bytes::<Self>(&binary)?;
+        Ok(result)
+    }
+
+    #[frb(sync)]
+    pub fn from_json(json: String) -> Result<Self, anyhow::Error> {
+        let result = serde_json::from_str(&json)?;
+        Ok(result)
+    }
+
+    #[frb(sync)]
+    pub fn to_binary(&self) -> Result<Vec<u8>, anyhow::Error> {
+        let result = postcard::to_allocvec(self)?;
+        Ok(result)
+    }
+
+    #[frb(sync)]
+    pub fn to_json(&self) -> Result<String, anyhow::Error> {
+        let result = serde_json::to_string(self)?;
+        Ok(result)
+    }
+}
+
 #[frb]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RawIf {
     #[frb(non_final)]
     pub condition: Value,
@@ -23,7 +52,7 @@ pub struct RawIf {
 impl_copy!(RawIf);
 
 #[frb]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RawFor {
     #[frb(non_final)]
     pub condition: Value,
@@ -31,7 +60,7 @@ pub struct RawFor {
 impl_copy!(RawFor);
 
 #[frb]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum RawStatement {
     End,
     If(RawIf),
@@ -42,7 +71,7 @@ pub enum RawStatement {
 impl_copy!(RawStatement);
 
 #[frb]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum RawStatementVariant {
     End,
     If,

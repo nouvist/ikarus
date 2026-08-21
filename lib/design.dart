@@ -14,6 +14,7 @@ export 'package:ikarus/design/widgets/inherited.dart';
 export 'package:ikarus/design/widgets/titlebar.dart';
 export 'package:ikarus/design/widgets/dialog.dart';
 export 'package:ikarus/design/widgets/scaffold.dart';
+export 'package:ikarus/design/widgets/context_menu.dart';
 export 'package:ikarus/design/widgets/ikarus_logo.dart';
 export 'package:ikarus/design/widgets/istn_logo.dart';
 export 'package:ikarus/design/widgets/nouvist_logo.dart';
@@ -37,7 +38,9 @@ export 'package:ikarus/design/widgets/input.dart';
 export 'package:ikarus/design/widgets/button.dart';
 export 'package:ikarus/design/widgets/toggle_button.dart';
 
-export 'package:ikarus/design/widgets/context_menu.dart';
+// chat
+export 'package:ikarus/design/widgets/chat_bubble.dart';
+
 
 @pragma('vm:prefer-inline')
 Future<void> yieldNow([Function()? callback]) {
