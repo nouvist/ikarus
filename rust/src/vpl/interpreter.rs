@@ -57,12 +57,12 @@ impl Interpreter {
                 Statement::For(it) => loop {
                     let condition = self.evaluator.evaluate(it.condition.clone())?;
                     let Value::Boolean(condition) = condition else {
-                        continue;
+                        break;
                     };
 
                     let ValueBoolean(condition) = condition;
                     if !condition {
-                        continue;
+                        break;
                     }
 
                     Box::pin(self.run_unsafe(it.scope.clone())).await?;
