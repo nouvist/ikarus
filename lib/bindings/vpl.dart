@@ -8,7 +8,7 @@ import 'package:ikarus/extensions.dart';
 
 // dialogs
 part 'vpl_blocks.dart';
-part 'vpl_inner.dart';
+part 'vpl_value.dart';
 
 // building blocks
 part 'vpl_add_dialog.dart';

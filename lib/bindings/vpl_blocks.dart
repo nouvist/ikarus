@@ -64,7 +64,7 @@ class _VplBindingVariableState extends State<VplBindingVariable> {
 
   Future<void> _handleVariable() async {
     final next = await context.navigator().push(
-      VplVariableDialog.route(
+      VplValueDialog.route(
         data: widget.data.field0.value,
         parent: .of(context),
       ),
@@ -82,16 +82,16 @@ class _VplBindingVariableState extends State<VplBindingVariable> {
     return VplBlock(
       onDelete: widget.onDelete,
       onDuplicate: widget.onDuplicate,
-      type: .assignment,
+      type: .variable,
       child: Row(
         children: [
           const Text('Var '),
-          VplBindingInner.ident(
+          VplBindingValue.ident(
             onTap: _handleIdentifier,
             data: widget.data.field0.ident,
           ),
           const Text(' sbg '),
-          VplBindingInner(
+          VplBindingValue(
             onTap: _handleVariable,
             data: widget.data.field0.value,
           ),
@@ -120,7 +120,7 @@ class VplBindingIf extends StatefulWidget implements VplBinding {
 class _VplBindingIfState extends State<VplBindingIf> {
   Future<void> _handleVariable() async {
     final next = await context.navigator().push(
-      VplVariableDialog.route(
+      VplValueDialog.route(
         data: widget.data.field0.condition,
         parent: .of(context),
       ),
@@ -141,7 +141,7 @@ class _VplBindingIfState extends State<VplBindingIf> {
       child: Row(
         children: [
           const Text('Jika '),
-          VplBindingInner(
+          VplBindingValue(
             onTap: _handleVariable,
             data: widget.data.field0.condition,
           ),
@@ -170,7 +170,7 @@ class VplBindingFor extends StatefulWidget implements VplBinding {
 class _VplBindingForState extends State<VplBindingFor> {
   Future<void> _handleVariable() async {
     final next = await context.navigator().push(
-      VplVariableDialog.route(
+      VplValueDialog.route(
         data: widget.data.field0.condition,
         parent: .of(context),
       ),
@@ -191,7 +191,7 @@ class _VplBindingForState extends State<VplBindingFor> {
       child: Row(
         children: [
           const Text('Selagi '),
-          VplBindingInner(
+          VplBindingValue(
             onTap: _handleVariable,
             data: widget.data.field0.condition,
           ),
@@ -234,7 +234,7 @@ class _VplBindingCallState extends State<VplBindingCall> {
 
   VoidCallback _createVariableHandler(String arg) => () async {
     final next = await context.navigator().push(
-      VplVariableDialog.route(
+      VplValueDialog.route(
         data: _map[arg] ?? const .null_(),
         parent: .of(context),
       ),
@@ -265,7 +265,7 @@ class _VplBindingCallState extends State<VplBindingCall> {
             for (final arg in args) ...[
               if (arg == arg[0]) const Text(', '),
               Text('$arg: '),
-              VplBindingInner(
+              VplBindingValue(
                 onTap: _createVariableHandler(arg),
                 data: _map[arg] ?? const .null_(),
               ),

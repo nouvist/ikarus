@@ -1,10 +1,10 @@
 part of 'vpl.dart';
 
-class VplVariableDialog extends StatefulWidget {
+class VplValueDialog extends StatefulWidget {
   final int nested;
   final Value data;
 
-  const VplVariableDialog({super.key, this.nested = 0, required this.data});
+  const VplValueDialog({super.key, this.nested = 0, required this.data});
 
   static PageRoute<Value?> route({
     int nested = 0,
@@ -14,16 +14,16 @@ class VplVariableDialog extends StatefulWidget {
     return DialogRoute(
       builder: (context) => VplInheritedData.inherit(
         parent: parent,
-        child: VplVariableDialog(nested: nested, data: data),
+        child: VplValueDialog(nested: nested, data: data),
       ),
     );
   }
 
   @override
-  State<VplVariableDialog> createState() => _VplVariableDialogState();
+  State<VplValueDialog> createState() => _VplValueDialogState();
 }
 
-class _VplVariableDialogState extends State<VplVariableDialog> {
+class _VplValueDialogState extends State<VplValueDialog> {
   late var _data = widget.data.copy();
   final _string = TextEditingController();
   final _number = TextEditingController();
@@ -77,7 +77,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
 
   VoidCallback _createComputedLeftHandler(Value_Computed data) => () async {
     final next = await context.navigator().push(
-      VplVariableDialog.route(
+      VplValueDialog.route(
         nested: widget.nested + 1,
         data: data.field0.left,
         parent: .of(context),
@@ -93,7 +93,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
 
   VoidCallback _createComputedRightHandler(Value_Computed data) => () async {
     final next = await context.navigator().push(
-      VplVariableDialog.route(
+      VplValueDialog.route(
         nested: widget.nested + 1,
         data: data.field0.right,
         parent: .of(context),
@@ -158,11 +158,11 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
                   ] else if (_data case Value_Ident it) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai:')),
-                    VplBindingInner(onTap: _handleIdent(it), data: it),
+                    VplBindingValue(onTap: _handleIdent(it), data: it),
                   ] else if (_data case Value_Computed it) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Kiri:')),
-                    VplBindingInner(
+                    VplBindingValue(
                       onTap: _createComputedLeftHandler(it),
                       data: it.field0.left,
                     ),
@@ -171,7 +171,7 @@ class _VplVariableDialogState extends State<VplVariableDialog> {
                     ..._buildComputedOperation(it),
                     const Gap(12),
                     _buildTitle(const Text('Kanan:')),
-                    VplBindingInner(
+                    VplBindingValue(
                       onTap: _createComputedRightHandler(it),
                       data: it.field0.right,
                     ),

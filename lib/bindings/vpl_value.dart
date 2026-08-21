@@ -1,12 +1,12 @@
 part of 'vpl.dart';
 
-class VplBindingInner extends StatelessWidget {
+class VplBindingValue extends StatelessWidget {
   final VoidCallback? onTap;
   final Value data;
 
-  const VplBindingInner({super.key, this.onTap, required this.data});
+  const VplBindingValue({super.key, this.onTap, required this.data});
 
-  VplBindingInner.ident({
+  VplBindingValue.ident({
     Key? key,
     VoidCallback? onTap,
     required Identifier data,
@@ -15,10 +15,10 @@ class VplBindingInner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data case Value_Computed it) {
-      return VplInnerWrapper(
+      return VplValueWrapper(
         onTap: onTap,
         children: [
-          VplBindingInner(data: it.field0.left),
+          VplBindingValue(data: it.field0.left),
           Text(switch (it.field0.operation) {
             .add => ' + ',
             .subtract => ' - ',
@@ -33,12 +33,12 @@ class VplBindingInner extends StatelessWidget {
             .boolGt => ' > ',
             .boolGe => ' >= ',
           }),
-          VplBindingInner(data: it.field0.right),
+          VplBindingValue(data: it.field0.right),
         ],
       );
     }
 
-    return VplInner(
+    return VplValue(
       onTap: onTap,
       type: switch (data) {
         Value_Ident() => .ident,

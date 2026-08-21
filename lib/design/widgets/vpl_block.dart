@@ -4,7 +4,7 @@ import 'package:ikarus/design.dart';
 
 enum VplBlockCutout { both, start }
 
-enum VplBlockType { sentinel, assignment, call, ident, value }
+enum VplBlockType { sentinel, variable, call, ident }
 
 class VplBlock extends StatefulWidget {
   final VoidCallback? onDelete;
@@ -47,10 +47,9 @@ class _VplBlockState extends State<VplBlock> {
   Widget build(BuildContext context) {
     final color = switch (widget.type) {
       .sentinel => Colors.cStart0,
-      .assignment => Colors.cVariable0,
+      .variable => Colors.cVariable0,
       .call => Colors.cCall0,
       .ident => Colors.cIdent0,
-      .value => Colors.cValue0,
     };
 
     return MouseRegion(

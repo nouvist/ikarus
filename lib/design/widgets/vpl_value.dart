@@ -2,12 +2,12 @@ import 'package:ikarus/design.dart';
 
 enum VplInnerType { ident, value }
 
-class VplInner extends StatelessWidget {
+class VplValue extends StatelessWidget {
   final VoidCallback? onTap;
   final VplInnerType type;
   final Widget child;
 
-  const VplInner({
+  const VplValue({
     super.key,
     this.onTap,
     required this.type,
@@ -56,14 +56,14 @@ class VplInner extends StatelessWidget {
   }
 }
 
-class VplInnerWrapper extends StatelessWidget {
+class VplValueWrapper extends StatelessWidget {
   final VoidCallback? onTap;
   final List<Widget> children;
-  const VplInnerWrapper({super.key, this.onTap, this.children = const []});
+  const VplValueWrapper({super.key, this.onTap, this.children = const []});
 
   @override
   Widget build(BuildContext context) {
-    final parent = context.findAncestorWidgetOfExactType<VplInnerWrapper>();
+    final parent = context.findAncestorWidgetOfExactType<VplValueWrapper>();
 
     return Container(
       decoration: switch (parent != null) {
