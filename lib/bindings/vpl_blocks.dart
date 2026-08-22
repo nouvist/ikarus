@@ -277,24 +277,40 @@ class _VplBindingCallState extends State<VplBindingCall> {
     final name = widget.data.field0.field0.name();
     final args = name.args();
     var i = 0;
-    return VplBlock(
+    return VplLargeBlock(
       onDelete: widget.onDelete,
       onDuplicate: widget.onDuplicate,
       type: .call,
       child: switch (args.isEmpty) {
         true => Center(child: Text('${name.display()}()')),
-        false => Row(
+        false => Column(
+          spacing: 4,
+          crossAxisAlignment: .start,
           children: [
-            Text('${name.display()}('),
+            Text(name.display()),
             for (final arg in args) ...[
-              if (i++ > 0) const Text(', '),
-              Text(style: const .new(fontWeight: .bold), '$arg: '),
-              VplBindingValue(
-                onTap: _createVariableHandler(arg),
-                data: _args[arg] ?? const .null_(),
+              Row(
+                children: [
+                  const Gap(32),
+                  switch (arg.contains(' ')) {
+                    true => Text(
+                      style: const .new(fontWeight: .bold),
+                      '${arg.substring(arg.indexOf(' ') + 1)}: '
+                      '${arg.substring(0, arg.indexOf(' '))} ',
+                    ),
+                    false => Text(
+                      style: const .new(fontWeight: .bold),
+                      '$arg: ',
+                    ),
+                  },
+
+                  VplBindingValue(
+                    onTap: _createVariableHandler(arg),
+                    data: _args[arg] ?? const .null_(),
+                  ),
+                ],
               ),
             ],
-            const Text(')'),
           ],
         ),
       },

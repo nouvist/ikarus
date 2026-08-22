@@ -6,13 +6,12 @@ import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
 
-// dialogs
-part 'vpl_blocks.dart';
-part 'vpl_value.dart';
-
 // building blocks
 part 'vpl_add_dialog.dart';
+// dialogs
+part 'vpl_blocks.dart';
 part 'vpl_identifier_dialog.dart';
+part 'vpl_value.dart';
 part 'vpl_value_dialog.dart';
 
 class Vpl extends StatefulWidget {
@@ -25,8 +24,17 @@ class Vpl extends StatefulWidget {
 }
 
 class _VplState extends State<Vpl> {
+  final _xScroll = ScrollController();
+  final _yScroll = ScrollController();
   final _idents = <String>[];
   final _nesteds = <int>[];
+
+  @override
+  void dispose() {
+    _xScroll.dispose();
+    _yScroll.dispose();
+    super.dispose();
+  }
 
   void _calculateIdents([bool shouldUpdate = false]) {
     if (shouldUpdate) return setState(() => _calculateIdents());
@@ -155,10 +163,7 @@ class _VplState extends State<Vpl> {
     return ReorderableDragStartListener(
       key: ValueKey(data),
       index: index + 1,
-      child: VplIndicator(
-        type: .editing, // TODO: ini belum di Rust
-        child: VplNested(value: nested, child: child),
-      ),
+      child: VplNested(value: nested, child: child),
     );
   }
 
@@ -177,6 +182,7 @@ class _VplState extends State<Vpl> {
         children: [
           Positioned.fill(
             child: ReorderableList(
+              controller: _yScroll,
               onReorderItem: _handleReorderItem,
               padding: const .all(8),
               itemCount: widget.statements.length + 1,

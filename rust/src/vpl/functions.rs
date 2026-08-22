@@ -16,6 +16,8 @@ pub mod browser;
 use browser::*;
 pub mod page;
 use page::*;
+pub mod element;
+use element::*;
 
 impl_fn_call! {
     [SystemStop] "Sistem::Berhenti";
@@ -36,6 +38,10 @@ impl_fn_call! {
 
     [PageWaitForNavigation] "Halaman::TungguNavigasi"
         => page: "ref Halaman";
+    [PageFindElement] "Halaman::CariElemen"
+        => page: "ref Halaman",
+        => element: "out Elemen",
+        => selector: "Pemilah";
 }
 
 #[frb(ignore)]

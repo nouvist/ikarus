@@ -36,8 +36,8 @@ impl Invoke for FnCallBrowserNewPage {
             .await
             .map_err(|_| Error::BrowserInvalidUrl)?;
 
-        interpreter.store_pointer(ident.0.clone(), Box::new(page));
         interpreter.store_variable(ident, &page::symbol())?;
+        interpreter.store_pointer(ident.0.clone(), Box::new(page));
 
         Ok(())
     }
@@ -88,8 +88,8 @@ impl Invoke for FnCallBrowserGetPage {
             return Ok(());
         };
 
-        interpreter.store_pointer(ident.0.clone(), Box::new(page));
         interpreter.store_variable(ident, &page::symbol())?;
+        interpreter.store_pointer(ident.0.clone(), Box::new(page));
 
         Ok(())
     }

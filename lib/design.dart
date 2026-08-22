@@ -24,11 +24,11 @@ export 'package:ikarus/design/widgets/console.dart';
 
 // vpl
 export 'package:ikarus/design/widgets/vpl_block.dart';
+export 'package:ikarus/design/widgets/vpl_large_block.dart';
 export 'package:ikarus/design/widgets/vpl_value.dart';
 export 'package:ikarus/design/widgets/vpl_scope.dart';
 export 'package:ikarus/design/widgets/vpl_nested.dart';
 export 'package:ikarus/design/widgets/vpl_controls.dart';
-export 'package:ikarus/design/widgets/vpl_indicator.dart';
 export 'package:ikarus/design/widgets/vpl_tile.dart';
 
 // input

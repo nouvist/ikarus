@@ -121,7 +121,7 @@ class _VplAddDialogState extends State<VplAddDialog> {
       onTap: _createVplHandler(.call(fn)),
       type: .call,
       icon: const Icon(FluentIcons.cube_24_regular),
-      child: Text(display),
+      child: Text(maxLines: 1, style: const .new(overflow: .ellipsis), display),
     );
   }
 }
