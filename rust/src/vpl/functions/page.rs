@@ -57,7 +57,6 @@ impl Invoke for FnCallPageFindElement {
             .ok_or_else(|| Error::FunctionInvalidArgument("Pemilah harus berupa string"))?;
 
         let element = page.find_element(selector.0.to_owned()).await.ok();
-        println!("{element:?}");
         match element {
             Some(it) => {
                 interpreter.store_variable(element_ident, &element::symbol())?;

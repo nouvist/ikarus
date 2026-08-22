@@ -93,7 +93,32 @@ macro_rules! impl_as_value {
     };
 }
 
+macro_rules! impl_is_value {
+    ($($identifier:ident => $type:ty),+$(,)?) => {
+        #[frb(ignore)]
+        impl Value {
+            paste::paste! {
+                $(pub fn [<is_ $identifier>](&self) -> bool {
+                    match self {
+                        Value::$type(it) => true,
+                        _ => false,
+                    }
+                })+
+            }
+        }
+    };
+}
+
 impl_as_value! {
+    identifier => Identifier,
+    string => String,
+    number => Number,
+    boolean => Boolean,
+    object => Object,
+    computed => Computed,
+}
+
+impl_is_value! {
     identifier => Identifier,
     string => String,
     number => Number,

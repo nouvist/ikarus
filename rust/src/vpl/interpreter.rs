@@ -60,6 +60,9 @@ impl Interpreter {
     #[inline]
     #[frb(sync)]
     pub fn store_variable(&mut self, ident: &Identifier, value: &Value) -> Result<Value, Error> {
+        if !value.is_object() {
+            self.remove_pointer(&ident.0);
+        }
         self.evaluator.store(ident, value)
     }
 
@@ -71,7 +74,14 @@ impl Interpreter {
 
     #[inline]
     #[frb(ignore)]
+    pub fn remove_pointer(&mut self, str: &str) {
+        self.pointer.remove_entry(str);
+    }
+
+    #[inline]
+    #[frb(ignore)]
     pub fn store_pointer(&mut self, str: String, pointer: InterpreterPointer) {
+        self.pointer.remove_entry(&str);
         self.pointer.insert(str, pointer);
     }
 

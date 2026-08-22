@@ -1,12 +1,7 @@
-use chromiumoxide::{Browser, BrowserConfig, error::CdpError};
+use chromiumoxide::{Browser, BrowserConfig};
 use flutter_rust_bridge::{DartFnFuture, frb};
-use std::{
-    borrow::Cow,
-    sync::{Arc, OnceLock},
-};
-use thiserror::Error;
+use std::sync::{Arc, OnceLock};
 use tokio::sync::{RwLock, RwLockReadGuard};
-use tokio::task::JoinError;
 use tokio_stream::StreamExt;
 
 use crate::{error::Error, log, win32::window::Window};
