@@ -72,3 +72,30 @@ impl Invoke for FnCallElementGetInnerHtml {
         Ok(())
     }
 }
+
+#[frb]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct FnCallElementGetText {
+    pub element: Value,
+    pub text: Value,
+}
+
+#[async_trait]
+impl Invoke for FnCallElementGetText {
+    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
+        let ident_element = self.element.unwrap_as_identifier()?;
+        let ident_html = self.text.unwrap_as_identifier()?;
+        let pointer = ident_element.unwrap_pointer::<Element>(interpreter)?;
+        let html = pointer.inner_text().await?;
+
+        interpreter.store_variable(
+            ident_html,
+            &match html {
+                Some(it) => Value::String(ValueString(it)),
+                None => Value::Null,
+            },
+        )?;
+
+        Ok(())
+    }
+}

@@ -46,10 +46,12 @@ impl_fn_call! {
     [ElementGetOuterHtml] "Elemen::AmbilHtmlLuar"
         => element: "ref Elemen",
         => html: "out Html";
-
     [ElementGetInnerHtml] "Elemen::AmbilHtmlDalam"
         => element: "ref Elemen",
         => html: "out Html";
+    [ElementGetText] "Elemen::AmbilTeks"
+        => element: "ref Elemen",
+        => text: "out Teks";
 }
 
 #[frb(ignore)]
