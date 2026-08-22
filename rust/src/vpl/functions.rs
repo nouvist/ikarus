@@ -14,6 +14,8 @@ pub mod system;
 use system::*;
 pub mod browser;
 use browser::*;
+pub mod page;
+use page::*;
 
 impl_fn_call! {
     [SystemStop] "Sistem::Berhenti";
@@ -29,6 +31,9 @@ impl_fn_call! {
     [BrowserGetPage] "Peramban::AmbilTab"
         => variable: "Variabel",
         => index: "Indeks";
+
+    [PageWaitForNavigation] "Halaman::TungguNavigasi"
+        => variable: "Variabel";
 }
 
 #[frb(ignore)]

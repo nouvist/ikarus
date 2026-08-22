@@ -14,6 +14,7 @@ pub mod vpl {
     pub mod interpreter;
     pub mod raw_tokens;
     pub mod tokens;
+    pub mod extensions;
 }
 
 pub mod ai {
