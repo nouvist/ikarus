@@ -25,12 +25,12 @@ abstract final class Colors {
   static const brt = Color(0x80ffffff);
 
   static const cFg0 = Color(0xffffffff);
-  static const cStart0 = Color(0xffc33b3b);
-  static const cScope0 = Color(0xffa17e0a);
-  static const cVariable0 = Color(0xff00896c);
-  static const cIdent0 = Color(0xffb43d88);
-  static const cValue0 = Color(0xffa84e24);
-  static const cNamespace0 = Color(0xff5f57ad);
+  static const cStart0 = Color(0xff3b1212);
+  static const cScope0 = Color(0xff483805);
+  static const cVariable0 = Color(0xff004d3c);
+  static const cIdent0 = Color(0xff39132b);
+  static const cValue0 = Color(0xff3f1d0d);
+  static const cNamespace0 = Color(0xff1c1933);
   static const cCall0 = Colors.bg3;
 
   static const cFg1 = Color(0xffffffff);
