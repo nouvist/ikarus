@@ -29,7 +29,7 @@ impl Invoke for FnCallSystemPrint {
                 true => "Benar".to_string(),
                 false => "Salah".to_string(),
             },
-            Value::Object(_it) => "[Objek]".to_string(),
+            Value::Object(it) => it.symbol,
             _ => unreachable!(),
         };
 

@@ -75,7 +75,10 @@ class _VplBlockState extends State<VplBlock> {
                         borderRadius: .horizontal(right: const .circular(6)),
                         color: color,
                       ),
-                      child: widget.child,
+                      child: Foreground(
+                        color: Colors.cFg0,
+                        child: widget.child,
+                      ),
                     ),
                     if (_isShowControls && widget.type != .sentinel) ...[
                       const Gap(16),

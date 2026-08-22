@@ -289,13 +289,6 @@ class _VplValueDialogState extends State<VplValueDialog> {
               child: const Text('Komputasi'),
             ),
           ),
-          Expanded(
-            child: ToggleButton(
-              onTap: _createTypeHandler(const .object(.element)),
-              active: _data is Value_Object,
-              child: const Text('Objek'),
-            ),
-          ),
         ],
       ),
     ];

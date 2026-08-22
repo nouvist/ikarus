@@ -43,7 +43,7 @@ class ChatBubble extends StatelessWidget {
                     border: .all(color: Colors.bro),
                     borderRadius: const .all(.circular(8)),
                   ),
-                  child: const Text("lorem ipsum dolor sit amet consectetur"),
+                  child: const Text('lorem ipsum dolor sit amet consectetur'),
                 ),
               ),
             ],

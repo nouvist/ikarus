@@ -59,9 +59,8 @@ impl_copy!(ValueComputed);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum ValueObject {
-    Csv,
-    Element,
+pub struct ValueObject {
+    pub symbol: String,
 }
 impl_copy!(ValueObject);
 

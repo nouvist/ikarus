@@ -9,20 +9,39 @@ use tokio::sync::{RwLock, RwLockReadGuard};
 use tokio::task::JoinError;
 use tokio_stream::StreamExt;
 
-use crate::{log, win32::window::Window};
+use crate::{error::Error, log, win32::window::Window};
 
 #[frb(ignore)]
-pub struct InnerBrowserSingleton {
-    pub browser: Option<Browser>,
-    pub window: Option<Window>,
-    pub pid: Option<u32>,
+pub struct BrowserSingletonInner {
+    browser: Option<Browser>,
+    window: Option<Window>,
+    pid: Option<u32>,
 }
 
 #[frb(opaque)]
 #[derive(Clone)]
 pub struct BrowserSingleton {
-    inner: Arc<RwLock<InnerBrowserSingleton>>,
+    inner: Arc<RwLock<BrowserSingletonInner>>,
     listener: Arc<RwLock<Option<Box<dyn Fn() -> DartFnFuture<()> + Send + Sync>>>>,
+}
+
+impl BrowserSingletonInner {
+    #[inline]
+    pub fn browser(&self) -> Result<&Browser, Error> {
+        self.browser
+            .as_ref()
+            .ok_or_else(|| Error::BrowserNotRunning)
+    }
+
+    #[inline]
+    pub async fn is_running(&self) -> bool {
+        self.browser.is_some()
+    }
+
+    #[inline]
+    pub async fn pid(&self) -> Option<u32> {
+        self.pid
+    }
 }
 
 #[frb]
@@ -61,7 +80,7 @@ impl BrowserSingleton {
         static INSTANCE: OnceLock<BrowserSingleton> = OnceLock::new();
         INSTANCE.get_or_init(|| BrowserSingleton {
             listener: Arc::new(RwLock::new(None)),
-            inner: Arc::new(RwLock::new(InnerBrowserSingleton {
+            inner: Arc::new(RwLock::new(BrowserSingletonInner {
                 browser: None,
                 window: None,
                 pid: None,
@@ -132,17 +151,19 @@ impl BrowserSingleton {
         *listener = Some(Box::new(callback));
     }
 
+    #[inline]
     pub async fn is_running(&self) -> bool {
-        self.inner.read().await.browser.is_some()
+        self.inner().await.is_running().await
     }
 
+    #[inline]
     pub async fn pid(&self) -> Option<u32> {
-        self.inner.read().await.pid
+        self.inner().await.pid().await
     }
 
     #[inline]
     #[frb(ignore)]
-    pub async fn inner(&self) -> RwLockReadGuard<'_, InnerBrowserSingleton> {
+    pub async fn inner(&self) -> RwLockReadGuard<'_, BrowserSingletonInner> {
         self.inner.read().await
     }
 }

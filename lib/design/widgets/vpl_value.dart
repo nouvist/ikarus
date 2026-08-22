@@ -49,7 +49,7 @@ class VplValue extends StatelessWidget {
             ),
             borderRadius: const .all(.circular(4)),
           ),
-          child: child,
+          child: Foreground(color: Colors.cFg1, child: child),
         ),
       ),
     );

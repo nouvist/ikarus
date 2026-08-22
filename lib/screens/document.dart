@@ -189,7 +189,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         border: .all(color: Colors.bro),
         borderRadius: const .all(.circular(8)),
       ),
-      child: Chat(),
+      child: const Chat(),
     );
   }
 
@@ -238,7 +238,7 @@ class _ToolbarButton extends StatelessWidget {
   final VoidCallback? onTap;
   final Widget child;
 
-  const _ToolbarButton({this.onTap, this.enabled = true, required this.child});
+  const _ToolbarButton({this.onTap, required this.child}) : enabled = true;
 
   @override
   Widget build(BuildContext context) {

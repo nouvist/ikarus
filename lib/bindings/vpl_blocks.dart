@@ -253,6 +253,7 @@ class _VplBindingCallState extends State<VplBindingCall> {
   Widget build(BuildContext context) {
     final name = widget.data.field0.field0.name();
     final args = name.args();
+    var i = 0;
     return VplBlock(
       onDelete: widget.onDelete,
       onDuplicate: widget.onDuplicate,
@@ -261,16 +262,16 @@ class _VplBindingCallState extends State<VplBindingCall> {
         true => Center(child: Text('${name.display()}()')),
         false => Row(
           children: [
-            Text('${name.display()}( '),
+            Text('${name.display()}('),
             for (final arg in args) ...[
-              if (arg == arg[0]) const Text(', '),
-              Text('$arg: '),
+              if (i++ > 0) const Text(', '),
+              Text(style: const .new(fontWeight: .bold), '$arg: '),
               VplBindingValue(
                 onTap: _createVariableHandler(arg),
                 data: _map[arg] ?? const .null_(),
               ),
             ],
-            const Text(' )'),
+            const Text(')'),
           ],
         ),
       },

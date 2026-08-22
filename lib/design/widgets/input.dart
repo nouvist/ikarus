@@ -6,15 +6,16 @@ class Input extends StatefulWidget {
   final TextEditingController controller;
   final bool obscure;
   final TextInputType? type;
-final List<TextInputFormatter>? formatters;
+  final List<TextInputFormatter>? formatters;
   final ValueChanged<String>? onSubmit;
 
   const Input({
     super.key,
     required this.controller,
     this.obscure = false,
-    this.type,this.formatters,
-    this.onSubmit, 
+    this.type,
+    this.formatters,
+    this.onSubmit,
   });
 
   @override
