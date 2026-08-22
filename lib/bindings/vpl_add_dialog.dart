@@ -100,14 +100,28 @@ class _VplAddDialogState extends State<VplAddDialog> {
           child: const Text('Variabel'),
         ),
       ],
-      for (final fn in FnName.values)
-        if (fn.display().toLowerCase().contains(search))
-          VplTile(
-            onTap: _createVplHandler(.call(fn)),
-            type: .call,
-            icon: const Icon(FluentIcons.cube_24_regular),
-            child: Text(fn.display()),
-          ),
+      for (final fn in FnName.values) ?_buildFunctions(context, fn, search),
+      const Gap(16),
     ];
+  }
+
+  Widget? _buildFunctions(BuildContext context, FnName fn, String search) {
+    final args = fn.args();
+    var display = fn.display();
+    display += '(';
+    for (final arg in args) {
+      if (arg != args[0]) display += ', ';
+      display += arg;
+    }
+    display += ')';
+
+    final lowercase = display.toLowerCase();
+    if (!lowercase.contains(search)) return null;
+    return VplTile(
+      onTap: _createVplHandler(.call(fn)),
+      type: .call,
+      icon: const Icon(FluentIcons.cube_24_regular),
+      child: Text(display),
+    );
   }
 }
