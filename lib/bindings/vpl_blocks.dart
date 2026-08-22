@@ -230,21 +230,44 @@ class VplBindingCall extends StatefulWidget implements VplBinding {
 }
 
 class _VplBindingCallState extends State<VplBindingCall> {
-  late final _map = widget.data.field0.field0.toArgs();
+  late final _args = widget.data.field0.field0.toArgs();
 
   VoidCallback _createVariableHandler(String arg) => () async {
-    final next = await context.navigator().push(
-      VplValueDialog.route(
-        data: _map[arg] ?? const .null_(),
-        parent: .of(context),
-      ),
-    );
+    var value = null as Value?;
+    if (arg == 'Variabel') {
+      final inherited = VplInheritedData.of(context);
+      inherited.calculateIdents();
 
-    if (next == null) return;
+      final current = switch (_args[arg]) {
+        Value_Identifier it => it.field0.field0,
+        _ => ''
+      };
+
+      final next = await context.navigator().push(
+        VplIdentifierDialog.route(
+          current: current,
+          existings: inherited.idents,
+          parent: .of(context),
+        ),
+      );
+
+      if (next == null) return;
+      value = .identifier(.new(field0: next));
+    } else {
+      final next = await context.navigator().push(
+        VplValueDialog.route(
+          data: _args[arg] ?? const .null_(),
+          parent: .of(context),
+        ),
+      );
+      value = next;
+    }
+
+    if (value == null) return;
     if (!mounted) return;
     setState(() {
-      _map[arg] = next;
-      final applied = widget.data.field0.field0.applyArgs(args: _map);
+      _args[arg] = value!;
+      final applied = widget.data.field0.field0.applyArgs(args: _args);
       widget.data.field0.field0 = applied;
     });
   };
@@ -268,7 +291,7 @@ class _VplBindingCallState extends State<VplBindingCall> {
               Text(style: const .new(fontWeight: .bold), '$arg: '),
               VplBindingValue(
                 onTap: _createVariableHandler(arg),
-                data: _map[arg] ?? const .null_(),
+                data: _args[arg] ?? const .null_(),
               ),
             ],
             const Text(')'),

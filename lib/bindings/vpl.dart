@@ -35,12 +35,14 @@ class _VplState extends State<Vpl> {
       if (st case RawStatement_Variable it) {
         final next = it.field0.ident.field0;
         if (_idents.contains(next)) continue;
-        _idents.add(it.field0.ident.field0);
+        _idents.add(next);
       } else if (st case RawStatement_Call it) {
         final args = it.field0.field0.toArgs();
         final variable = args['Variabel'];
         if (variable case Value_Identifier it) {
-          _idents.add(it.field0.field0);
+          final next = it.field0.field0;
+          if (_idents.contains(next)) continue;
+          _idents.add(next);
         }
       }
     }
@@ -210,7 +212,8 @@ class VplInheritedData extends InheritedWidget {
     required this._onCalculateNesteds,
   });
 
-  VplInheritedData.inherit({super.key, 
+  VplInheritedData.inherit({
+    super.key,
     required VplInheritedData parent,
     required super.child,
   }) : idents = parent.idents,
