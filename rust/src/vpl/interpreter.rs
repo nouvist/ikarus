@@ -5,7 +5,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{
     error::Error,
-    impl_copy, log,
+    impl_frb_clone, log,
     vpl::{
         evaluator::Evaluator,
         functions::Invoke,
@@ -31,7 +31,7 @@ impl InterpreterAbortController {
     }
 }
 
-impl_copy!(InterpreterAbortController);
+impl_frb_clone!(InterpreterAbortController);
 
 #[frb(ignore)]
 type InterpreterPointer = Box<dyn Any + Send + Sync>;

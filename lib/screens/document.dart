@@ -40,7 +40,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
     final scope = await RawScope(field0: _statements).build();
     final interpreter = Interpreter();
     final abort = InterpreterAbortController();
-    _abort = abort.copy();
+    _abort = abort.clone();
 
     setState(() => _isInterpreterRunning = true);
     await interpreter.run(scope: scope, abort: abort);

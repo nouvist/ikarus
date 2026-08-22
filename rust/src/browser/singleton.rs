@@ -44,32 +44,6 @@ impl BrowserSingletonInner {
     }
 }
 
-#[frb]
-#[derive(Error, Debug)]
-pub enum BrowserError {
-    #[error("{0}")]
-    CdpError(#[from] CdpError),
-    #[error("{0}")]
-    ChromiumoxideError(Cow<'static, str>),
-    #[error("{0}")]
-    TokioJoinError(#[from] JoinError),
-
-    #[error("failed to get browser pid")]
-    PidError,
-}
-
-impl From<String> for BrowserError {
-    fn from(value: String) -> Self {
-        Self::ChromiumoxideError(Cow::Owned(value))
-    }
-}
-
-impl From<&'static str> for BrowserError {
-    fn from(value: &'static str) -> Self {
-        Self::ChromiumoxideError(Cow::Borrowed(value))
-    }
-}
-
 impl BrowserSingleton {
     #[frb(sync)]
     pub fn frb_override_instance() -> Self {
@@ -88,7 +62,7 @@ impl BrowserSingleton {
         })
     }
 
-    pub async fn init(&self) -> Result<(), BrowserError> {
+    pub async fn init(&self) -> Result<(), Error> {
         let mut lock = self.inner.write().await;
 
         if lock.browser.is_some() {
@@ -103,13 +77,16 @@ impl BrowserSingleton {
         let config = BrowserConfig::builder()
             .with_head()
             .viewport(None)
-            .build()?;
-        let (mut browser, mut handler) = Browser::launch(config).await?;
+            .build()
+            .map_err(|_| Error::BrowserFailedToLaunch)?;
+        let (mut browser, mut handler) = Browser::launch(config)
+            .await
+            .map_err(|_| Error::BrowserFailedToLaunch)?;
         let pid = browser
             .get_mut_child()
             .map(|it| it.inner.id())
             .flatten()
-            .ok_or_else(|| BrowserError::PidError)?;
+            .ok_or_else(|| Error::BrowserFailedToLaunch)?;
         let window = Window::from_pid(pid);
 
         lock.browser = Some(browser);

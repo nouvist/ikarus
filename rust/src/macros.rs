@@ -1,9 +1,9 @@
 #[macro_export]
-macro_rules! impl_copy {
+macro_rules! impl_frb_clone {
     ($type:ty) => {
         impl $type {
             #[frb(sync)]
-            pub fn copy(&self) -> Self {
+            pub fn frb_override_clone(&self) -> Self {
                 self.clone()
             }
         }

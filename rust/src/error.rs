@@ -21,6 +21,8 @@ pub enum Error {
     #[error("variabel tidak valid untuk dievaluasi")]
     EvaluatorInvalidVariable,
 
+    #[error("peramban gagal dijalankan")]
+    BrowserFailedToLaunch,
     #[error("peramban belum dijalankan")]
     BrowserNotRunning,
     #[error("url yang dimasukkan tidak valid")]

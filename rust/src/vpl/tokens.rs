@@ -1,29 +1,29 @@
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
-use crate::{impl_copy, vpl::functions::FnCall};
+use crate::{impl_frb_clone, vpl::functions::FnCall};
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Identifier(#[frb(non_final)] pub String);
-impl_copy!(Identifier);
+impl_frb_clone!(Identifier);
 
 pub type ValueIdentifier = Identifier;
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ValueString(#[frb(non_final)] pub String);
-impl_copy!(ValueString);
+impl_frb_clone!(ValueString);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ValueNumber(#[frb(non_final)] pub f64);
-impl_copy!(ValueNumber);
+impl_frb_clone!(ValueNumber);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ValueBoolean(#[frb(non_final)] pub bool);
-impl_copy!(ValueBoolean);
+impl_frb_clone!(ValueBoolean);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -43,7 +43,7 @@ pub enum ValueComputedOperation {
     BoolGt,
     BoolGe,
 }
-impl_copy!(ValueComputedOperation);
+impl_frb_clone!(ValueComputedOperation);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -55,14 +55,14 @@ pub struct ValueComputed {
     #[frb(non_final)]
     pub right: Box<Value>,
 }
-impl_copy!(ValueComputed);
+impl_frb_clone!(ValueComputed);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ValueObject {
     pub symbol: String,
 }
-impl_copy!(ValueObject);
+impl_frb_clone!(ValueObject);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -75,7 +75,7 @@ pub enum Value {
     Object(ValueObject),
     Computed(Box<ValueComputed>),
 }
-impl_copy!(Value);
+impl_frb_clone!(Value);
 
 macro_rules! impl_as_value {
     ($($identifier:ident => $type:ty),+$(,)?) => {
@@ -116,12 +116,12 @@ pub struct StatementVariable {
     #[frb(non_final)]
     pub value: Value,
 }
-impl_copy!(StatementVariable);
+impl_frb_clone!(StatementVariable);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StatementCall(#[frb(non_final)] pub FnCall);
-impl_copy!(StatementCall);
+impl_frb_clone!(StatementCall);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -131,7 +131,7 @@ pub struct StatementIf {
     #[frb(non_final)]
     pub scope: Scope,
 }
-impl_copy!(StatementIf);
+impl_frb_clone!(StatementIf);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -141,12 +141,12 @@ pub struct StatementFor {
     #[frb(non_final)]
     pub scope: Scope,
 }
-impl_copy!(StatementFor);
+impl_frb_clone!(StatementFor);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Scope(#[frb(non_final)] pub Vec<Statement>);
-impl_copy!(Scope);
+impl_frb_clone!(Scope);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -156,4 +156,4 @@ pub enum Statement {
     Call(StatementCall),
     Variable(StatementVariable),
 }
-impl_copy!(Statement);
+impl_frb_clone!(Statement);

@@ -24,7 +24,7 @@ class VplValueDialog extends StatefulWidget {
 }
 
 class _VplValueDialogState extends State<VplValueDialog> {
-  late var _data = widget.data.copy();
+  late var _data = widget.data.clone();
   final _string = TextEditingController();
   final _number = TextEditingController();
 

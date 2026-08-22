@@ -2,7 +2,7 @@ use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error::Error, impl_copy, log, vpl::{
+    error::Error, impl_frb_clone, log, vpl::{
         functions::FnName,
         tokens::{
             Scope, Statement, StatementCall, StatementFor, StatementIf, StatementVariable, Value,
@@ -13,7 +13,7 @@ use crate::{
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RawScope(#[frb(non_final)] pub Vec<RawStatement>);
-impl_copy!(RawScope);
+impl_frb_clone!(RawScope);
 
 impl RawScope {
     #[frb(sync)]
@@ -47,7 +47,7 @@ pub struct RawIf {
     #[frb(non_final)]
     pub condition: Value,
 }
-impl_copy!(RawIf);
+impl_frb_clone!(RawIf);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -55,7 +55,7 @@ pub struct RawFor {
     #[frb(non_final)]
     pub condition: Value,
 }
-impl_copy!(RawFor);
+impl_frb_clone!(RawFor);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -66,7 +66,7 @@ pub enum RawStatement {
     Call(StatementCall),
     Variable(StatementVariable),
 }
-impl_copy!(RawStatement);
+impl_frb_clone!(RawStatement);
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -77,7 +77,7 @@ pub enum RawStatementVariant {
     Variable,
     Call(FnName),
 }
-impl_copy!(RawStatementVariant);
+impl_frb_clone!(RawStatementVariant);
 
 impl RawStatement {
     pub fn variant(&self) -> RawStatementVariant {

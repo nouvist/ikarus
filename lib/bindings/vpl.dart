@@ -91,7 +91,7 @@ class _VplState extends State<Vpl> {
   });
 
   void _handleDuplicate(int index) => setState(() {
-    widget.statements.insert(index + 1, widget.statements[index].copy());
+    widget.statements.insert(index + 1, widget.statements[index].clone());
   });
 
   void _handleReorderItem(int oldIndex, int newIndex) {
