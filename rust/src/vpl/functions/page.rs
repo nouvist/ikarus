@@ -37,7 +37,7 @@ impl Invoke for FnCallPageWaitForNavigation {
     }
 }
 
-#[frb(non_opaque)]
+#[frb]
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct FnCallPageFindElement {
     pub page: Value,

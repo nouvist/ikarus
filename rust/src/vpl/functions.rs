@@ -42,6 +42,14 @@ impl_fn_call! {
         => page: "ref Halaman",
         => element: "out Elemen",
         => selector: "Pemilah";
+
+    [ElementGetOuterHtml] "Elemen::AmbilHtmlLuar"
+        => element: "ref Elemen",
+        => html: "out Html";
+
+    [ElementGetInnerHtml] "Elemen::AmbilHtmlDalam"
+        => element: "ref Elemen",
+        => html: "out Html";
 }
 
 #[frb(ignore)]

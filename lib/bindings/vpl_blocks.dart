@@ -275,45 +275,59 @@ class _VplBindingCallState extends State<VplBindingCall> {
   @override
   Widget build(BuildContext context) {
     final name = widget.data.field0.field0.name();
+    final display = name.display();
     final args = name.args();
-    var i = 0;
+    final index = display.indexOf('::');
+
     return VplLargeBlock(
       onDelete: widget.onDelete,
       onDuplicate: widget.onDuplicate,
       type: .call,
-      child: switch (args.isEmpty) {
-        true => Center(child: Text('${name.display()}()')),
-        false => Column(
-          spacing: 4,
-          crossAxisAlignment: .start,
-          children: [
-            Text(name.display()),
-            for (final arg in args) ...[
-              Row(
-                children: [
-                  const Gap(32),
-                  switch (arg.contains(' ')) {
-                    true => Text(
-                      style: const .new(fontWeight: .bold),
-                      '${arg.substring(arg.indexOf(' ') + 1)}: '
-                      '${arg.substring(0, arg.indexOf(' '))} ',
-                    ),
-                    false => Text(
-                      style: const .new(fontWeight: .bold),
-                      '$arg: ',
-                    ),
-                  },
-
-                  VplBindingValue(
-                    onTap: _createVariableHandler(arg),
-                    data: _args[arg] ?? const .null_(),
+      child: Column(
+        spacing: 4,
+        mainAxisAlignment: .center,
+        crossAxisAlignment: .start,
+        children: [
+          RichText(
+            text: TextSpan(
+              style: DefaultTextStyle.of(context).style,
+              children: [
+                TextSpan(
+                  style: const .new(
+                    fontWeight: .bold,
+                    color: Colors.cNamespace1,
                   ),
-                ],
-              ),
-            ],
+                  text: display.substring(0, index),
+                ),
+                TextSpan(text: display.substring(index)),
+              ],
+            ),
+          ),
+          for (final arg in args) ...[
+            Row(
+              children: [
+                const Gap(32),
+                switch (arg.contains(' ')) {
+                  true => Text(
+                    style: const .new(color: Colors.cIdent1),
+                    '${arg.substring(arg.indexOf(' ') + 1)}: '
+                    '${arg.substring(0, arg.indexOf(' '))} ',
+                  ),
+                  false => Text(
+                    style: const .new(color: Colors.cIdent1),
+                    '$arg: ',
+                  ),
+                },
+
+                VplBindingValue(
+                  onTap: _createVariableHandler(arg),
+                  data: _args[arg] ?? const .null_(),
+                ),
+              ],
+            ),
           ],
-        ),
-      },
+        ],
+      ),
     );
   }
 }

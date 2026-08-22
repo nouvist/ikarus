@@ -36,7 +36,7 @@ class _ChatState extends State<Chat> {
           child: Row(
             spacing: 8,
             children: [
-              Expanded(child: Input(controller: .new())),
+              Expanded(child: Input(controller: _input)),
               const Button(child: Icon(FluentIcons.send_24_regular)),
             ],
           ),

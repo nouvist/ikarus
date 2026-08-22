@@ -49,7 +49,7 @@ class VplTile extends StatelessWidget {
               .assignment => Colors.cVariable1,
               .ident => Colors.cIdent1,
               .value => Colors.cValue1,
-              .call => Colors.cCall1,
+              .call => Colors.cNamespace1,
             },
             child: icon,
           ),

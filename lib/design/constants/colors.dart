@@ -4,8 +4,12 @@ abstract final class Colors {
   static const tr = Color(0x00000000);
 
   static const bg0 = Color(0xff131313);
-  static const bg1 = Color(0xff1f1f1f);
-  static const bg2 = Color(0xff3a3a3a);
+  static const bg1 = Color(0xff191919);
+  static const bg2 = Color(0xff1f1f1f);
+  static const bg3 = Color(0xff262626);
+  static const bg4 = Color(0xff2d2d2d);
+  static const bg5 = Color(0xff343434);
+  static const bg6 = Color(0xff3a3a3a);
 
   static const fg0 = Color(0xffffffff);
   static const fg1 = Color(0xffdddddd);
@@ -26,7 +30,8 @@ abstract final class Colors {
   static const cVariable0 = Color(0xff00896c);
   static const cIdent0 = Color(0xffb43d88);
   static const cValue0 = Color(0xffa84e24);
-  static const cCall0 = Color(0xff5f57ad);
+  static const cNamespace0 = Color(0xff5f57ad);
+  static const cCall0 = Colors.bg3;
 
   static const cFg1 = Color(0xffffffff);
   static const cStart1 = Color(0xffff6868);
@@ -34,5 +39,6 @@ abstract final class Colors {
   static const cVariable1 = Color(0xff00dbad);
   static const cIdent1 = Color(0xffff82d1);
   static const cValue1 = Color(0xfff96725);
-  static const cCall1 = Color(0xffa298ff);
+  static const cNamespace1 = Color(0xffa298ff);
+  static const cCall1 = Colors.bg4;
 }
