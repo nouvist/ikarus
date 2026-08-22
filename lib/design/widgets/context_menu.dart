@@ -22,8 +22,8 @@ class ContextMenu extends StatefulWidget {
 
 class _ContextMenuState extends State<ContextMenu> {
   late final _controller = widget.controller ?? OverlayPortalController();
-  late var _left = widget.position?.dx ?? 0;
-  late var _top = widget.position?.dy ?? 0;
+  late var _left = widget.position?.dx ?? -1000;
+  late var _top = widget.position?.dy ?? -1000;
 
   @pragma('vm:prefer-inline')
   double _estimateWidth() => 128;
@@ -35,16 +35,33 @@ class _ContextMenuState extends State<ContextMenu> {
   void initState() {
     super.initState();
     yieldNow(() {
-      final overlay = context.findAncestorElement<Overlay>()!.size!;
-      final height = _estimateHeight();
-      final width = _estimateWidth();
-
-      if (_left + width > overlay.width) _left -= width;
-      if (_top + height > overlay.height) _top -= height;
-      if (_left < 0) _left = 0;
-      if (_top < 0) _top -= 0;
+      _updatePosition();
       if (_controller != widget.controller) _controller.show();
     });
+  }
+
+  void _updatePosition() {
+    final overlay = context.findAncestorElement<Overlay>()!.size!;
+    final height = _estimateHeight();
+    final width = _estimateWidth();
+
+    _left = widget.position?.dx ?? 0;
+    _top = widget.position?.dy ?? 0;
+    if (_left + width > overlay.width) _left -= width;
+    if (_top + height > overlay.height) _top -= height;
+    if (_left < 0) _left = 0;
+    if (_top < 0) _top -= 0;
+  }
+
+  @override
+  void didUpdateWidget(ContextMenu oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.position != oldWidget.position) {
+      yieldNow(() {
+        _updatePosition();
+        markNeedsBuild();
+      });
+    }
   }
 
   @override

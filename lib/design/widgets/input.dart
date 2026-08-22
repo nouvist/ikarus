@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:ikarus/design.dart';
-import 'package:ikarus/extensions.dart';
 
 class Input extends StatefulWidget {
   final TextEditingController controller;
@@ -106,9 +105,7 @@ class _InputState extends State<Input>
       parentNode: _focus,
       child: _gesture.buildGestureDetector(
         child: ContextMenu(
-          position:
-              _position -
-              context.findAncestorElement<Overlay>()!.calculateWidgetOffset()!,
+          position: _position,
           menus: [
             ContextMenuItem(
               onTap: () => state.cutSelection(.toolbar),
