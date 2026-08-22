@@ -80,7 +80,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
   Future<void> _handleOpen() async {
     final file = await FilePicker.pickFile(
       type: FileType.custom,
-      allowedExtensions: ['ikp'],
+      allowedExtensions: ['ikd'],
     );
 
     if (file == null) return;
@@ -98,8 +98,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
     final buffer = RawScope(field0: _statements).toBinary();
     await FilePicker.saveFile(
       type: FileType.custom,
-      allowedExtensions: ['ikp'],
-      fileName: 'Dokumen Ikarus.ikp',
+      allowedExtensions: ['ikd'],
+      fileName: 'Dokumen Ikarus.ikd',
       bytes: buffer,
     );
   }
