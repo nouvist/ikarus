@@ -234,13 +234,13 @@ class _VplBindingCallState extends State<VplBindingCall> {
 
   VoidCallback _createVariableHandler(String arg) => () async {
     var value = null as Value?;
-    if (arg == 'Variabel') {
+    if (arg.startsWith('ref ') || arg.startsWith('out ')) {
       final inherited = VplInheritedData.of(context);
       inherited.calculateIdents();
 
       final current = switch (_args[arg]) {
         Value_Identifier it => it.field0.field0,
-        _ => ''
+        _ => '',
       };
 
       final next = await context.navigator().push(

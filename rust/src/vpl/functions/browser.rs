@@ -9,21 +9,21 @@ use crate::{
         extensions::ValueUnwrapAsIdentifier,
         functions::{Invoke, page},
         interpreter::Interpreter,
-        tokens::Value,
+        tokens::{Value, ValueNumber},
     },
 };
 
 #[frb]
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct FnCallBrowserNewPage {
-    pub variable: Value,
+    pub page: Value,
     pub url: Value,
 }
 
 #[async_trait]
 impl Invoke for FnCallBrowserNewPage {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let ident = &self.variable.unwrap_as_identifier()?;
+        let ident = &self.page.unwrap_as_identifier()?;
         let url = interpreter.evaluate_variable(&self.url)?;
         let url = url
             .as_string()
@@ -45,15 +45,35 @@ impl Invoke for FnCallBrowserNewPage {
 
 #[frb]
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct FnCallBrowserGetPageCount {
+    pub result: Value,
+}
+
+#[async_trait]
+impl Invoke for FnCallBrowserGetPageCount {
+    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
+        let ident = self.result.unwrap_as_identifier()?;
+        let singleton = BrowserSingleton::instance().inner().await;
+        let browser = singleton.browser()?;
+        let pages = browser.pages().await?;
+        let value = Value::Number(ValueNumber(pages.len() as f64));
+
+        interpreter.store_variable(ident, &value)?;
+        Ok(())
+    }
+}
+
+#[frb]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct FnCallBrowserGetPage {
-    pub variable: Value,
+    pub page: Value,
     pub index: Value,
 }
 
 #[async_trait]
 impl Invoke for FnCallBrowserGetPage {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let ident = self.variable.unwrap_as_identifier()?;
+        let ident = self.page.unwrap_as_identifier()?;
         let index = interpreter.evaluate_variable(&self.index)?;
         let index = index
             .as_number()

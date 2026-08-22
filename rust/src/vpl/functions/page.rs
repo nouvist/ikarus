@@ -22,14 +22,14 @@ pub fn symbol() -> Value {
 #[frb]
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct FnCallPageWaitForNavigation {
-    pub variable: Value,
+    pub page: Value,
     pub url: Value,
 }
 
 #[async_trait]
 impl Invoke for FnCallPageWaitForNavigation {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let ident = self.variable.unwrap_as_identifier()?;
+        let ident = self.page.unwrap_as_identifier()?;
         let page = ident.unwrap_pointer::<Page>(interpreter)?;
         page.wait_for_navigation().await?;
 

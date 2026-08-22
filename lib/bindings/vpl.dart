@@ -38,9 +38,14 @@ class _VplState extends State<Vpl> {
         _idents.add(next);
       } else if (st case RawStatement_Call it) {
         final args = it.field0.field0.toArgs();
-        final variable = args['Variabel'];
-        if (variable case Value_Identifier it) {
-          final next = it.field0.field0;
+        final identifiers = args.entries
+            .where(
+              (it) => it.key.startsWith('ref ') || it.key.startsWith('out '),
+            )
+            .map((it) => it.value)
+            .whereType<Value_Identifier>();
+        for (final identifier in identifiers) {
+          final next = identifier.field0.field0;
           if (_idents.contains(next)) continue;
           _idents.add(next);
         }

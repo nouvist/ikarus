@@ -26,14 +26,16 @@ impl_fn_call! {
 
 
     [BrowserNewPage] "Peramban::BuatTab"
-        => variable: "Variabel",
+        => page: "out Halaman",
         => url: "Url";
     [BrowserGetPage] "Peramban::AmbilTab"
-        => variable: "Variabel",
+        => page: "ref Halaman",
         => index: "Indeks";
+    [BrowserGetPageCount] "Peramban::AmbilJumlahTab"
+        => result: "out Jumlah";
 
     [PageWaitForNavigation] "Halaman::TungguNavigasi"
-        => variable: "Variabel";
+        => page: "ref Halaman";
 }
 
 #[frb(ignore)]
