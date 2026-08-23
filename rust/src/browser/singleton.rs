@@ -57,12 +57,12 @@ impl BrowserSingleton {
         })
     }
 
-    pub async fn init(&self) -> Result<(), Error> {
-        let mut lock = self.inner.write().await;
+    pub async fn initialize(&self) -> Result<(), Error> {
+        let mut inner = self.inner.write().await;
 
-        if lock.browser.is_some() {
+        if inner.browser.is_some() {
             log("[Sistem] Menarik Chrome ke depan...").await;
-            if let Some(window) = lock.window {
+            if let Some(window) = inner.window {
                 window.focus();
             }
             return Ok(());
@@ -84,10 +84,10 @@ impl BrowserSingleton {
             .ok_or_else(|| Error::BrowserFailedToLaunch)?;
         let window = Window::from_pid(pid);
 
-        lock.browser = Some(browser);
-        lock.pid = Some(pid);
-        lock.window = window;
-        drop(lock);
+        inner.browser = Some(browser);
+        inner.pid = Some(pid);
+        inner.window = window;
+        drop(inner);
         if let Some(listener) = &*self.listener.read().await {
             (listener)().await;
         }

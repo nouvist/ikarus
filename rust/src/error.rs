@@ -28,11 +28,15 @@ pub enum Error {
     #[error("url yang dimasukkan tidak valid")]
     BrowserInvalidUrl,
 
+    #[error("AI gagal diinisialisasi")]
+    AiFailedToInitialize,
+    #[error("AI gagal diinisialisasi")]
+    AiPromptError(#[from] rig::completion::PromptError),
+
     #[error("fungsi gagal dideserialisasi")]
     FunctionInvalidDeserialize,
     #[error("{0}")]
     FunctionInvalidArgument(&'static str),
     #[error("{0}")]
     Function(&'static str),
-
 }

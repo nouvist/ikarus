@@ -1,4 +1,5 @@
 import 'package:ikarus/crux.dart';
+import 'package:ikarus/crux/ai/singleton.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions/build_context.dart';
 import 'package:ikarus/helpers.dart';
@@ -68,7 +69,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       embedDimensions: int.parse(_embedDimensions.text),
     );
 
-    settings.update();
+    await settings.update();
+    await AiSingleton.instance().initialize();
+
     if (!mounted) return;
     context.navigator().pop();
   }

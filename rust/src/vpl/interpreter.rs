@@ -81,7 +81,6 @@ impl Interpreter {
     #[inline]
     #[frb(ignore)]
     pub fn store_pointer(&mut self, str: String, pointer: InterpreterPointer) {
-        self.pointer.remove_entry(&str);
         self.pointer.insert(str, pointer);
     }
 

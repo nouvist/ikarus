@@ -9,26 +9,24 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   final _input = TextEditingController();
-  final _chat = <ChatBubble>[];
+  // final _chat = <ChatBubble>[];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
-          child: switch (_chat.isEmpty) {
-            true => const Center(
-              child: Text(
-                style: .new(color: Colors.fg2),
-                'Belum ada percakapan yang kamu mulai.',
-              ),
-            ),
-            false => ListView(
-              padding: const .all(8),
-              reverse: true,
-              children: _chat,
-            ),
-          },
+          child: ListView(
+            padding: const .all(8),
+            reverse: true,
+            children: [
+              ChatBubble(type: .assistant, child: Text('halo')),
+              ChatBubble(type: .assistant, child: Text('halo')),
+              ChatName(type: .assistant),
+              ChatBubble(type: .user, child: Text('halo')),
+              ChatName(type: .user),
+            ],
+          ),
         ),
         Padding(
           // ignore: prefer_const_constructors

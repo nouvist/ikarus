@@ -9,17 +9,18 @@ pub mod frb_generated;
 pub mod macros;
 
 pub mod vpl {
+    pub mod binding;
     pub mod evaluator;
+    pub mod extensions;
     pub mod functions;
     pub mod interpreter;
     pub mod raw_tokens;
     pub mod tokens;
-    pub mod extensions;
-    pub mod binding;
 }
 
 pub mod ai {
     pub mod settings;
+    pub mod singleton;
 }
 
 pub mod browser {

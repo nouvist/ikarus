@@ -50,10 +50,6 @@ class _ConsoleState extends State<Console> implements ConsoleState {
 
     await yieldNow();
     if (!mounted) return;
-    final max = _scroll.position.maxScrollExtent;
-
-    // await Future.delayed(const .new(milliseconds: 100));
-    // _scroll.position.jumpTo(max);
   }
 
   @override

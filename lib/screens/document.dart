@@ -68,7 +68,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Future<void> _handleLaunchBrowser() async {
-    await _browser.init();
+    await _browser.initialize();
   }
 
   void _handleNew() {
