@@ -1,4 +1,3 @@
-export 'package:ikarus/crux/ai/settings.dart';
 export 'package:ikarus/crux/browser/singleton.dart';
 export 'package:ikarus/crux/frb_generated.dart' show RustLib;
 export 'package:ikarus/crux/lib.dart';

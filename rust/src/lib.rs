@@ -18,11 +18,6 @@ pub mod vpl {
     pub mod tokens;
 }
 
-pub mod ai {
-    pub mod settings;
-    pub mod singleton;
-}
-
 pub mod browser {
     pub mod singleton;
 }

@@ -113,10 +113,6 @@ class _DocumentScreenState extends State<DocumentScreen> {
           TitlebarMenu(onTap: _handleNew, child: const Text('Baru')),
           TitlebarMenu(onTap: _handleOpen, child: const Text('Buka')),
           TitlebarMenu(onTap: _handleSave, child: const Text('Simpan')),
-          TitlebarMenu(
-            onTap: () => context.navigator().push(SettingsScreen.route()),
-            child: const Text('Pengaturan'),
-          ),
         ],
       ),
       child: Column(
@@ -136,7 +132,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
       crossAxisAlignment: .stretch,
       children: [
         Expanded(child: _buildLeftLayout()),
-        Expanded(child: _buildChat(context)),
+        // Expanded(child: _buildChat(context)),
       ],
     );
   }
