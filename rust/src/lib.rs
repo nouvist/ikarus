@@ -15,6 +15,7 @@ pub mod vpl {
     pub mod raw_tokens;
     pub mod tokens;
     pub mod extensions;
+    pub mod binding;
 }
 
 pub mod ai {
@@ -47,8 +48,7 @@ pub fn home() -> &'static Utf8Path {
     home.as_path()
 }
 
-type DartLogger = Box<dyn Fn(String) -> DartFnFuture<()> + Send + Sync>;
-static LOGGER: OnceLock<DartLogger> = OnceLock::new();
+static LOGGER: OnceLock<Box<dyn Fn(String) -> DartFnFuture<()> + Send + Sync>> = OnceLock::new();
 
 #[frb]
 pub async fn register_logger(

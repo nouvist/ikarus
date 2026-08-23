@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:ikarus/crux.dart';
+import 'package:ikarus/crux/vpl/binding.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
 
@@ -30,11 +31,27 @@ class _VplState extends State<Vpl> {
   final _nesteds = <int>[];
 
   @override
+  void initState() {
+    super.initState();
+    RawScopeBinding.registerGetter(cb: _handleGet);
+    RawScopeBinding.registerSetter(cb: _handleSet);
+  }
+
+  @override
   void dispose() {
     _xScroll.dispose();
     _yScroll.dispose();
     super.dispose();
   }
+
+  Future<RawScope> _handleGet() async {
+    return RawScope(field0: widget.statements);
+  }
+
+  Future<void> _handleSet(RawScope scope) async => setState(() {
+    widget.statements.clear();
+    widget.statements.addAll(scope.field0.map((it) => it.clone()));
+  });
 
   void _calculateIdents([bool shouldUpdate = false]) {
     if (shouldUpdate) return setState(() => _calculateIdents());
