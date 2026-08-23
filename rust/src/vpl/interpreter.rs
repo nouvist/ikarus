@@ -34,7 +34,7 @@ impl InterpreterAbortController {
 impl_frb_clone!(InterpreterAbortController);
 
 #[frb(ignore)]
-type InterpreterPointer = Box<dyn Any + Send + Sync>;
+type InterpreterPointer = Arc<dyn Any + Send + Sync>;
 
 #[frb(opaque)]
 pub struct Interpreter {
@@ -82,6 +82,21 @@ impl Interpreter {
     #[frb(ignore)]
     pub fn store_pointer(&mut self, str: String, pointer: InterpreterPointer) {
         self.pointer.insert(str, pointer);
+    }
+
+    pub fn unwrap_pointer<T: 'static + Send + Sync>(
+        &mut self,
+        pointer: &Identifier,
+    ) -> Result<Arc<T>, Error> {
+        let pointer = self
+            .get_pointer(&pointer.0)
+            .ok_or_else(|| Error::Function("Variabel yang dirujuk bukan jenis yang diharapkan"))?;
+        let pointer = pointer
+            .clone()
+            .downcast::<T>()
+            .map_err(|_| Error::Function("Variabel yang dirujuk bukan jenis yang diharapkan"))?;
+
+        Ok(pointer)
     }
 
     pub async fn frb_override_run(&mut self, scope: Scope, abort: InterpreterAbortController) {

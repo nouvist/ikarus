@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
 use flutter_rust_bridge::frb;
@@ -18,6 +18,8 @@ pub mod page;
 use page::*;
 pub mod element;
 use element::*;
+pub mod csv;
+use csv::*;
 
 impl_fn_call! {
     [SystemStop] "Sistem::Berhenti";
@@ -52,6 +54,9 @@ impl_fn_call! {
     [ElementGetText] "Elemen::AmbilTeks"
         => element: "ref Elemen",
         => text: "out Teks";
+    [ElementType] "Elemen::Ketik"
+        => element: "ref Elemen",
+        => text: "Teks";
 }
 
 #[frb(ignore)]

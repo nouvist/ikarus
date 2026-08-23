@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 use flutter_rust_bridge::frb;
 use serde::{Deserialize, Serialize};
@@ -23,7 +25,7 @@ pub struct FnCallBrowserNewPage {
 #[async_trait]
 impl Invoke for FnCallBrowserNewPage {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let ident = &self.page.unwrap_as_identifier()?;
+        let pointer = &self.page.unwrap_as_identifier()?;
         let url = interpreter.evaluate_variable(&self.url)?;
         let url = url
             .as_string()
@@ -36,8 +38,8 @@ impl Invoke for FnCallBrowserNewPage {
             .await
             .map_err(|_| Error::BrowserInvalidUrl)?;
 
-        interpreter.store_variable(ident, &page::symbol())?;
-        interpreter.store_pointer(ident.0.clone(), Box::new(page));
+        interpreter.store_variable(pointer, &page::symbol())?;
+        interpreter.store_pointer(pointer.0.clone(), Arc::new(page));
 
         Ok(())
     }
@@ -52,13 +54,13 @@ pub struct FnCallBrowserGetPageCount {
 #[async_trait]
 impl Invoke for FnCallBrowserGetPageCount {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let ident = self.result.unwrap_as_identifier()?;
+        let result = self.result.unwrap_as_identifier()?;
         let singleton = BrowserSingleton::instance().inner().await;
         let browser = singleton.browser()?;
         let pages = browser.pages().await?;
         let value = Value::Number(ValueNumber(pages.len() as f64));
 
-        interpreter.store_variable(ident, &value)?;
+        interpreter.store_variable(result, &value)?;
         Ok(())
     }
 }
@@ -89,7 +91,7 @@ impl Invoke for FnCallBrowserGetPage {
         };
 
         interpreter.store_variable(ident, &page::symbol())?;
-        interpreter.store_pointer(ident.0.clone(), Box::new(page));
+        interpreter.store_pointer(ident.0.clone(), Arc::new(page));
 
         Ok(())
     }
