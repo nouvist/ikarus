@@ -4,6 +4,8 @@ use camino::{Utf8Path, Utf8PathBuf};
 use flutter_rust_bridge::{DartFnFuture, frb};
 use tokio::spawn;
 
+use crate::mcp::server::McpServer;
+
 pub mod frb_generated;
 
 pub mod macros;
@@ -20,6 +22,10 @@ pub mod vpl {
 
 pub mod browser {
     pub mod singleton;
+}
+
+pub mod mcp {
+    pub mod server;
 }
 
 pub mod win32 {
@@ -64,4 +70,5 @@ pub async fn log(str: impl AsRef<str>) {
 pub async fn init_app() {
     _ = home();
     flutter_rust_bridge::setup_default_user_utils();
+    McpServer::serve();
 }

@@ -1,4 +1,7 @@
+use std::borrow::Cow;
+
 use flutter_rust_bridge::frb;
+use rmcp::{ErrorData, model::ErrorCode};
 use thiserror::Error;
 
 #[frb(opaque)]
@@ -8,10 +11,12 @@ pub enum Error {
     IoError(#[from] tokio::io::Error),
     #[error("gagal berkomunikasi dengan peramban")]
     CdpError(#[from] chromiumoxide::error::CdpError),
+    #[error("data gagal diserialisasi ke json")]
+    SerdeJsonError(#[from] serde_json::Error),
 
-    #[error("gagal menyerialisasi data")]
+    #[error("data gagal diserialisasi")]
     SerializeError,
-    #[error("gagal mendeserialisasi data")]
+    #[error("data gagal dideserialisasi")]
     DeserializeError,
     #[error("lingkup tidak memiliki pembuka/penutup yang valid")]
     VplInvalidNested,
@@ -34,4 +39,14 @@ pub enum Error {
     FunctionInvalidArgument(&'static str),
     #[error("{0}")]
     Function(&'static str),
+}
+
+impl From<Error> for rmcp::ErrorData {
+    fn from(value: Error) -> Self {
+        ErrorData {
+            code: ErrorCode::default(),
+            message: Cow::Owned(format!("{value}")),
+            data: None,
+        }
+    }
 }

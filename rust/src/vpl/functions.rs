@@ -2,6 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
 use flutter_rust_bridge::frb;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{

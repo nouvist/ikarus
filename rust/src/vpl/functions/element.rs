@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use chromiumoxide::Element;
 use flutter_rust_bridge::frb;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -20,7 +21,7 @@ pub fn symbol() -> Value {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetOuterHtml {
     pub element: Value,
     pub html: Value,
@@ -47,7 +48,7 @@ impl Invoke for FnCallElementGetOuterHtml {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetInnerHtml {
     pub element: Value,
     pub html: Value,
@@ -74,7 +75,7 @@ impl Invoke for FnCallElementGetInnerHtml {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetText {
     pub element: Value,
     pub text: Value,
@@ -101,7 +102,7 @@ impl Invoke for FnCallElementGetText {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementType {
     pub element: Value,
     pub text: Value,

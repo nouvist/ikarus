@@ -125,17 +125,17 @@ impl BrowserSingleton {
 
     #[inline]
     pub async fn is_running(&self) -> bool {
-        self.inner().await.is_running().await
+        self.lock().await.is_running().await
     }
 
     #[inline]
     pub async fn pid(&self) -> Option<u32> {
-        self.inner().await.pid().await
+        self.lock().await.pid().await
     }
 
     #[inline]
     #[frb(ignore)]
-    pub async fn inner(&self) -> RwLockReadGuard<'_, BrowserSingletonInner> {
+    pub async fn lock(&self) -> RwLockReadGuard<'_, BrowserSingletonInner> {
         self.inner.read().await
     }
 }

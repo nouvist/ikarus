@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use flutter_rust_bridge::frb;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -16,7 +17,7 @@ use crate::{
 };
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallBrowserNewPage {
     pub page: Value,
     pub url: Value,
@@ -31,7 +32,7 @@ impl Invoke for FnCallBrowserNewPage {
             .as_string()
             .ok_or_else(|| Error::FunctionInvalidArgument("Url harus berupa string"))?;
 
-        let singleton = BrowserSingleton::instance().inner().await;
+        let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
         let page = browser
             .new_page(&url.0)
@@ -46,7 +47,7 @@ impl Invoke for FnCallBrowserNewPage {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallBrowserGetPageCount {
     pub result: Value,
 }
@@ -55,7 +56,7 @@ pub struct FnCallBrowserGetPageCount {
 impl Invoke for FnCallBrowserGetPageCount {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
         let result = self.result.unwrap_as_identifier()?;
-        let singleton = BrowserSingleton::instance().inner().await;
+        let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
         let pages = browser.pages().await?;
         let value = Value::Number(ValueNumber(pages.len() as f64));
@@ -66,7 +67,7 @@ impl Invoke for FnCallBrowserGetPageCount {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallBrowserGetPage {
     pub page: Value,
     pub index: Value,
@@ -82,7 +83,7 @@ impl Invoke for FnCallBrowserGetPage {
             .ok_or_else(|| Error::FunctionInvalidArgument("Url harus berupa string"))?;
         let index = index.0 as usize;
 
-        let singleton = BrowserSingleton::instance().inner().await;
+        let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
         let pages = browser.pages().await?;
         let Some(page) = pages.get(index).map(|it| it.clone()) else {

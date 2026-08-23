@@ -3,6 +3,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use chromiumoxide::Page;
 use flutter_rust_bridge::frb;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -22,7 +23,7 @@ pub fn symbol() -> Value {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageWaitForNavigation {
     pub page: Value,
     pub url: Value,
@@ -40,7 +41,7 @@ impl Invoke for FnCallPageWaitForNavigation {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageFindElement {
     pub page: Value,
     pub element: Value,

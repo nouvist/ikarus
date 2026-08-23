@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use async_trait::async_trait;
 use flutter_rust_bridge::frb;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 
@@ -12,7 +13,7 @@ use crate::{
 };
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemPrint {
     pub content: Value,
 }
@@ -40,7 +41,7 @@ impl Invoke for FnCallSystemPrint {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemSleep {
     pub ms: Value,
 }
@@ -62,7 +63,7 @@ impl Invoke for FnCallSystemSleep {
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemStop {}
 
 #[async_trait]

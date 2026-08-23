@@ -1,4 +1,5 @@
 use flutter_rust_bridge::frb;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -11,7 +12,7 @@ use crate::{
 };
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawScope(#[frb(non_final)] pub Vec<RawStatement>);
 impl_frb_clone!(RawScope);
 
@@ -42,7 +43,7 @@ impl RawScope {
 }
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawIf {
     #[frb(non_final)]
     pub condition: Value,
@@ -50,7 +51,7 @@ pub struct RawIf {
 impl_frb_clone!(RawIf);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawFor {
     #[frb(non_final)]
     pub condition: Value,
@@ -58,7 +59,7 @@ pub struct RawFor {
 impl_frb_clone!(RawFor);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub enum RawStatement {
     End,
     If(RawIf),
@@ -69,7 +70,7 @@ pub enum RawStatement {
 impl_frb_clone!(RawStatement);
 
 #[frb]
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub enum RawStatementVariant {
     End,
     If,

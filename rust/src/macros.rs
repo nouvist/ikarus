@@ -14,13 +14,13 @@ macro_rules! impl_frb_clone {
 macro_rules! impl_fn_call {
     ($([$type:ident] $name:expr $( => $arg_type:ident : $arg_name:expr),* $(,)?);+ $(;)?) => {
         #[frb]
-        #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+        #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
         pub enum FnName {
             $($type,)+
         }
 
         #[frb]
-        #[derive(Debug, Clone, Serialize, Deserialize)]
+        #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
         pub enum FnCall {
             $($type(paste::paste!([<FnCall $type>])),)+
         }
