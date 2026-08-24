@@ -43,7 +43,6 @@ impl Invoke for FnCallElementGetOuterHtml {
                 None => Value::Null,
             },
         )?;
-
         Ok(())
     }
 }
@@ -70,7 +69,6 @@ impl Invoke for FnCallElementGetInnerHtml {
                 None => Value::Null,
             },
         )?;
-
         Ok(())
     }
 }
@@ -97,7 +95,6 @@ impl Invoke for FnCallElementGetText {
                 None => Value::Null,
             },
         )?;
-
         Ok(())
     }
 }
@@ -120,7 +117,22 @@ impl Invoke for FnCallElementType {
             .ok_or_function_invalid_argument("Teks haruslah berupa string")?;
 
         pointer.type_str(&text.0).await?;
+        Ok(())
+    }
+}
 
+#[frb]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct FnCallElementClick {
+    pub element: Value,
+}
+
+#[async_trait]
+impl Invoke for FnCallElementClick {
+    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
+        let pointer = self.element.unwrap_as_identifier()?;
+        let pointer = interpreter.unwrap_pointer::<Element>(pointer)?;
+        pointer.click().await?;
         Ok(())
     }
 }

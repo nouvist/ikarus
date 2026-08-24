@@ -58,6 +58,8 @@ impl_fn_call! {
     [ElementType] "Elemen::Ketik"
         => element: "ref Elemen",
         => text: "Teks";
+    [ElementClick] "Elemen::Klik"
+        => element: "ref Elemen";
 }
 
 #[frb(ignore)]
