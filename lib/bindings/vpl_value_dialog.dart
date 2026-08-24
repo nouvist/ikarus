@@ -133,7 +133,6 @@ class _VplValueDialogState extends State<VplValueDialog> {
             constraints: const .new(
               maxWidth: 400,
               minHeight: 352,
-              maxHeight: 600,
             ),
             child: Container(
               clipBehavior: .antiAlias,
@@ -301,46 +300,36 @@ class _VplValueDialogState extends State<VplValueDialog> {
         children: [
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .add;
-              }),
+              onTap: () => setState(() => data.field0.operation = .add),
               active: data.field0.operation == .add,
               child: const Text('+'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .subtract;
-              }),
+              onTap: () => setState(() => data.field0.operation = .subtract),
               active: data.field0.operation == .subtract,
               child: const Text('-'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .multiply;
-              }),
+              onTap: () => setState(() => data.field0.operation = .multiply),
               active: data.field0.operation == .multiply,
               child: const Text('*'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .divide;
-              }),
+              onTap: () => setState(() => data.field0.operation = .divide),
               active: data.field0.operation == .divide,
               child: const Text('/'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .reminder;
-              }),
-              active: data.field0.operation == .reminder,
+              onTap: () => setState(() => data.field0.operation = .modulo),
+              active: data.field0.operation == .modulo,
               child: const Text('%'),
             ),
           ),
@@ -352,54 +341,55 @@ class _VplValueDialogState extends State<VplValueDialog> {
         children: [
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .boolAnd;
-              }),
+              onTap: () => setState(() => data.field0.operation = .boolAnd),
               active: data.field0.operation == .boolAnd,
               child: const Text('&&'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .boolOr;
-              }),
+              onTap: () => setState(() => data.field0.operation = .boolOr),
               active: data.field0.operation == .boolOr,
               child: const Text('||'),
             ),
           ),
+        ],
+      ),
+      const Gap(8),
+      Row(
+        spacing: 8,
+        children: [
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .boolEq;
-              }),
+              onTap: () => setState(() => data.field0.operation = .boolEq),
               active: data.field0.operation == .boolEq,
               child: const Text('=='),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .boolLt;
-              }),
+              onTap: () => setState(() => data.field0.operation = .boolNe),
+              active: data.field0.operation == .boolNe,
+              child: const Text('!='),
+            ),
+          ),
+          Expanded(
+            child: ToggleButton(
+              onTap: () => setState(() => data.field0.operation = .boolLt),
               active: data.field0.operation == .boolLt,
               child: const Text('<'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .boolLe;
-              }),
+              onTap: () => setState(() => data.field0.operation = .boolLe),
               active: data.field0.operation == .boolLe,
               child: const Text('<='),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() {
-                data.field0.operation = .boolGt;
-              }),
+              onTap: () => setState(() => data.field0.operation = .boolGt),
               active: data.field0.operation == .boolGt,
               child: const Text('>'),
             ),

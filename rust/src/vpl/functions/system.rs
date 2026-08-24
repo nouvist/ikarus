@@ -23,19 +23,7 @@ pub struct FnCallSystemPrint {
 impl Invoke for FnCallSystemPrint {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
         let evaluated = interpreter.evaluate_variable(&self.content)?;
-        let display = match evaluated {
-            Value::Null => "null".to_string(),
-            Value::String(it) => it.0.clone(),
-            Value::Number(it) => it.0.to_string(),
-            Value::Boolean(it) => match it.0 {
-                true => "Benar".to_string(),
-                false => "Salah".to_string(),
-            },
-            Value::Object(it) => it.symbol,
-            _ => unreachable!(),
-        };
-
-        log(display).await;
+        log(evaluated.display()).await;
         sleep(Duration::from_millis(5)).await;
         Ok(())
     }

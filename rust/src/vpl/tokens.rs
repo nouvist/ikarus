@@ -16,15 +16,36 @@ pub type ValueIdentifier = Identifier;
 pub struct ValueString(#[frb(non_final)] pub String);
 impl_frb_clone!(ValueString);
 
+impl From<String> for ValueString {
+    #[inline]
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct ValueNumber(#[frb(non_final)] pub f64);
 impl_frb_clone!(ValueNumber);
 
+impl From<f64> for ValueNumber {
+    #[inline]
+    fn from(value: f64) -> Self {
+        Self(value)
+    }
+}
+
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct ValueBoolean(#[frb(non_final)] pub bool);
 impl_frb_clone!(ValueBoolean);
+
+impl From<bool> for ValueBoolean {
+    #[inline]
+    fn from(value: bool) -> Self {
+        Self(value)
+    }
+}
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
@@ -33,12 +54,13 @@ pub enum ValueComputedOperation {
     Subtract,
     Multiply,
     Divide,
-    Reminder,
+    Modulo,
 
     BoolAnd,
     BoolOr,
 
     BoolEq,
+    BoolNe,
     BoolLt,
     BoolLe,
     BoolGt,
@@ -78,6 +100,39 @@ pub enum Value {
 }
 impl_frb_clone!(Value);
 
+impl Value {
+    pub fn display(&self) -> String {
+        match self {
+            Value::Null => "Null".to_string(),
+            Value::Identifier(it) => format!("[Penunjuk {}]", it.0),
+            Value::String(it) => it.0.clone(),
+            Value::Number(it) => it.0.to_string(),
+            Value::Boolean(it) => match it.0 {
+                true => "Benar".to_string(),
+                false => "Salah".to_string(),
+            },
+            Value::Object(it) => it.symbol.clone(),
+            Value::Computed(_) => "[Komputasi]".to_string(),
+        }
+    }
+
+    pub fn boolean(&self) -> bool {
+        match self {
+            Value::Null => false,
+            Value::Identifier(_) => true,
+            Value::String(it) => match it.0.to_lowercase() {
+                it if it == "benar" => true,
+                it if it == "true" => true,
+                _ => false,
+            },
+            Value::Number(it) => it.0 != 0.0,
+            Value::Boolean(it) => it.0,
+            Value::Object(_) => true,
+            Value::Computed(_) => true,
+        }
+    }
+}
+
 macro_rules! impl_as_value {
     ($($identifier:ident => $type:ty),+$(,)?) => {
         #[frb(ignore)]
@@ -101,7 +156,7 @@ macro_rules! impl_is_value {
             paste::paste! {
                 $(pub fn [<is_ $identifier>](&self) -> bool {
                     match self {
-                        Value::$type(it) => true,
+                        Value::$type(_) => true,
                         _ => false,
                     }
                 })+

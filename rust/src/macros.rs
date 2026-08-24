@@ -1,4 +1,21 @@
 #[macro_export]
+macro_rules! op {
+    ($op:ident) => {
+        crate::vpl::tokens::Value::ValueComputedOperation::$op
+    };
+}
+
+#[macro_export]
+macro_rules! val {
+    ($val:ident $(($($name:tt)+))?) => {
+        crate::vpl::tokens::Value::$val$(($($name)+))?
+    };
+    (ref $val:ident $(($($name:tt)+))?) => { paste::paste! {
+        crate::vpl::tokens::Value::$val$((crate::vpl::tokens::[<Value$val>]($($name)+)))?
+    } };
+}
+
+#[macro_export]
 macro_rules! impl_frb_clone {
     ($type:ty) => {
         impl $type {

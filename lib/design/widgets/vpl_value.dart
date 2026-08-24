@@ -122,6 +122,7 @@ enum VplInnerOperationType {
   boolAnd,
   boolOr,
   boolEq,
+  boolNe,
   boolLt,
   boolLe,
   boolGt,
