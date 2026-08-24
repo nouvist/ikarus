@@ -1,8 +1,7 @@
 use std::{env, sync::OnceLock};
 
 use camino::{Utf8Path, Utf8PathBuf};
-use flutter_rust_bridge::{DartFnFuture, frb};
-use tokio::spawn;
+use flutter_rust_bridge::frb;
 
 use crate::mcp::server::McpServer;
 
@@ -33,6 +32,31 @@ pub mod win32 {
 }
 
 pub mod error;
+pub mod error_helper;
+
+pub use logger::log;
+pub mod logger {
+    use std::sync::OnceLock;
+
+    use flutter_rust_bridge::{DartFnFuture, frb};
+
+    static LOGGER: OnceLock<Box<dyn Fn(String) -> DartFnFuture<()> + Send + Sync>> =
+        OnceLock::new();
+
+    #[frb]
+    pub async fn register_logger(
+        callback: impl Fn(String) -> DartFnFuture<()> + Send + Sync + 'static,
+    ) {
+        _ = LOGGER.set(Box::new(callback));
+    }
+
+    pub async fn log(str: impl AsRef<str>) {
+        let str = str.as_ref().to_owned();
+        if let Some(logger) = LOGGER.get() {
+            tokio::spawn((logger)(str));
+        }
+    }
+}
 
 #[frb]
 pub fn home() -> &'static Utf8Path {
@@ -48,22 +72,6 @@ pub fn home() -> &'static Utf8Path {
     });
 
     home.as_path()
-}
-
-static LOGGER: OnceLock<Box<dyn Fn(String) -> DartFnFuture<()> + Send + Sync>> = OnceLock::new();
-
-#[frb]
-pub async fn register_logger(
-    callback: impl Fn(String) -> DartFnFuture<()> + Send + Sync + 'static,
-) {
-    _ = LOGGER.set(Box::new(callback));
-}
-
-pub async fn log(str: impl AsRef<str>) {
-    let str = str.as_ref().to_owned();
-    if let Some(logger) = LOGGER.get() {
-        spawn((logger)(str));
-    }
 }
 
 #[frb(init)]

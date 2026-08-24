@@ -4,9 +4,7 @@ use tokio::task::yield_now;
 use tokio_util::sync::CancellationToken;
 
 use crate::{
-    error::Error,
-    impl_frb_clone, log,
-    vpl::{
+    error::Error, error_helper::{MapError, OkOrError}, impl_frb_clone, log, vpl::{
         evaluator::Evaluator,
         functions::Invoke,
         tokens::{Identifier, Scope, Value, ValueBoolean},
@@ -90,11 +88,11 @@ impl Interpreter {
     ) -> Result<Arc<T>, Error> {
         let pointer = self
             .get_pointer(&pointer.0)
-            .ok_or_else(|| Error::Function("Variabel yang dirujuk bukan jenis yang diharapkan"))?;
+            .ok_or_function_invalid_argument("Variabel yang dirujuk bukan jenis yang diharapkan")?;
         let pointer = pointer
             .clone()
             .downcast::<T>()
-            .map_err(|_| Error::Function("Variabel yang dirujuk bukan jenis yang diharapkan"))?;
+            .map_function_invalid_argument("Variabel yang dirujuk bukan jenis yang diharapkan")?;
 
         Ok(pointer)
     }

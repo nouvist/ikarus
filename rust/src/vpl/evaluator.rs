@@ -4,6 +4,7 @@ use flutter_rust_bridge::frb;
 
 use crate::{
     error::Error,
+    error_helper::OkOrError,
     vpl::tokens::{
         Identifier, Value, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString,
     },
@@ -29,15 +30,14 @@ impl Evaluator {
                     .jar
                     .get(&ident.0)
                     .cloned()
-                    .ok_or_else(|| Error::EvaluatorNoVariable)?;
+                    .ok_or_evaluator_no_variable()?;
                 Ok(resolved)
             }
             Value::Computed(it) => {
                 let left = self.evaluate(&it.left)?;
                 let right = self.evaluate(&it.right)?;
 
-                Evaluator::apply(&it.operation, &left, &right)
-                    .ok_or_else(|| Error::EvaluatorInvalidVariable)
+                Evaluator::apply(&it.operation, &left, &right).ok_or_evaluator_invalid_variable()
             }
             it => Ok(it.clone()),
         }

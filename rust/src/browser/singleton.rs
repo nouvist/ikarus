@@ -4,7 +4,12 @@ use std::sync::{Arc, OnceLock};
 use tokio::sync::{RwLock, RwLockReadGuard};
 use tokio_stream::StreamExt;
 
-use crate::{error::Error, log, win32::window::Window};
+use crate::{
+    error::Error,
+    error_helper::{MapError, OkOrError},
+    log,
+    win32::window::Window,
+};
 
 #[frb(ignore)]
 pub struct BrowserSingletonInner {
@@ -23,9 +28,7 @@ pub struct BrowserSingleton {
 impl BrowserSingletonInner {
     #[inline]
     pub fn browser(&self) -> Result<&Browser, Error> {
-        self.browser
-            .as_ref()
-            .ok_or_else(|| Error::BrowserNotRunning)
+        self.browser.as_ref().ok_or_browser_not_running()
     }
 
     #[inline]
@@ -73,15 +76,15 @@ impl BrowserSingleton {
             .with_head()
             .viewport(None)
             .build()
-            .map_err(|_| Error::BrowserFailedToLaunch)?;
+            .map_browser_failed_to_launch()?;
         let (mut browser, mut handler) = Browser::launch(config)
             .await
-            .map_err(|_| Error::BrowserFailedToLaunch)?;
+            .map_browser_failed_to_launch()?;
         let pid = browser
             .get_mut_child()
             .map(|it| it.inner.id())
             .flatten()
-            .ok_or_else(|| Error::BrowserFailedToLaunch)?;
+            .ok_or_browser_failed_to_launch()?;
         let window = Window::from_pid(pid);
 
         inner.browser = Some(browser);

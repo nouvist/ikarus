@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     browser::singleton::BrowserSingleton,
     error::Error,
+    error_helper::{MapError, OkOrError},
     vpl::{
         extensions::ValueUnwrapAsIdentifier,
         functions::{Invoke, page},
@@ -30,14 +31,11 @@ impl Invoke for FnCallBrowserNewPage {
         let url = interpreter.evaluate_variable(&self.url)?;
         let url = url
             .as_string()
-            .ok_or_else(|| Error::FunctionInvalidArgument("Url harus berupa string"))?;
+            .ok_or_function_invalid_argument("Url harus berupa string")?;
 
         let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
-        let page = browser
-            .new_page(&url.0)
-            .await
-            .map_err(|_| Error::BrowserInvalidUrl)?;
+        let page = browser.new_page(&url.0).await.map_browser_invalid_url()?;
 
         interpreter.store_variable(pointer, &page::symbol())?;
         interpreter.store_pointer(pointer.0.clone(), Arc::new(page));
@@ -80,7 +78,7 @@ impl Invoke for FnCallBrowserGetPage {
         let index = interpreter.evaluate_variable(&self.index)?;
         let index = index
             .as_number()
-            .ok_or_else(|| Error::FunctionInvalidArgument("Url harus berupa string"))?;
+            .ok_or_function_invalid_argument("Url harus berupa string")?;
         let index = index.0 as usize;
 
         let singleton = BrowserSingleton::instance().lock().await;

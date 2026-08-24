@@ -4,8 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
-import 'package:ikarus/extensions.dart';
-import 'package:ikarus/screens.dart';
 
 class DocumentScreen extends StatefulWidget {
   const DocumentScreen({super.key});

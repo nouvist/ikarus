@@ -110,3 +110,70 @@ macro_rules! impl_fn_call {
         }
     };
 }
+
+#[macro_export]
+macro_rules! impl_error_helper {
+    ($type:ty where $($name:ident => $subtype:ident $(($arg:ty))?),+ $(,)?) => {
+        pub trait MapError<T> {
+            $($crate::impl_error_helper!(@map_trait $name, $type $(, $arg)?);)+
+        }
+
+        impl<T, E> MapError<T> for Result<T, E> {
+            $($crate::impl_error_helper!(@map_impl $name, $type, $subtype $(, $arg)?);)+
+        }
+
+        pub trait OkOrError<T> {
+            $($crate::impl_error_helper!(@ok_or_trait $name, $type $(, $arg)?);)+
+        }
+
+        impl<T> OkOrError<T> for Option<T> {
+            $($crate::impl_error_helper!(@ok_or_impl $name, $type, $subtype $(, $arg)?);)+
+        }
+    };
+
+    (@map_trait $name:ident, $type:ty) => {
+        paste::paste! { fn [<map_ $name>](self) -> Result<T, $type>; }
+    };
+    (@map_trait $name:ident, $type:ty, $arg:ty) => {
+        paste::paste! { fn [<map_ $name>](self, msg: $arg) -> Result<T, $type>; }
+    };
+
+    (@ok_or_trait $name:ident, $type:ty) => {
+        paste::paste! { fn [<ok_or_ $name>](self) -> Result<T, $type>; }
+    };
+    (@ok_or_trait $name:ident, $type:ty, $arg:ty) => {
+        paste::paste! { fn [<ok_or_ $name>](self, msg: $arg) -> Result<T, $type>; }
+    };
+
+    (@map_impl $name:ident, $type:ty, $subtype:ident) => {
+        paste::paste! {
+            fn [<map_ $name>](self) -> Result<T, $type> {
+                self.map_err(|_| $type::$subtype)
+            }
+        }
+    };
+    (@map_impl $name:ident, $type:ty, $subtype:ident, $arg:ty) => {
+        paste::paste! {
+            fn [<map_ $name>](self, msg: $arg) -> Result<T, $type> {
+                self.map_err(|_| $type::$subtype(msg))
+            }
+        }
+    };
+
+    (@ok_or_impl $name:ident, $type:ty, $subtype:ident) => {
+        paste::paste! {
+            #[inline]
+            fn [<ok_or_ $name>](self) -> Result<T, $type> {
+                self.ok_or_else(|| $type::$subtype)
+            }
+        }
+    };
+    (@ok_or_impl $name:ident, $type:ty, $subtype:ident, $arg:ty) => {
+        paste::paste! {
+            #[inline]
+            fn [<ok_or_ $name>](self, msg: $arg) -> Result<T, $type> {
+                self.ok_or_else(|| $type::$subtype(msg))
+            }
+        }
+    };
+}

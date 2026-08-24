@@ -10,7 +10,6 @@ use rmcp::{
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use windows::Win32::UI::WindowsAndMessaging::CURSOR_CREATION_SCALING_DEFAULT;
 
 use crate::{
     error::Error,

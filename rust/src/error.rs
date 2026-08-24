@@ -18,6 +18,7 @@ pub enum Error {
     SerializeError,
     #[error("data gagal dideserialisasi")]
     DeserializeError,
+
     #[error("lingkup tidak memiliki pembuka/penutup yang valid")]
     VplInvalidNested,
 
@@ -38,7 +39,7 @@ pub enum Error {
     #[error("{0}")]
     FunctionInvalidArgument(&'static str),
     #[error("{0}")]
-    Function(&'static str),
+    FunctionError(&'static str),
 }
 
 impl From<Error> for rmcp::ErrorData {

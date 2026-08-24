@@ -2,6 +2,7 @@ use flutter_rust_bridge::frb;
 
 use crate::{
     error::Error,
+    error_helper::OkOrError,
     vpl::{
         interpreter::Interpreter,
         tokens::{Identifier, Value},
@@ -17,7 +18,7 @@ pub trait ValueUnwrapAsIdentifier {
 impl ValueUnwrapAsIdentifier for Value {
     fn unwrap_as_identifier(&self) -> Result<&Identifier, Error> {
         self.as_identifier()
-            .ok_or_else(|| Error::FunctionInvalidArgument("Variabel harus berupa rujukan"))
+            .ok_or_function_invalid_argument("Variabel harus berupa rujukan")
     }
 }
 

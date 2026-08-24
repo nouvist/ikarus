@@ -7,8 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error::Error,
-    vpl::{
+    error::Error, error_helper::OkOrError, vpl::{
         extensions::ValueUnwrapAsIdentifier,
         functions::{Invoke, element},
         interpreter::Interpreter,
@@ -57,7 +56,7 @@ impl Invoke for FnCallPageFindElement {
         let selector = self
             .selector
             .as_string()
-            .ok_or_else(|| Error::FunctionInvalidArgument("Pemilah harus berupa string"))?;
+            .ok_or_function_invalid_argument("Pemilah harus berupa string")?;
 
         let element = pointer.find_element(selector.0.to_owned()).await.ok();
         println!("{element:?}");

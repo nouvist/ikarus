@@ -3,7 +3,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error::Error, impl_frb_clone, log, vpl::{
+    error::Error,
+    error_helper::MapError,
+    impl_frb_clone, log,
+    vpl::{
         functions::FnName,
         tokens::{
             Scope, Statement, StatementCall, StatementFor, StatementIf, StatementVariable, Value,
@@ -19,25 +22,25 @@ impl_frb_clone!(RawScope);
 impl RawScope {
     #[frb(sync)]
     pub fn from_binary(binary: Vec<u8>) -> Result<Self, Error> {
-        let result = postcard::from_bytes::<Self>(&binary).map_err(|_| Error::DeserializeError)?;
+        let result = postcard::from_bytes::<Self>(&binary).map_deserialize_error()?;
         Ok(result)
     }
 
     #[frb(sync)]
     pub fn from_json(json: String) -> Result<Self, Error> {
-        let result = serde_json::from_str(&json).map_err(|_| Error::DeserializeError)?;
+        let result = serde_json::from_str(&json).map_deserialize_error()?;
         Ok(result)
     }
 
     #[frb(sync)]
     pub fn to_binary(&self) -> Result<Vec<u8>, Error> {
-        let result = postcard::to_allocvec(self).map_err(|_| Error::SerializeError)?;
+        let result = postcard::to_allocvec(self).map_deserialize_error()?;
         Ok(result)
     }
 
     #[frb(sync)]
     pub fn to_json(&self) -> Result<String, Error> {
-        let result = serde_json::to_string(self).map_err(|_| Error::SerializeError)?;
+        let result = serde_json::to_string(self).map_deserialize_error()?;
         Ok(result)
     }
 }

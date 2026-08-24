@@ -19,7 +19,7 @@ class _ChatState extends State<Chat> {
           child: ListView(
             padding: const .all(8),
             reverse: true,
-            children: [
+            children: const [
               ChatBubble(type: .assistant, child: Text('halo')),
               ChatBubble(type: .assistant, child: Text('halo')),
               ChatName(type: .assistant),

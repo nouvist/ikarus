@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     error::Error,
+    error_helper::OkOrError,
     vpl::{
         extensions::ValueUnwrapAsIdentifier,
         functions::Invoke,
@@ -116,7 +117,7 @@ impl Invoke for FnCallElementType {
         let text = interpreter.evaluate_variable(&self.text)?;
         let text = text
             .as_string()
-            .ok_or_else(|| Error::FunctionInvalidArgument("Teks haruslah berupa string"))?;
+            .ok_or_function_invalid_argument("Teks haruslah berupa string")?;
 
         pointer.type_str(&text.0).await?;
 

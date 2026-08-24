@@ -8,6 +8,7 @@ use tokio::time::sleep;
 
 use crate::{
     error::Error,
+    error_helper::OkOrError,
     log,
     vpl::{functions::Invoke, interpreter::Interpreter, tokens::Value},
 };
@@ -52,7 +53,7 @@ impl Invoke for FnCallSystemSleep {
         let ms = interpreter.evaluate_variable(&self.ms)?;
         let ms = ms
             .as_number()
-            .ok_or_else(|| Error::FunctionInvalidArgument("Milidetik harus berupa angka"))?;
+            .ok_or_function_invalid_argument("Milidetik harus berupa angka")?;
 
         let ms = ms.0 as u64;
         let ms = Duration::from_millis(ms);
