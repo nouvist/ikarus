@@ -1,13 +1,21 @@
 use chromiumoxide::{Browser, BrowserConfig};
 use flutter_rust_bridge::{DartFnFuture, frb};
-use std::sync::{Arc, OnceLock};
-use tokio::sync::{RwLock, RwLockReadGuard};
+use std::{
+    sync::{Arc, OnceLock},
+    time::Duration,
+};
+use tokio::{
+    sync::{RwLock, RwLockReadGuard},
+    task::yield_now,
+    time::sleep,
+};
 use tokio_stream::StreamExt;
 
 use crate::{
     error::Error,
     error_helper::{MapError, OkOrError},
     log,
+    template::template,
     win32::window::Window,
 };
 
@@ -91,11 +99,12 @@ impl BrowserSingleton {
         inner.pid = Some(pid);
         inner.window = window;
         drop(inner);
+
         if let Some(listener) = &*self.listener.read().await {
             (listener)().await;
         }
 
-        let rw = self.inner.clone();
+        let inner = self.inner.clone();
         let listener = self.listener.clone();
         tokio::spawn(async move {
             while let Some(h) = handler.next().await {
@@ -105,7 +114,7 @@ impl BrowserSingleton {
             }
 
             log("[Sistem] Chrome ditutup...").await;
-            let mut lock = rw.write().await;
+            let mut lock = inner.write().await;
             lock.browser = None;
             lock.pid = None;
             lock.window = None;
@@ -114,6 +123,25 @@ impl BrowserSingleton {
                 (listener)().await;
             }
         });
+
+        yield_now().await;
+        let inner = self.inner.read().await;
+        let browser = inner.browser.as_ref().unwrap();
+        loop {
+            let pages = browser.pages().await?;
+            let page = pages.first();
+            match page {
+                Some(page) => {
+                    page.goto("about:blank").await?;
+                    page.set_content(template()).await?;
+                    break;
+                }
+                None => {
+                    sleep(Duration::from_millis(100)).await;
+                    continue;
+                }
+            }
+        }
 
         Ok(())
     }

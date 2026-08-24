@@ -215,7 +215,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
             child: const Icon(FluentIcons.stop_24_regular),
           ),
           const Spacer(),
-          if (_pid case final it?) Text('Pid: $it'),
+          if (_pid case final it?) Text('PID: $it'),
           const Gap(8),
           // _ToolbarButton(
           //   enabled: _isRunning,

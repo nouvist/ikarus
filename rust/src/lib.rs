@@ -31,6 +31,8 @@ pub mod win32 {
     pub mod window;
 }
 
+pub mod template;
+
 pub mod error;
 pub mod error_helper;
 
