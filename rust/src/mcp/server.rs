@@ -12,7 +12,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error::Error,
+    error_helper::MapKnownError,
     vpl::{
         binding::RawScopeBinding,
         raw_tokens::{RawScope, RawStatement},
@@ -27,26 +27,16 @@ pub struct McpServer {}
 impl McpServer {
     #[tool(description = "Get current statements")]
     async fn get_statements(&self) -> Result<String, ErrorData> {
-        // TODO: ngehandle errornya yang bener jir
-        Ok(self.get_statements_impl().await?)
-    }
-
-    async fn get_statements_impl(&self) -> Result<String, Error> {
         let current = RawScopeBinding::get_current().await;
-        let json = serde_json::to_string(&current)?;
+        let json = serde_json::to_string(&current).map_known_error()?;
         Ok(json)
     }
 
     #[tool(description = "Add new statement")]
-    async fn add_statement(&self, param: Parameters<McpAddStatement>) -> Result<String, ErrorData> {
-        // TODO: ngehandle errornya yang bener jir
-        Ok(self.add_statement_impl(param).await?)
-    }
-
-    async fn add_statement_impl(
+    async fn add_statement(
         &self,
         Parameters(param): Parameters<McpAddStatement>,
-    ) -> Result<String, Error> {
+    ) -> Result<String, ErrorData> {
         let mut current = RawScopeBinding::get_current().await.0;
         current.insert(
             param

@@ -14,3 +14,16 @@ impl_error_helper! {
         function_invalid_argument => FunctionInvalidArgument(&'static str),
         function_error => FunctionError(&'static str),
 }
+
+pub trait MapKnownError<T> {
+    fn map_known_error(self) -> Result<T, Error>;
+}
+
+impl<T, E> MapKnownError<T> for Result<T, E>
+where
+    E: Into<Error>,
+{
+    fn map_known_error(self) -> Result<T, Error> {
+        self.map_err(|err| err.into())
+    }
+}
