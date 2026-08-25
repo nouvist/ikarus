@@ -47,9 +47,9 @@ class _InputState extends State<Input>
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
+    return SizedBox(
       key: ValueKey(_key),
-      constraints: const .new(maxHeight: 48),
+      height: 48,
       child: _gesture.buildGestureDetector(
         child: MouseRegion(
           cursor: SystemMouseCursors.text,

@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
+import 'package:ikarus/extensions.dart';
+import 'package:ikarus/screens.dart';
 
 class DocumentScreen extends StatefulWidget {
   const DocumentScreen({super.key});
@@ -102,6 +104,10 @@ class _DocumentScreenState extends State<DocumentScreen> {
     );
   }
 
+  void _handleSettings() {
+    context.navigator().push(SettingsScreen.route());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,6 +117,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
           TitlebarMenu(onTap: _handleNew, child: const Text('Baru')),
           TitlebarMenu(onTap: _handleOpen, child: const Text('Buka')),
           TitlebarMenu(onTap: _handleSave, child: const Text('Simpan')),
+          TitlebarMenu(onTap: _handleSettings, child: const Text('Setelan')),
         ],
       ),
       child: Column(
@@ -130,7 +137,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
       crossAxisAlignment: .stretch,
       children: [
         Expanded(child: _buildLeftLayout()),
-        // Expanded(child: _buildChat(context)),
+        Expanded(child: _buildChat(context)),
       ],
     );
   }
@@ -225,6 +232,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
       ),
     );
   }
+
 }
 
 class _ToolbarButton extends StatelessWidget {

@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     error::Error,
     error_helper::MapError,
-    impl_frb_clone, log,
+    impl_frb_clone,
+    logger::log,
     vpl::{
         functions::FnName,
         tokens::{

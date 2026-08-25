@@ -46,25 +46,23 @@ class _VplAddDialogState extends State<VplAddDialog> {
       alignment: .topCenter,
       child: Padding(
         padding: const .only(top: 64, left: 16, right: 16, bottom: 16),
-        child: ConstrainedBox(
+        child: Container(
           constraints: const .new(maxWidth: 400, maxHeight: 500),
-          child: Container(
-            clipBehavior: .antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: const .all(.circular(16)),
-              color: Colors.bg0,
-              border: .all(color: Colors.bro),
-              boxShadow: Shadows.s0,
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const .all(16),
-                  child: Input(controller: _search),
-                ),
-                Expanded(child: ListView(children: _buildVpls(context))),
-              ],
-            ),
+          clipBehavior: .antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: const .all(.circular(16)),
+            color: Colors.bg0,
+            border: .all(color: Colors.bro),
+            boxShadow: Shadows.s0,
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const .all(16),
+                child: Input(controller: _search),
+              ),
+              Expanded(child: ListView(children: _buildVpls(context))),
+            ],
           ),
         ),
       ),
@@ -133,7 +131,8 @@ class _VplAddDialogState extends State<VplAddDialog> {
               if (arg != args[0]) const TextSpan(text: ', '),
               TextSpan(
                 style: const .new(color: Colors.cIdent1),
-                text: arg),
+                text: arg,
+              ),
             ],
 
             const TextSpan(text: ')'),

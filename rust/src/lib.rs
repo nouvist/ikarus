@@ -36,29 +36,9 @@ pub mod template;
 pub mod error;
 pub mod error_helper;
 
-pub use logger::log;
-pub mod logger {
-    use std::sync::OnceLock;
+pub mod logger;
 
-    use flutter_rust_bridge::{DartFnFuture, frb};
-
-    static LOGGER: OnceLock<Box<dyn Fn(String) -> DartFnFuture<()> + Send + Sync>> =
-        OnceLock::new();
-
-    #[frb]
-    pub async fn register_logger(
-        callback: impl Fn(String) -> DartFnFuture<()> + Send + Sync + 'static,
-    ) {
-        _ = LOGGER.set(Box::new(callback));
-    }
-
-    pub async fn log(str: impl AsRef<str>) {
-        let str = str.as_ref().to_owned();
-        if let Some(logger) = LOGGER.get() {
-            tokio::spawn((logger)(str));
-        }
-    }
-}
+pub mod settings;
 
 #[frb]
 pub fn home() -> &'static Utf8Path {

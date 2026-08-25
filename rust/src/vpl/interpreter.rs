@@ -4,7 +4,11 @@ use tokio::task::yield_now;
 use tokio_util::sync::CancellationToken;
 
 use crate::{
-    error::Error, error_helper::{MapError, OkOrError}, impl_frb_clone, log, vpl::{
+    error::Error,
+    error_helper::{MapError, OkOrError},
+    impl_frb_clone,
+    logger::log,
+    vpl::{
         evaluator::Evaluator,
         functions::Invoke,
         tokens::{Identifier, Scope, Value, ValueBoolean},

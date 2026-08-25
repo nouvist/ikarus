@@ -130,10 +130,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
         ),
         child: IntrinsicHeight(
           child: ConstrainedBox(
-            constraints: const .new(
-              maxWidth: 400,
-              minHeight: 352,
-            ),
+            constraints: const .new(maxWidth: 400),
             child: Container(
               clipBehavior: .antiAlias,
               padding: const .all(16),

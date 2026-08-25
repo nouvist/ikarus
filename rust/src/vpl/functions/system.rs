@@ -9,7 +9,7 @@ use tokio::time::sleep;
 use crate::{
     error::Error,
     error_helper::OkOrError,
-    log,
+    logger::log,
     vpl::{functions::Invoke, interpreter::Interpreter, tokens::Value},
 };
 
@@ -24,7 +24,6 @@ impl Invoke for FnCallSystemPrint {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
         let evaluated = interpreter.evaluate_variable(&self.content)?;
         log(evaluated.display()).await;
-        sleep(Duration::from_millis(5)).await;
         Ok(())
     }
 }
