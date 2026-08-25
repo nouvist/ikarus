@@ -15,7 +15,7 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
-  var _abort = null as InterpreterAbortController?;
+  var _abort = null as AbortController?;
   final _browser = BrowserSingleton.instance();
   final _statements = <RawStatement>[];
   var _isBrowserRunning = false;
@@ -39,7 +39,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
     if (_isInterpreterRunning) return;
     final scope = await RawScope(field0: _statements).build();
     final interpreter = Interpreter();
-    final abort = InterpreterAbortController();
+    final abort = AbortController();
     _abort = abort.clone();
 
     setState(() => _isInterpreterRunning = true);

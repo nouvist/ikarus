@@ -3,8 +3,6 @@ use std::{env, sync::OnceLock};
 use camino::{Utf8Path, Utf8PathBuf};
 use flutter_rust_bridge::frb;
 
-use crate::mcp::server::McpServer;
-
 pub mod frb_generated;
 
 pub mod macros;
@@ -23,22 +21,23 @@ pub mod browser {
     pub mod singleton;
 }
 
-pub mod mcp {
-    pub mod server;
+pub mod ai {
+    pub mod mcp;
+    pub mod singleton;
 }
 
 pub mod win32 {
     pub mod window;
 }
 
-pub mod template;
-
-pub mod error;
-pub mod error_helper;
-
-pub mod logger;
-
-pub mod settings;
+pub mod shared {
+    pub mod abort_controller;
+    pub mod error;
+    pub mod error_helper;
+    pub mod logger;
+    pub mod settings;
+    pub mod templates;
+}
 
 #[frb]
 pub fn home() -> &'static Utf8Path {
@@ -60,5 +59,4 @@ pub fn home() -> &'static Utf8Path {
 pub async fn init_app() {
     _ = home();
     flutter_rust_bridge::setup_default_user_utils();
-    McpServer::serve();
 }

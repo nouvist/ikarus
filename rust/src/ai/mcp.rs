@@ -1,18 +1,10 @@
 use flutter_rust_bridge::frb;
-use rmcp::{
-    ErrorData,
-    handler::server::wrapper::Parameters,
-    tool, tool_router,
-    transport::{
-        StreamableHttpServerConfig, StreamableHttpService,
-        streamable_http_server::session::local::LocalSessionManager,
-    },
-};
+use rmcp::{ErrorData, handler::server::wrapper::Parameters, tool, tool_router};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error_helper::MapKnownError,
+    shared::error_helper::MapKnownError,
     vpl::{
         binding::RawScopeBinding,
         raw_tokens::{RawScope, RawStatement},
@@ -48,21 +40,6 @@ impl McpServer {
         RawScopeBinding::set_current(RawScope(current)).await;
 
         Ok("success".to_string())
-    }
-
-    pub fn serve() {
-        tokio::spawn(async move {
-            let service = StreamableHttpService::new(
-                || Ok(McpServer {}),
-                LocalSessionManager::default().into(),
-                StreamableHttpServerConfig::default(),
-            );
-            let app = axum::Router::new().nest_service("/mcp", service);
-            let listener = tokio::net::TcpListener::bind("127.0.0.1:1337")
-                .await
-                .unwrap();
-            axum::serve(listener, app).await.unwrap();
-        });
     }
 }
 

@@ -7,8 +7,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     browser::singleton::BrowserSingleton,
-    error::Error,
-    error_helper::{MapError, OkOrError},
+    shared::{
+        error::Error,
+        error_helper::{MapError, OkOrError},
+    },
     vpl::{
         extensions::ValueUnwrapAsIdentifier,
         functions::{Invoke, page},

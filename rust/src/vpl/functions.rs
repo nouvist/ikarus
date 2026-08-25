@@ -6,7 +6,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error::Error,
+    shared::error::Error,
     impl_fn_call,
     vpl::{interpreter::Interpreter, tokens::Value},
 };

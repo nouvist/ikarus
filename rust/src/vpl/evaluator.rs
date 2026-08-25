@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use flutter_rust_bridge::frb;
 
 use crate::{
-    error::Error,
-    error_helper::OkOrError,
+    shared::{error::Error, error_helper::OkOrError},
     vpl::tokens::{
         Identifier, Value, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString,
     },

@@ -1,3 +1,9 @@
-rust_input: crate::logger,crate::settings,crate::browser,crate::mcp,crate::vpl,crate::win32
+rust_input: 
+  crate::browser,
+  crate::ai,
+  crate::vpl,
+  crate::shared::abort_controller,
+  crate::shared::logger,
+  crate::shared::settings,
 rust_root: rust/
 dart_output: lib/crux

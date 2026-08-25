@@ -1,8 +1,7 @@
 use flutter_rust_bridge::frb;
 
 use crate::{
-    error::Error,
-    error_helper::OkOrError,
+    shared::{error::Error, error_helper::OkOrError},
     vpl::{
         interpreter::Interpreter,
         tokens::{Identifier, Value},

@@ -7,7 +7,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error::Error, error_helper::OkOrError, vpl::{
+    shared::{error::Error, error_helper::OkOrError},
+    vpl::{
         extensions::ValueUnwrapAsIdentifier,
         functions::{Invoke, element},
         interpreter::Interpreter,

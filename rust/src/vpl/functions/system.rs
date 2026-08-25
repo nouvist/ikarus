@@ -7,9 +7,7 @@ use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 
 use crate::{
-    error::Error,
-    error_helper::OkOrError,
-    logger::log,
+    shared::{error::Error, error_helper::OkOrError, logger::log},
     vpl::{functions::Invoke, interpreter::Interpreter, tokens::Value},
 };
 

@@ -3,7 +3,10 @@ use std::sync::OnceLock;
 use serde::{Deserialize, Serialize};
 use tokio::{fs, sync::RwLock};
 
-use crate::{error::Error, error_helper::MapError, home};
+use crate::{
+    home,
+    shared::{error::Error, error_helper::MapError},
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Settings {

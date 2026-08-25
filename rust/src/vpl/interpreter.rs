@@ -1,13 +1,14 @@
 use flutter_rust_bridge::frb;
 use std::{any::Any, collections::HashMap, sync::Arc};
 use tokio::task::yield_now;
-use tokio_util::sync::CancellationToken;
 
 use crate::{
-    error::Error,
-    error_helper::{MapError, OkOrError},
-    impl_frb_clone,
-    logger::log,
+    shared::{
+        abort_controller::AbortController,
+        error::Error,
+        error_helper::{MapError, OkOrError},
+        logger::log,
+    },
     vpl::{
         evaluator::Evaluator,
         functions::Invoke,
@@ -16,24 +17,6 @@ use crate::{
 };
 
 use super::{functions::FnCall, tokens::Statement};
-
-#[frb(opaque)]
-#[derive(Clone)]
-pub struct InterpreterAbortController(Arc<CancellationToken>);
-
-impl InterpreterAbortController {
-    #[frb(sync)]
-    pub fn new() -> Self {
-        Self(Arc::new(CancellationToken::new()))
-    }
-
-    #[frb(sync)]
-    pub fn abort(&self) {
-        self.0.cancel();
-    }
-}
-
-impl_frb_clone!(InterpreterAbortController);
 
 #[frb(ignore)]
 type InterpreterPointer = Arc<dyn Any + Send + Sync>;
@@ -101,10 +84,10 @@ impl Interpreter {
         Ok(pointer)
     }
 
-    pub async fn frb_override_run(&mut self, scope: Scope, abort: InterpreterAbortController) {
+    pub async fn frb_override_run(&mut self, scope: Scope, abort: AbortController) {
         self.pointer.clear();
         self.evaluator.clear();
-        let result = abort.0.run_until_cancelled(self.run(scope)).await;
+        let result = abort.run_until_cancelled(self.run(scope)).await;
 
         let Some(result) = result else {
             log(&format!("[Sistem] Program dihentikan.")).await;

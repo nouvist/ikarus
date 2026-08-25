@@ -12,7 +12,13 @@ use tokio::{
 use tokio_stream::StreamExt;
 
 use crate::{
-    error::Error, error_helper::{MapError, OkOrError}, logger::log, template::template, win32::window::Window,
+    shared::{
+        error::Error,
+        error_helper::{MapError, OkOrError},
+        logger::log,
+        templates::initial_page_html,
+    },
+    win32::window::Window,
 };
 
 #[frb(ignore)]
@@ -129,7 +135,7 @@ impl BrowserSingleton {
             match page {
                 Some(page) => {
                     page.goto("about:blank").await?;
-                    page.set_content(template()).await?;
+                    page.set_content(initial_page_html()).await?;
                     break;
                 }
                 None => {

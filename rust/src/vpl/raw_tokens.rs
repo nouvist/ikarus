@@ -3,11 +3,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    error::Error,
-    error_helper::MapError,
-    impl_frb_clone,
-    logger::log,
-    vpl::{
+    impl_frb_clone, shared::{error::Error, error_helper::MapError, logger::log}, vpl::{
         functions::FnName,
         tokens::{
             Scope, Statement, StatementCall, StatementFor, StatementIf, StatementVariable, Value,
