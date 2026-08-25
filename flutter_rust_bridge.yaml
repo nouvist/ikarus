@@ -2,6 +2,7 @@ rust_input:
   crate::browser,
   crate::ai,
   crate::vpl,
+  crate::shared::error,
   crate::shared::abort_controller,
   crate::shared::logger,
   crate::shared::settings,

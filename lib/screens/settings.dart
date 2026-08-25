@@ -93,6 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   padding: const .symmetric(vertical: 8),
                   child: Container(height: 1, color: Colors.bro),
                 ),
+                const Text('Perubahan memerlukan Ikarus untuk dimulai ulang.'),
                 Row(
                   spacing: 8,
                   mainAxisAlignment: .end,

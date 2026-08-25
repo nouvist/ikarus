@@ -5,6 +5,7 @@ import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
+import 'package:ikarus/helpers.dart';
 import 'package:ikarus/screens.dart';
 
 class DocumentScreen extends StatefulWidget {
@@ -26,13 +27,6 @@ class _DocumentScreenState extends State<DocumentScreen> {
   void initState() {
     super.initState();
     _browser.registerListener(callback: _handleBrowserChange);
-  }
-
-  @override
-  void dispose() {
-    // _abort.dispose();
-    // _browser.dispose();
-    super.dispose();
   }
 
   Future<void> _handleStart() async {
@@ -232,7 +226,6 @@ class _DocumentScreenState extends State<DocumentScreen> {
       ),
     );
   }
-
 }
 
 class _ToolbarButton extends StatelessWidget {

@@ -1,3 +1,4 @@
+import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 
 class Chat extends StatefulWidget {
@@ -10,6 +11,11 @@ class Chat extends StatefulWidget {
 class _ChatState extends State<Chat> {
   final _input = TextEditingController();
   // final _chat = <ChatBubble>[];
+
+  Future<void> _handleSubmit() async {
+    final ai = await AiSingleton.instance();
+    final prompt = _input.text;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +40,16 @@ class _ChatState extends State<Chat> {
           child: Row(
             spacing: 8,
             children: [
-              Expanded(child: Input(controller: _input)),
-              const Button(child: Icon(FluentIcons.send_24_regular)),
+              Expanded(
+                child: Input(
+                  controller: _input,
+                  onSubmit: (_) => _handleSubmit(),
+                ),
+              ),
+              Button(
+                onTap: _handleSubmit,
+                child: const Icon(FluentIcons.send_24_regular),
+              ),
             ],
           ),
         ),

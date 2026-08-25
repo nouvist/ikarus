@@ -22,7 +22,7 @@ pub enum Error {
     #[error("lingkup tidak memiliki pembuka/penutup yang valid")]
     VplInvalidNested,
 
-    #[error("lingkup tidak memiliki pembuka/penutup yang valid")]
+    #[error("AI atau MCP gagal diinisialisasi")]
     AiFailedToInitialize,
 
     #[error("variabel yang dituju tidak ditemukan")]
