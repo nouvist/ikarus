@@ -60,7 +60,6 @@ impl Invoke for FnCallPageFindElement {
             .ok_or_function_invalid_argument("Pemilah harus berupa string")?;
 
         let element = pointer.find_element(selector.0.to_owned()).await.ok();
-        println!("{element:?}");
         match element {
             Some(it) => {
                 interpreter.store_variable(element_ident, &element::symbol())?;

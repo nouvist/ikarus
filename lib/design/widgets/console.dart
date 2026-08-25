@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/helpers.dart';
@@ -54,7 +55,10 @@ class _ConsoleState extends State<Console> implements ConsoleState {
 
   @override
   @pragma('vm:prefer-inline')
-  void log(String str) => _push(.new(str));
+  void log(String str) {
+    if (kDebugMode) print(str);
+    _push(.new(str));
+  }
 
   @override
   void clear() => setState(() {
@@ -115,7 +119,12 @@ class _ConsoleState extends State<Console> implements ConsoleState {
               ),
             ),
           ),
-          Expanded(child: Text(item.text)),
+          Expanded(
+            child: SelectableRegion(
+              selectionControls: EmptyTextSelectionControls(),
+              child: Text(item.text),
+            ),
+          ),
         ],
       ),
     );

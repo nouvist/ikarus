@@ -7,12 +7,14 @@ use thiserror::Error;
 #[frb(opaque)]
 #[derive(Error, Debug)]
 pub enum Error {
-    #[error("gagal melakukan operasi pada berkas")]
+    #[error("gagal melakukan operasi pada berkas: {0}")]
     IoError(#[from] tokio::io::Error),
-    #[error("gagal berkomunikasi dengan peramban")]
+    #[error("gagal berkomunikasi dengan peramban: {0}")]
     CdpError(#[from] chromiumoxide::error::CdpError),
-    #[error("data gagal diserialisasi ke json")]
+    #[error("data gagal diserialisasi ke json: {0}")]
     SerdeJsonError(#[from] serde_json::Error),
+    #[error("gagal melakukan prompt: {0}")]
+    PromptError(#[from] rig::completion::PromptError),
 
     #[error("data gagal diserialisasi")]
     SerializeError,

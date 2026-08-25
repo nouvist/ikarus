@@ -15,11 +15,13 @@ pub struct Settings {
     pub text_generation_model: String,
 }
 
+const FILENAME: &'static str = "settings.dat";
+
 static INSTANCE: OnceLock<RwLock<Settings>> = OnceLock::new();
 impl Settings {
     fn instance() -> &'static RwLock<Settings> {
         INSTANCE.get_or_init(|| {
-            let path = home().join("settiings.dat");
+            let path = home().join(FILENAME);
             if path.exists()
                 && let Ok(file) = std::fs::read(path)
             {
@@ -45,7 +47,7 @@ impl Settings {
     pub async fn save(&self) -> Result<(), Error> {
         let buffer = postcard::to_allocvec(self).map_deserialize_error()?;
         let mut instance = Self::instance().write().await;
-        fs::write(home().join("settings.dat"), buffer).await?;
+        fs::write(home().join(FILENAME), buffer).await?;
         *instance = self.clone();
 
         Ok(())

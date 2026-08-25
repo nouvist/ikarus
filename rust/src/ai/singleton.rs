@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use flutter_rust_bridge::frb;
-use rig::{Agent, client::AgentClientExt, providers::openai};
+use rig::{Agent, client::AgentClientExt, completion::Prompt, providers::openai};
 use rmcp::{RoleClient, ServiceExt, model::Tool, service::RunningService};
 use tokio::{
     io,
@@ -14,6 +14,7 @@ use crate::{
     shared::{
         error::Error,
         error_helper::{MapError, OkOrError},
+        logger::log,
         settings::Settings,
         templates::preamble_md,
     },
@@ -69,11 +70,11 @@ impl AiSingleton {
 
         let agent = client
             .agent(&settings.text_generation_model)
-            .preamble(preamble_md())
-            .rmcp_tool(
-                mcp_tools.first().ok_or_ai_failed_to_initialize()?.clone(),
-                mcp_client.peer().clone(),
-            )
+            // .preamble(preamble_md())
+            // .rmcp_tool(
+            //     mcp_tools.first().ok_or_ai_failed_to_initialize()?.clone(),
+            //     mcp_client.peer().clone(),
+            // )
             .build();
 
         Ok(agent)
@@ -95,5 +96,23 @@ impl AiSingleton {
             .await
             .map_ai_failed_to_initialize()?;
         Ok((client, tools))
+    }
+
+    pub async fn frb_override_prompt(&self, prompt: String) -> Option<String> {
+        match self.prompt(prompt).await {
+            Ok(it) => Some(it),
+            Err(it) => {
+                log(format!("Galat: {it}")).await;
+                None
+            }
+        }
+    }
+
+    pub async fn prompt(&self, prompt: String) -> Result<String, Error> {
+        let inner = self.inner.read().await;
+        println!("> User: {prompt}");
+        let response = inner.agent.prompt(prompt).await?;
+        println!("> AI: {response}");
+        Ok(response)
     }
 }
