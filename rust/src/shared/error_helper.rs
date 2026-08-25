@@ -12,8 +12,8 @@ impl_error_helper! {
         browser_not_running => BrowserNotRunning,
         browser_invalid_url => BrowserInvalidUrl,
         function_invalid_deserialize => FunctionInvalidDeserialize,
-        function_invalid_argument => FunctionInvalidArgument(&'static str),
-        function_error => FunctionError(&'static str),
+        function_invalid_argument => FunctionInvalidArgument(String),
+        function_error => FunctionError(String),
 }
 
 pub trait MapKnownError<T> {

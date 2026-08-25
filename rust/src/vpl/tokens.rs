@@ -2,7 +2,7 @@ use flutter_rust_bridge::frb;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::{impl_frb_clone, vpl::functions::FnCall};
+use crate::{impl_frb_clone, shared::error::Error, vpl::functions::FnCall};
 
 #[frb]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
@@ -165,6 +165,27 @@ macro_rules! impl_is_value {
     };
 }
 
+macro_rules! impl_unwrap_as_value {
+    ($($identifier:ident => $type:ty [$name:expr]),+$(,)?) => {
+        #[frb(ignore)]
+        impl Value {
+            paste::paste! {
+                $(pub fn [<unwrap_as_ $identifier>](
+                    &self,
+                    name: &'static str
+                ) -> Result<&[<Value $type>], Error> {
+                    match self {
+                        Value::$type(it) => Ok(&it),
+                        _ => Err(Error::FunctionInvalidArgument(
+                            format!("{} {} {}", name, "harus berupa", $name)
+                        )),
+                    }
+                })+
+            }
+        }
+    };
+}
+
 impl_as_value! {
     identifier => Identifier,
     string => String,
@@ -181,6 +202,15 @@ impl_is_value! {
     boolean => Boolean,
     object => Object,
     computed => Computed,
+}
+
+impl_unwrap_as_value! {
+    identifier => Identifier ["rujukan"],
+    string => String ["string"],
+    number => Number ["angka"],
+    boolean => Boolean ["boolean"],
+    object => Object ["objek"],
+    computed => Computed ["komputasi"],
 }
 
 impl Default for Value {

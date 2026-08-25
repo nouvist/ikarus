@@ -70,11 +70,11 @@ impl AiSingleton {
 
         let agent = client
             .agent(&settings.text_generation_model)
-            // .preamble(preamble_md())
-            // .rmcp_tool(
-            //     mcp_tools.first().ok_or_ai_failed_to_initialize()?.clone(),
-            //     mcp_client.peer().clone(),
-            // )
+            .preamble(preamble_md())
+            .rmcp_tool(
+                mcp_tools.first().ok_or_ai_failed_to_initialize()?.clone(),
+                mcp_client.peer().clone(),
+            )
             .build();
 
         Ok(agent)

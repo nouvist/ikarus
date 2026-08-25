@@ -7,12 +7,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     browser::singleton::BrowserSingleton,
-    shared::{
-        error::Error,
-        error_helper::{MapError, OkOrError},
-    },
+    shared::{error::Error, error_helper::MapError},
     vpl::{
-        extensions::ValueUnwrapAsIdentifier,
         functions::{Invoke, page},
         interpreter::Interpreter,
         tokens::{Value, ValueNumber},
@@ -29,11 +25,11 @@ pub struct FnCallBrowserNewPage {
 #[async_trait]
 impl Invoke for FnCallBrowserNewPage {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = &self.page.unwrap_as_identifier()?;
+        let pointer = &self
+            .page
+            .unwrap_as_identifier("Halaman tidak merujuk pada variabel yang valid")?;
         let url = interpreter.evaluate_variable(&self.url)?;
-        let url = url
-            .as_string()
-            .ok_or_function_invalid_argument("Url harus berupa string")?;
+        let url = url.unwrap_as_string("Url")?;
 
         let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
@@ -55,7 +51,7 @@ pub struct FnCallBrowserGetPageCount {
 #[async_trait]
 impl Invoke for FnCallBrowserGetPageCount {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let result = self.result.unwrap_as_identifier()?;
+        let result = self.result.unwrap_as_identifier("Halaman")?;
         let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
         let pages = browser.pages().await?;
@@ -76,11 +72,9 @@ pub struct FnCallBrowserGetPage {
 #[async_trait]
 impl Invoke for FnCallBrowserGetPage {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let ident = self.page.unwrap_as_identifier()?;
+        let ident = self.page.unwrap_as_identifier("Halaman")?;
         let index = interpreter.evaluate_variable(&self.index)?;
-        let index = index
-            .as_number()
-            .ok_or_function_invalid_argument("Url harus berupa string")?;
+        let index = index.unwrap_as_number("Indeks")?;
         let index = index.0 as usize;
 
         let singleton = BrowserSingleton::instance().lock().await;

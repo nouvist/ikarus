@@ -6,8 +6,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    shared::error::Error,
     impl_fn_call,
+    shared::error::Error,
     vpl::{interpreter::Interpreter, tokens::Value},
 };
 
@@ -48,18 +48,26 @@ impl_fn_call! {
 
     [ElementGetOuterHtml] "Elemen::AmbilHtmlLuar"
         => element: "ref Elemen",
-        => html: "out Html";
+        => result: "out Hasil";
     [ElementGetInnerHtml] "Elemen::AmbilHtmlDalam"
         => element: "ref Elemen",
-        => html: "out Html";
+        => result: "out Hasil";
     [ElementGetText] "Elemen::AmbilTeks"
         => element: "ref Elemen",
-        => text: "out Teks";
+        => result: "out Hasil";
     [ElementType] "Elemen::Ketik"
         => element: "ref Elemen",
         => text: "Teks";
     [ElementClick] "Elemen::Klik"
         => element: "ref Elemen";
+
+    [CsvNew] "Csv::Baru"
+        => csv: "out Csv";
+    [CsvGet] "Csv::Ambil"
+        => csv: "ref Csv",
+        => row: "Baris",
+        => col: "Kolom",
+        => result: "out Hasil";
 }
 
 #[frb(ignore)]

@@ -5,7 +5,6 @@ import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
-import 'package:ikarus/helpers.dart';
 import 'package:ikarus/screens.dart';
 
 class DocumentScreen extends StatefulWidget {
@@ -179,7 +178,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Widget _buildChat(BuildContext context) {
-    return DecoratedBox(
+    return Container(
+      clipBehavior: .antiAlias,
       decoration: BoxDecoration(
         border: .all(color: Colors.bro),
         borderRadius: const .all(.circular(8)),

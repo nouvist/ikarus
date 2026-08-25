@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use tokio::time::sleep;
 
 use crate::{
-    shared::{error::Error, error_helper::OkOrError, logger::log},
+    shared::{error::Error, logger::log},
     vpl::{functions::Invoke, interpreter::Interpreter, tokens::Value},
 };
 
@@ -36,9 +36,7 @@ pub struct FnCallSystemSleep {
 impl Invoke for FnCallSystemSleep {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
         let ms = interpreter.evaluate_variable(&self.ms)?;
-        let ms = ms
-            .as_number()
-            .ok_or_function_invalid_argument("Milidetik harus berupa angka")?;
+        let ms = ms.unwrap_as_number("Milidetik")?;
 
         let ms = ms.0 as u64;
         let ms = Duration::from_millis(ms);

@@ -13,8 +13,6 @@ pub enum Error {
     CdpError(#[from] chromiumoxide::error::CdpError),
     #[error("data gagal diserialisasi ke json: {0}")]
     SerdeJsonError(#[from] serde_json::Error),
-    #[error("gagal melakukan prompt: {0}")]
-    PromptError(#[from] rig::completion::PromptError),
 
     #[error("data gagal diserialisasi")]
     SerializeError,
@@ -26,6 +24,10 @@ pub enum Error {
 
     #[error("AI atau MCP gagal diinisialisasi")]
     AiFailedToInitialize,
+    #[error("gagal mendapatkan respon: {0}")]
+    AiFailedToStream(#[from] rig::agent::StreamingError),
+    #[error("gagal melakukan prompt: {0}")]
+    AiPromptError(#[from] rig::completion::PromptError),
 
     #[error("variabel yang dituju tidak ditemukan")]
     EvaluatorNoVariable,
@@ -42,9 +44,9 @@ pub enum Error {
     #[error("fungsi gagal dideserialisasi")]
     FunctionInvalidDeserialize,
     #[error("{0}")]
-    FunctionInvalidArgument(&'static str),
+    FunctionInvalidArgument(String),
     #[error("{0}")]
-    FunctionError(&'static str),
+    FunctionError(String),
 }
 
 impl From<Error> for rmcp::ErrorData {

@@ -84,11 +84,17 @@ class _ChatState extends State<Chat> {
         Positioned(
           top: 8,
           right: 8,
-          child: Button(
-            onTap: _handleClear,
-            width: 48,
-            padding: .zero,
-            child: const Icon(FluentIcons.delete_24_regular),
+          child: ClipRRect(
+            clipBehavior: .antiAlias,
+            child: BackdropFilter(
+              filter: .blur(sigmaX: 8, sigmaY: 8),
+              child: Button(
+                onTap: _handleClear,
+                width: 48,
+                padding: .zero,
+                child: const Icon(FluentIcons.delete_24_regular),
+              ),
+            ),
           ),
         ),
       ],

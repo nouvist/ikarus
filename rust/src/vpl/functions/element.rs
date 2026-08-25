@@ -5,9 +5,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    shared::{error::Error, error_helper::OkOrError},
+    shared::error::Error,
     vpl::{
-        extensions::ValueUnwrapAsIdentifier,
         functions::Invoke,
         interpreter::Interpreter,
         tokens::{Value, ValueObject, ValueString},
@@ -24,16 +23,20 @@ pub fn symbol() -> Value {
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetOuterHtml {
     pub element: Value,
-    pub html: Value,
+    pub result: Value,
 }
 
 #[async_trait]
 impl Invoke for FnCallElementGetOuterHtml {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = self.element.unwrap_as_identifier()?;
-        let pointer = interpreter.unwrap_pointer::<Element>(pointer)?;
-        let html = self.html.unwrap_as_identifier()?;
-        let str = pointer.outer_html().await?;
+        let element = self
+            .element
+            .unwrap_as_identifier("Elemen tidak merujuk pada variabel yang valid")?;
+        let element = interpreter.unwrap_pointer::<Element>(element)?;
+        let html = self
+            .result
+            .unwrap_as_identifier("Html tidak merujuk pada variabel yang valid")?;
+        let str = element.outer_html().await?;
 
         interpreter.store_variable(
             html,
@@ -50,20 +53,24 @@ impl Invoke for FnCallElementGetOuterHtml {
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetInnerHtml {
     pub element: Value,
-    pub html: Value,
+    pub result: Value,
 }
 
 #[async_trait]
 impl Invoke for FnCallElementGetInnerHtml {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = self.element.unwrap_as_identifier()?;
-        let pointer = interpreter.unwrap_pointer::<Element>(pointer)?;
-        let html = self.html.unwrap_as_identifier()?;
-        let str = pointer.inner_html().await?;
+        let element = self
+            .element
+            .unwrap_as_identifier("Elemen tidak merujuk pada variabel yang valid")?;
+        let element = interpreter.unwrap_pointer::<Element>(element)?;
+        let result = self
+            .result
+            .unwrap_as_identifier("Hasil tidak merujuk pada variabel yang valid")?;
+        let content = element.inner_html().await?;
 
         interpreter.store_variable(
-            html,
-            &match str {
+            result,
+            &match content {
                 Some(it) => Value::String(ValueString(it)),
                 None => Value::Null,
             },
@@ -76,19 +83,23 @@ impl Invoke for FnCallElementGetInnerHtml {
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetText {
     pub element: Value,
-    pub text: Value,
+    pub result: Value,
 }
 
 #[async_trait]
 impl Invoke for FnCallElementGetText {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = self.element.unwrap_as_identifier()?;
-        let pointer = interpreter.unwrap_pointer::<Element>(pointer)?;
-        let html = self.text.unwrap_as_identifier()?;
-        let str = pointer.inner_text().await?;
+        let element = self
+            .element
+            .unwrap_as_identifier("Elemen tidak merujuk pada variabel yang valid")?;
+        let element = interpreter.unwrap_pointer::<Element>(element)?;
+        let result = self
+            .result
+            .unwrap_as_identifier("Hasil tidak merujuk pada variabel yang valid")?;
+        let str = element.inner_text().await?;
 
         interpreter.store_variable(
-            html,
+            result,
             &match str {
                 Some(it) => Value::String(ValueString(it)),
                 None => Value::Null,
@@ -108,14 +119,14 @@ pub struct FnCallElementType {
 #[async_trait]
 impl Invoke for FnCallElementType {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = self.element.unwrap_as_identifier()?;
-        let pointer = interpreter.unwrap_pointer::<Element>(pointer)?;
+        let element = self
+            .element
+            .unwrap_as_identifier("Elemen tidak merujuk pada variabel yang valid")?;
+        let element = interpreter.unwrap_pointer::<Element>(element)?;
         let text = interpreter.evaluate_variable(&self.text)?;
-        let text = text
-            .as_string()
-            .ok_or_function_invalid_argument("Teks haruslah berupa string")?;
+        let text = text.unwrap_as_string("Teks")?;
 
-        pointer.type_str(&text.0).await?;
+        element.type_str(&text.0).await?;
         Ok(())
     }
 }
@@ -129,7 +140,7 @@ pub struct FnCallElementClick {
 #[async_trait]
 impl Invoke for FnCallElementClick {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = self.element.unwrap_as_identifier()?;
+        let pointer = self.element.unwrap_as_identifier("Elemen")?;
         let pointer = interpreter.unwrap_pointer::<Element>(pointer)?;
         pointer.click().await?;
         Ok(())

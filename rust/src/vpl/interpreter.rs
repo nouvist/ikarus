@@ -75,11 +75,15 @@ impl Interpreter {
     ) -> Result<Arc<T>, Error> {
         let pointer = self
             .get_pointer(&pointer.0)
-            .ok_or_function_invalid_argument("Variabel yang dirujuk bukan jenis yang diharapkan")?;
+            .ok_or_function_invalid_argument(
+                "Variabel yang dirujuk bukan jenis yang diharapkan".to_owned(),
+            )?;
         let pointer = pointer
             .clone()
             .downcast::<T>()
-            .map_function_invalid_argument("Variabel yang dirujuk bukan jenis yang diharapkan")?;
+            .map_function_invalid_argument(
+                "Variabel yang dirujuk bukan jenis yang diharapkan".to_owned(),
+            )?;
 
         Ok(pointer)
     }
