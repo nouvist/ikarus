@@ -35,11 +35,28 @@ pub struct FnCallCsvNew {
 #[async_trait]
 impl Invoke for FnCallCsvNew {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let csv = self
-            .csv
-            .unwrap_as_identifier("Csv")?;
+        let csv = self.csv.unwrap_as_identifier("Csv")?;
         interpreter.store_pointer(csv.0.clone(), Arc::new(Csv::default()));
         interpreter.store_variable(csv, &symbol())?;
+        Ok(())
+    }
+}
+
+#[frb]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct FnCallCsvLoad {
+    pub csv: Value,
+    pub file: Value,
+}
+
+#[async_trait]
+impl Invoke for FnCallCsvLoad {
+    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
+        let csv = self.csv.unwrap_as_identifier("Csv")?;
+        let file = interpreter
+            .evaluate_variable(&self.file)?
+            .unwrap_as_string("Berkas")?;
+
         Ok(())
     }
 }

@@ -3,7 +3,7 @@ pub fn initial_page_html() -> &'static str {
     INITIAL_PAGE_HTML
 }
 
-const PREAMBLE_MD: &'static str = include_str!("templates/preamble.md");
-pub fn preamble_md() -> &'static str {
-    PREAMBLE_MD
+const PROMPT01: &'static str = include_str!("templates/prompt01_start.md");
+pub fn prompt01() -> &'static str {
+    PROMPT01
 }

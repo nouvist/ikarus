@@ -29,18 +29,14 @@ pub struct FnCallElementGetOuterHtml {
 #[async_trait]
 impl Invoke for FnCallElementGetOuterHtml {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let element = self
-            .element
-            .unwrap_as_identifier("Elemen tidak merujuk pada variabel yang valid")?;
-        let element = interpreter.unwrap_pointer::<Element>(element)?;
-        let html = self
-            .result
-            .unwrap_as_identifier("Html tidak merujuk pada variabel yang valid")?;
-        let str = element.outer_html().await?;
+        let element_ptr = self.element.unwrap_as_identifier("Elemen")?;
+        let element = interpreter.unwrap_pointer::<Element>(element_ptr)?;
+        let result_ptr = self.result.unwrap_as_identifier("Html")?;
+        let result = element.outer_html().await?;
 
         interpreter.store_variable(
-            html,
-            &match str {
+            result_ptr,
+            &match result {
                 Some(it) => Value::String(ValueString(it)),
                 None => Value::Null,
             },
@@ -59,18 +55,14 @@ pub struct FnCallElementGetInnerHtml {
 #[async_trait]
 impl Invoke for FnCallElementGetInnerHtml {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let element = self
-            .element
-            .unwrap_as_identifier("Elemen tidak merujuk pada variabel yang valid")?;
-        let element = interpreter.unwrap_pointer::<Element>(element)?;
-        let result = self
-            .result
-            .unwrap_as_identifier("Hasil tidak merujuk pada variabel yang valid")?;
-        let content = element.inner_html().await?;
+        let element_ptr = self.element.unwrap_as_identifier("Elemen")?;
+        let element = interpreter.unwrap_pointer::<Element>(element_ptr)?;
+        let result_ptr = self.result.unwrap_as_identifier("Hasil")?;
+        let result = element.inner_html().await?;
 
         interpreter.store_variable(
-            result,
-            &match content {
+            result_ptr,
+            &match result {
                 Some(it) => Value::String(ValueString(it)),
                 None => Value::Null,
             },
@@ -89,18 +81,14 @@ pub struct FnCallElementGetText {
 #[async_trait]
 impl Invoke for FnCallElementGetText {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let element = self
-            .element
-            .unwrap_as_identifier("Elemen tidak merujuk pada variabel yang valid")?;
-        let element = interpreter.unwrap_pointer::<Element>(element)?;
-        let result = self
-            .result
-            .unwrap_as_identifier("Hasil tidak merujuk pada variabel yang valid")?;
-        let str = element.inner_text().await?;
+        let element_ptr = self.element.unwrap_as_identifier("Elemen")?;
+        let element = interpreter.unwrap_pointer::<Element>(element_ptr)?;
+        let result_ptr = self.result.unwrap_as_identifier("Hasil")?;
+        let result = element.inner_text().await?;
 
         interpreter.store_variable(
-            result,
-            &match str {
+            result_ptr,
+            &match result {
                 Some(it) => Value::String(ValueString(it)),
                 None => Value::Null,
             },
@@ -119,13 +107,11 @@ pub struct FnCallElementType {
 #[async_trait]
 impl Invoke for FnCallElementType {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let element = self
-            .element
-            .unwrap_as_identifier("Elemen tidak merujuk pada variabel yang valid")?;
-        let element = interpreter.unwrap_pointer::<Element>(element)?;
+        let element_ptr = self.element.unwrap_as_identifier("Elemen")?;
+        let element = interpreter.unwrap_pointer::<Element>(element_ptr)?;
         let text = interpreter.evaluate_variable(&self.text)?;
         let text = text.unwrap_as_string("Teks")?;
-
+        element.focus().await?;
         element.type_str(&text.0).await?;
         Ok(())
     }
@@ -140,9 +126,10 @@ pub struct FnCallElementClick {
 #[async_trait]
 impl Invoke for FnCallElementClick {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = self.element.unwrap_as_identifier("Elemen")?;
-        let pointer = interpreter.unwrap_pointer::<Element>(pointer)?;
-        pointer.click().await?;
+        let element_ptr = self.element.unwrap_as_identifier("Elemen")?;
+        let element = interpreter.unwrap_pointer::<Element>(element_ptr)?;
+        element.focus().await?;
+        element.click().await?;
         Ok(())
     }
 }

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
@@ -71,15 +70,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Future<void> _handleOpen() async {
-    final file = await FilePicker.pickFile(
-      type: FileType.custom,
-      allowedExtensions: ['ikd'],
-    );
-
-    if (file == null) return;
-    final buffer = await file.readAsBytes();
-    final next = RawScope.fromBinary(binary: buffer);
-
+    final next = await RawScope.open();
+    if (next == null) return;
     if (!mounted) return;
     setState(() {
       _statements.clear();
@@ -88,13 +80,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Future<void> _handleSave() async {
-    final buffer = RawScope(field0: _statements).toBinary();
-    await FilePicker.saveFile(
-      type: FileType.custom,
-      allowedExtensions: ['ikd'],
-      fileName: 'Dokumen Ikarus.ikd',
-      bytes: buffer,
-    );
+    await RawScope(field0: _statements).save();
   }
 
   void _handleSettings() {

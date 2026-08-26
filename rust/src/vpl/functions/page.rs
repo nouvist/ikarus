@@ -31,9 +31,9 @@ pub struct FnCallPageWaitForNavigation {
 #[async_trait]
 impl Invoke for FnCallPageWaitForNavigation {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = self.page.unwrap_as_identifier("Halaman")?;
-        let pointer = interpreter.unwrap_pointer::<Page>(pointer)?;
-        pointer.wait_for_navigation().await?;
+        let page_ptr = self.page.unwrap_as_identifier("Halaman")?;
+        let page = interpreter.unwrap_pointer::<Page>(page_ptr)?;
+        page.wait_for_navigation().await?;
 
         Ok(())
     }
@@ -50,19 +50,19 @@ pub struct FnCallPageFindElement {
 #[async_trait]
 impl Invoke for FnCallPageFindElement {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let page = self.page.unwrap_as_identifier("Halaman")?;
-        let element = self.element.unwrap_as_identifier("Element")?;
-        let page = interpreter.unwrap_pointer::<Page>(page)?;
+        let page_ptr = self.page.unwrap_as_identifier("Halaman")?;
+        let page = interpreter.unwrap_pointer::<Page>(page_ptr)?;
+        let element_ptr = self.element.unwrap_as_identifier("Element")?;
         let selector = self.selector.unwrap_as_string("Pemilah")?;
 
         let value = page.find_element(selector.0.to_owned()).await.ok();
         match value {
             Some(it) => {
-                interpreter.store_variable(element, &element::symbol())?;
-                interpreter.store_pointer(element.0.clone(), Arc::new(it));
+                interpreter.store_variable(element_ptr, &element::symbol())?;
+                interpreter.store_pointer(element_ptr.0.clone(), Arc::new(it));
             }
             None => {
-                interpreter.store_variable(element, &Value::Null)?;
+                interpreter.store_variable(element_ptr, &Value::Null)?;
             }
         }
 

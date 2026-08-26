@@ -25,18 +25,16 @@ pub struct FnCallBrowserNewPage {
 #[async_trait]
 impl Invoke for FnCallBrowserNewPage {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let pointer = &self
-            .page
-            .unwrap_as_identifier("Halaman tidak merujuk pada variabel yang valid")?;
+        let page_ptr = &self.page.unwrap_as_identifier("Halaman")?;
         let url = interpreter.evaluate_variable(&self.url)?;
         let url = url.unwrap_as_string("Url")?;
 
         let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
-        let page = browser.new_page(&url.0).await.map_browser_invalid_url()?;
+        let value = browser.new_page(&url.0).await.map_browser_invalid_url()?;
 
-        interpreter.store_variable(pointer, &page::symbol())?;
-        interpreter.store_pointer(pointer.0.clone(), Arc::new(page));
+        interpreter.store_variable(page_ptr, &page::symbol())?;
+        interpreter.store_pointer(page_ptr.0.clone(), Arc::new(value));
 
         Ok(())
     }
@@ -51,13 +49,13 @@ pub struct FnCallBrowserGetPageCount {
 #[async_trait]
 impl Invoke for FnCallBrowserGetPageCount {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let result = self.result.unwrap_as_identifier("Halaman")?;
+        let result_ptr = self.result.unwrap_as_identifier("Halaman")?;
         let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
         let pages = browser.pages().await?;
         let value = Value::Number(ValueNumber(pages.len() as f64));
 
-        interpreter.store_variable(result, &value)?;
+        interpreter.store_variable(result_ptr, &value)?;
         Ok(())
     }
 }
@@ -72,7 +70,7 @@ pub struct FnCallBrowserGetPage {
 #[async_trait]
 impl Invoke for FnCallBrowserGetPage {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
-        let ident = self.page.unwrap_as_identifier("Halaman")?;
+        let page_ptr = self.page.unwrap_as_identifier("Halaman")?;
         let index = interpreter.evaluate_variable(&self.index)?;
         let index = index.unwrap_as_number("Indeks")?;
         let index = index.0 as usize;
@@ -81,12 +79,12 @@ impl Invoke for FnCallBrowserGetPage {
         let browser = singleton.browser()?;
         let pages = browser.pages().await?;
         let Some(page) = pages.get(index).map(|it| it.clone()) else {
-            interpreter.store_variable(ident, &Value::Null)?;
+            interpreter.store_variable(page_ptr, &Value::Null)?;
             return Ok(());
         };
 
-        interpreter.store_variable(ident, &page::symbol())?;
-        interpreter.store_pointer(ident.0.clone(), Arc::new(page));
+        interpreter.store_variable(page_ptr, &page::symbol())?;
+        interpreter.store_pointer(page_ptr.0.clone(), Arc::new(page));
 
         Ok(())
     }

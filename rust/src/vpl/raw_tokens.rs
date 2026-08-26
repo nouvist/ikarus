@@ -1,9 +1,13 @@
 use flutter_rust_bridge::frb;
+use rfd::FileDialog;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use tokio::fs;
 
 use crate::{
-    impl_frb_clone, shared::{error::Error, error_helper::MapError, logger::log}, vpl::{
+    impl_frb_clone,
+    shared::{error::Error, error_helper::MapError, logger::log},
+    vpl::{
         functions::FnName,
         tokens::{
             Scope, Statement, StatementCall, StatementFor, StatementIf, StatementVariable, Value,
@@ -39,6 +43,28 @@ impl RawScope {
     pub fn to_json(&self) -> Result<String, Error> {
         let result = serde_json::to_string(self).map_deserialize_error()?;
         Ok(result)
+    }
+
+    pub async fn open() -> Result<Option<Self>, Error> {
+        let path = FileDialog::new()
+            .add_filter("Dokumen Ikarus", &["ikd"])
+            .pick_file();
+        if let Some(path) = path {
+            let buffer = fs::read(path).await?;
+            return Ok(Some(Self::from_binary(buffer)?));
+        }
+        Ok(None)
+    }
+
+    pub async fn save(&self) -> Result<(), Error> {
+        let path = FileDialog::new()
+            .add_filter("Dokumen Ikarus", &["ikd"])
+            .save_file();
+        if let Some(path) = path {
+            let result = self.to_binary()?;
+            fs::write(path, result).await?;
+        }
+        Ok(())
     }
 }
 
