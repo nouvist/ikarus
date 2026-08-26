@@ -16,40 +16,49 @@ class VplValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 32,
-      decoration: const BoxDecoration(
-        color: Colors.fg0,
-        borderRadius: .all(.circular(4)),
-      ),
-      child: ButtonBuilder(
-        onTap: onTap,
-        builder: (context, state, child) => Opacity(
-          opacity: switch (state) {
-            .rest => 1,
-            .hover => 0.9,
-            .tap => 0.95,
-          },
-          child: child!,
+    return IntrinsicWidth(
+      child: Container(
+        constraints: const .new(minHeight: 32, maxHeight: 32, maxWidth: 256),
+        decoration: const BoxDecoration(
+          color: Colors.fg0,
+          borderRadius: .all(.circular(4)),
         ),
-        child: Container(
-          height: 32,
-          padding: const .symmetric(horizontal: 8),
-          alignment: .center,
-          decoration: BoxDecoration(
-            color: switch (type) {
-              .ident => Colors.cIdent0,
-              .value => Colors.cValue0,
+        child: ButtonBuilder(
+          onTap: onTap,
+          builder: (context, state, child) => Opacity(
+            opacity: switch (state) {
+              .rest => 1,
+              .hover => 0.9,
+              .tap => 0.95,
             },
-            border: .all(
-              color: switch (type) {
-                .ident => Colors.cIdent1,
-                .value => Colors.cValue1,
-              },
-            ),
-            borderRadius: const .all(.circular(4)),
+            child: child!,
           ),
-          child: Foreground(color: Colors.cFg1, child: child),
+          child: Container(
+            height: 32,
+            padding: const .symmetric(horizontal: 8),
+            alignment: .center,
+            decoration: BoxDecoration(
+              color: switch (type) {
+                .ident => Colors.cIdent0,
+                .value => Colors.cValue0,
+              },
+              border: .all(
+                color: switch (type) {
+                  .ident => Colors.cIdent1,
+                  .value => Colors.cValue1,
+                },
+              ),
+              borderRadius: const .all(.circular(4)),
+            ),
+            child: Foreground(
+              color: Colors.cFg1,
+              child: DefaultTextStyle.merge(
+                maxLines: 1,
+                style: const .new(overflow: .ellipsis),
+                child: child,
+              ),
+            ),
+          ),
         ),
       ),
     );
