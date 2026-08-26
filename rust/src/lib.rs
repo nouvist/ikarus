@@ -36,7 +36,6 @@ pub mod shared {
     pub mod file_dialog;
     pub mod logger;
     pub mod settings;
-    pub mod templates;
 }
 
 #[frb]

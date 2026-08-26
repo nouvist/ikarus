@@ -16,7 +16,6 @@ use crate::{
         error_helper::{MapError, OkOrError},
         logger::log,
         settings::Settings,
-        templates::prompt01,
     },
 };
 
@@ -68,14 +67,7 @@ impl AiSingleton {
             .build()
             .map_ai_failed_to_initialize()?;
 
-        let agent = client
-            .agent(&settings.text_generation_model)
-            .preamble(prompt01())
-            .rmcp_tool(
-                mcp_tools.first().ok_or_ai_failed_to_initialize()?.clone(),
-                mcp_client.peer().clone(),
-            )
-            .build();
+        let agent = client.agent(&settings.text_generation_model).build();
 
         Ok(agent)
     }

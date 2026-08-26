@@ -16,10 +16,11 @@ use crate::{
         error::Error,
         error_helper::{MapError, OkOrError},
         logger::log,
-        templates::initial_page_html,
     },
     win32::window::Window,
 };
+
+const TEMPLATE: &'static str = include_str!("./templates/index.html");
 
 #[frb(ignore)]
 pub struct BrowserSingletonInner {
@@ -135,7 +136,7 @@ impl BrowserSingleton {
             match page {
                 Some(page) => {
                     page.goto("about:blank").await?;
-                    page.set_content(initial_page_html()).await?;
+                    page.set_content(TEMPLATE).await?;
                     break;
                 }
                 None => {
