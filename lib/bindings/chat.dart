@@ -1,4 +1,6 @@
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:ikarus/crux.dart';
+import 'package:ikarus/crux/ai/state.dart';
 import 'package:ikarus/design.dart';
 
 class Chat extends StatefulWidget {
@@ -10,7 +12,13 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   final _input = TextEditingController();
-  var _chat = <Widget>[];
+  var _enabled = true;
+  late var _chat = _buildInitialChat();
+
+  void _push(List<Widget> children) {
+    if (!mounted) return;
+    setState(() => _chat = [...children.reversed, ..._chat]);
+  }
 
   Future<void> _handleSubmit() async {
     final ai = await AiSingleton.instance();
@@ -18,30 +26,53 @@ class _ChatState extends State<Chat> {
     if (prompt.isEmpty) return;
 
     setState(() {
+      _enabled = false;
       _input.clear();
-      _chat = [
-        ChatBubble(type: .user, child: Text(prompt)),
-        const ChatName(type: .user),
-        ..._chat,
-      ];
     });
 
-    final result = await ai.prompt(prompt: prompt);
-    if (result case final result?) {
-      setState(() {
-        _chat = [
-          ChatBubble(type: .assistant, child: Text(result)),
-          const ChatName(type: .assistant),
-          ..._chat,
-        ];
-      });
-    } else {
-      setState(() => _chat.removeLast());
+    _push([
+      const ChatName(type: .user),
+      ChatBubble(type: .user, child: Text(prompt)),
+    ]);
+
+    try {
+      _push([
+        const ChatName(type: .assistant),
+        const ChatBubble(type: .assistant, child: Text('Berpikir...')),
+      ]);
+      await ai.prompt(
+        prompt: prompt,
+        cb: (data) => switch (data) {
+          AiState_Start it => _push([
+            switch (it.field0.decision) {
+              .answerImmediately => const ChatBubble(
+                type: .assistant,
+                child: Text('Merangkai jawaban...'),
+              ),
+              .planForAlgorithm => const ChatBubble(
+                type: .assistant,
+                child: Text('Merangkai rencana...'),
+              ),
+            },
+          ]),
+          AiState_Answer it => _push([
+            ChatBubble(type: .assistant, child: Text(it.field0.message)),
+          ]),
+          AiState_Plan it => _push([
+            for (final plan in it.field0.plans)
+              ChatBubble(type: .assistant, child: Text(plan)),
+          ]),
+        },
+      );
+    } on AnyhowException catch (err) {
+      Console.current().log(err.message);
+    } finally {
+      setState(() => _enabled = true);
     }
   }
 
   void _handleClear() => setState(() {
-    _chat = const [];
+    _chat = _buildInitialChat();
   });
 
   @override
@@ -66,11 +97,13 @@ class _ChatState extends State<Chat> {
                   children: [
                     Expanded(
                       child: Input(
+                        enabled: _enabled,
                         controller: _input,
                         onSubmit: (_) => _handleSubmit(),
                       ),
                     ),
                     Button(
+                      enabled: _enabled,
                       onTap: _handleSubmit,
                       child: const Icon(FluentIcons.send_24_regular),
                     ),
@@ -100,4 +133,13 @@ class _ChatState extends State<Chat> {
       ],
     );
   }
+
+  List<Widget> _buildInitialChat() => [
+    const Gap(16),
+    const Text(
+      textAlign: .center,
+      style: .new(color: Colors.fg2),
+      'Percakapan tidak bersifat kontinu, setiap pesan memiliki konteks baru.',
+    ),
+  ];
 }

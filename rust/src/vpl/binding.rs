@@ -30,7 +30,7 @@ impl RawScopeBinding {
     }
 
     #[frb(ignore)]
-    pub async fn get_current() -> RawScope {
+    pub async fn current() -> RawScope {
         macro_rules! unwrap {
             ($($token:tt)+) => {
                 $($token)+ else {
@@ -48,7 +48,7 @@ impl RawScopeBinding {
     }
 
     #[frb(ignore)]
-    pub async fn set_current(scope: RawScope) {
+    pub async fn update(scope: RawScope) {
         macro_rules! unwrap {
             ($($token:tt)+) => {
                 $($token)+ else {

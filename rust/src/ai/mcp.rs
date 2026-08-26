@@ -19,7 +19,7 @@ pub struct McpServer {}
 impl McpServer {
     #[tool(description = "Get current statements")]
     async fn get_statements(&self) -> Result<String, ErrorData> {
-        let current = RawScopeBinding::get_current().await;
+        let current = RawScopeBinding::current().await;
         let json = serde_json::to_string(&current).map_known_error()?;
         Ok(json)
     }
@@ -29,7 +29,7 @@ impl McpServer {
         &self,
         Parameters(param): Parameters<McpAddStatement>,
     ) -> Result<String, ErrorData> {
-        let mut current = RawScopeBinding::get_current().await.0;
+        let mut current = RawScopeBinding::current().await.0;
         current.insert(
             param
                 .index
@@ -37,7 +37,7 @@ impl McpServer {
                 .clamp(0, current.len()),
             param.statement,
         );
-        RawScopeBinding::set_current(RawScope(current)).await;
+        RawScopeBinding::update(RawScope(current)).await;
 
         Ok("success".to_string())
     }

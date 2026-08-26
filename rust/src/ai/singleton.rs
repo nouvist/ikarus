@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use flutter_rust_bridge::frb;
+use flutter_rust_bridge::{DartFnFuture, frb};
 use rig::{Agent, client::AgentClientExt, completion::Prompt, providers::openai};
 use rmcp::{RoleClient, ServiceExt, model::Tool, service::RunningService};
 use tokio::{
@@ -9,21 +9,20 @@ use tokio::{
 };
 
 use crate::{
-    ai::mcp::McpServer,
-    impl_frb_clone,
-    shared::{
-        error::Error,
-        error_helper::{MapError, OkOrError},
-        logger::log,
-        settings::Settings,
+    ai::{
+        mcp::McpServer,
+        state::{AiState, AiStateAnswer, AiStatePlan, AiStateStart, AiStateStartDecision},
     },
+    impl_frb_clone,
+    shared::{error::Error, error_helper::MapError, logger::log, settings::Settings},
+    vpl::binding::RawScopeBinding,
 };
 
 #[frb(ignore)]
 #[derive(Clone)]
 pub struct AiSingletonInner {
     settings: Settings,
-    agent: Agent,
+    client: openai::Client,
 }
 
 #[frb(opaque)]
@@ -45,31 +44,21 @@ impl AiSingleton {
 
     async fn initialize() -> Result<Self, Error> {
         let settings = Settings::current().await;
-        let (mcp_client, mcp_tools) = Self::initialize_mcp().await?;
-        let agent = Self::initialize_agent(&settings, &mcp_client, &mcp_tools).await?;
+        let client = Self::initialize_client(&settings).await?;
 
         Ok(Self {
-            inner: Arc::new(RwLock::new(AiSingletonInner {
-                settings: settings,
-                agent: agent,
-            })),
+            inner: Arc::new(RwLock::new(AiSingletonInner { settings, client })),
         })
     }
 
-    async fn initialize_agent(
-        settings: &Settings,
-        mcp_client: &RunningService<RoleClient, ()>,
-        mcp_tools: &Vec<Tool>,
-    ) -> Result<Agent, Error> {
+    async fn initialize_client(settings: &Settings) -> Result<openai::Client, Error> {
         let client = openai::Client::builder()
             .base_url(&settings.text_generation_url)
             .api_key(&settings.text_generation_key)
             .build()
             .map_ai_failed_to_initialize()?;
 
-        let agent = client.agent(&settings.text_generation_model).build();
-
-        Ok(agent)
+        Ok(client)
     }
 
     async fn initialize_mcp() -> Result<(RunningService<RoleClient, ()>, Vec<Tool>), Error> {
@@ -90,21 +79,50 @@ impl AiSingleton {
         Ok((client, tools))
     }
 
-    pub async fn frb_override_prompt(&self, prompt: String) -> Option<String> {
-        match self.prompt(prompt).await {
-            Ok(it) => Some(it),
-            Err(it) => {
-                log(format!("Galat: {it}")).await;
-                None
-            }
-        }
-    }
-
-    pub async fn prompt(&self, prompt: String) -> Result<String, Error> {
+    pub async fn prompt(
+        &self,
+        prompt: String,
+        cb: impl Fn(AiState) -> DartFnFuture<()>,
+    ) -> Result<(), Error> {
+        let context = format!("#Program:\n{}", RawScopeBinding::current().await.to_json()?,);
         let inner = self.inner.read().await;
-        println!("> User: {prompt}");
-        let response = inner.agent.prompt(prompt).await?;
-        println!("> AI: {response}");
-        Ok(response)
+        let model = &inner.settings.text_generation_model;
+        let client = &inner.client;
+        let extractor_start = client
+            .extractor::<AiStateStart>(model.to_owned())
+            .preamble(concat!(
+                include_str!("./prompts/preamble.md"),
+                include_str!("./prompts/ai_state_start.md"),
+            ))
+            .build();
+        let extractor_answer = client
+            .extractor::<AiStateAnswer>(model.to_owned())
+            .preamble(include_str!("./prompts/preamble.md"))
+            .context(&context)
+            .build();
+        let extractor_plan = client
+            .extractor::<AiStatePlan>(model.to_owned())
+            .preamble(concat!(
+                include_str!("./prompts/preamble.md"),
+                include_str!("./prompts/ai_state_plan.md"),
+            ))
+            .context(&context)
+            .build();
+
+        let start = extractor_start.extract(prompt.clone()).await?;
+        (cb)(AiState::Start(start.clone())).await;
+
+        if let AiStateStartDecision::AnswerImmediately = start.decision {
+            let answer = extractor_answer
+                .extract(format!("{}{}", prompt, prompt.clone()))
+                .await?;
+            (cb)(AiState::Answer(answer)).await;
+            return Ok(());
+        }
+
+        let plan = extractor_plan.extract(prompt.clone()).await?;
+        (cb)(AiState::Plan(plan.clone())).await;
+
+        Ok(())
     }
 }

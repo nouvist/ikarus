@@ -28,6 +28,23 @@ macro_rules! impl_frb_clone {
 }
 
 #[macro_export]
+macro_rules! impl_enum_is {
+    ($type:ty where $($subenum_name:ident => $subenum_type:ty),+$(,)?) => {
+        #[frb(ignore)]
+        impl $type {
+            paste::paste! {
+                $(pub fn [<is_ $subenum_name>](&self) -> bool {
+                    match self {
+                        $type::$subenum_type => true,
+                        _ => false,
+                    }
+                })+
+            }
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! impl_fn_call {
     ($([$type:ident] $name:expr $( => $arg_type:ident : $arg_name:expr),* $(,)?);+ $(;)?) => {
         #[frb]

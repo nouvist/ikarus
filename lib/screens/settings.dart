@@ -67,7 +67,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               spacing: 8,
               crossAxisAlignment: .stretch,
               children: [
-                const Expanded(child: Text('Text Generation Provider')),
+                const Expanded(
+                  child: Text(
+                    style: .new(fontWeight: .bold),
+                    'Text Generation Provider',
+                  ),
+                ),
                 Row(
                   children: [
                     const Expanded(child: Text('API URL')),
@@ -89,11 +94,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Expanded(flex: 2, child: Input(controller: _model)),
                   ],
                 ),
+                const Text('Perubahan memerlukan Ikarus untuk dimulai ulang.'),
                 Padding(
                   padding: const .symmetric(vertical: 8),
                   child: Container(height: 1, color: Colors.bro),
                 ),
-                const Text('Perubahan memerlukan Ikarus untuk dimulai ulang.'),
                 Row(
                   spacing: 8,
                   mainAxisAlignment: .end,

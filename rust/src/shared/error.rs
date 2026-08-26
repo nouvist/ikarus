@@ -28,6 +28,8 @@ pub enum Error {
     AiFailedToStream(#[from] rig::agent::StreamingError),
     #[error("gagal melakukan prompt: {0}")]
     AiPromptError(#[from] rig::completion::PromptError),
+    #[error("gagal mengekstrak prompt: {0}")]
+    AiExtractionError(#[from] rig::extractor::ExtractionError),
 
     #[error("variabel yang dituju tidak ditemukan")]
     EvaluatorNoVariable,

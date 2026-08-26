@@ -1,6 +1,7 @@
 import 'package:ikarus/design.dart';
 
 class Button extends StatelessWidget {
+  final bool enabled;
   final VoidCallback? onTap;
   final VoidCallback? onTapUp;
   final VoidCallback? onTapDown;
@@ -12,6 +13,7 @@ class Button extends StatelessWidget {
 
   const Button({
     super.key,
+    this.enabled = true,
     this.onTap,
     this.onTapUp,
     this.onTapDown,
@@ -24,56 +26,65 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: ButtonBuilder(
-        onTap: onTap,
-        onTapUp: onTapUp,
-        onTapDown: onTapDown,
-        onDoubleTap: onDoubleTap,
-        builder: (context, state, child) => DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: const .all(.circular(8)),
-            border: Border(
-              bottom: .new(
-                color: switch (state) {
-                  .hover => Colors.brt,
-                  _ => Colors.bro,
+    return IgnorePointer(
+      ignoring: !enabled,
+      child: Opacity(
+        opacity: switch (enabled) {
+          true => 1,
+          false => 0.5,
+        },
+        child: SizedBox(
+          width: width,
+          height: height,
+          child: ButtonBuilder(
+            onTap: onTap,
+            onTapUp: onTapUp,
+            onTapDown: onTapDown,
+            onDoubleTap: onDoubleTap,
+            builder: (context, state, child) => DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: const .all(.circular(8)),
+                border: Border(
+                  bottom: .new(
+                    color: switch (state) {
+                      .hover => Colors.brt,
+                      _ => Colors.bro,
+                    },
+                    width: 2,
+                  ),
+                ),
+              ),
+              child: DecoratedBox(
+                decoration: switch (state) {
+                  .rest => BoxDecoration(
+                    color: Colors.ov1,
+                    border: .all(color: Colors.bro),
+                    borderRadius: const .all(.circular(8)),
+                  ),
+                  .hover => BoxDecoration(
+                    color: Colors.ov2,
+                    border: .all(color: Colors.bro),
+                    borderRadius: const .all(.circular(8)),
+                  ),
+                  .tap => BoxDecoration(
+                    color: Colors.ov0,
+                    border: .all(color: Colors.bro),
+                    borderRadius: const .all(.circular(8)),
+                  ),
                 },
-                width: 2,
+                child: Foreground(
+                  color: switch (state) {
+                    .tap => Colors.fg1,
+                    _ => Colors.fg0,
+                  },
+                  child: child!,
+                ),
               ),
             ),
-          ),
-          child: DecoratedBox(
-            decoration: switch (state) {
-              .rest => BoxDecoration(
-                color: Colors.ov1,
-                border: .all(color: Colors.bro),
-                borderRadius: const .all(.circular(8)),
-              ),
-              .hover => BoxDecoration(
-                color: Colors.ov2,
-                border: .all(color: Colors.bro),
-                borderRadius: const .all(.circular(8)),
-              ),
-              .tap => BoxDecoration(
-                color: Colors.ov0,
-                border: .all(color: Colors.bro),
-                borderRadius: const .all(.circular(8)),
-              ),
-            },
-            child: Foreground(
-              color: switch (state) {
-                .tap => Colors.fg1,
-                _ => Colors.fg0,
-              },
-              child: child!,
+            child: Center(
+              child: Padding(padding: padding, child: child),
             ),
           ),
-        ),
-        child: Center(
-          child: Padding(padding: padding, child: child),
         ),
       ),
     );

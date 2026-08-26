@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:ikarus/design.dart';
 
 class Input extends StatefulWidget {
+  final bool enabled;
   final TextEditingController controller;
   final bool obscure;
   final TextInputType? type;
@@ -10,6 +11,7 @@ class Input extends StatefulWidget {
 
   const Input({
     super.key,
+    this.enabled = true,
     required this.controller,
     this.obscure = false,
     this.type,
@@ -47,49 +49,58 @@ class _InputState extends State<Input>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      key: ValueKey(_key),
-      height: 48,
-      child: _gesture.buildGestureDetector(
-        child: MouseRegion(
-          cursor: SystemMouseCursors.text,
-          onHover: _handleHover,
-          child: ListenableBuilder(
-            listenable: _focus,
-            builder: (context, child) => DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: switch (_focus.hasFocus) {
-                    true => const BorderSide(color: Colors.a0, width: 3),
-                    false => const BorderSide(color: Colors.bro, width: 2),
-                  },
+    return IgnorePointer(
+      ignoring: !widget.enabled,
+      child: Opacity(
+        opacity: switch (widget.enabled) {
+          true => 1,
+          false => 0.5,
+        },
+        child: SizedBox(
+          key: ValueKey(_key),
+          height: 48,
+          child: _gesture.buildGestureDetector(
+            child: MouseRegion(
+              cursor: SystemMouseCursors.text,
+              onHover: _handleHover,
+              child: ListenableBuilder(
+                listenable: _focus,
+                builder: (context, child) => DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: switch (_focus.hasFocus) {
+                        true => const .new(color: Colors.a0, width: 3),
+                        false => const .new(color: Colors.bro, width: 2),
+                      },
+                    ),
+                    borderRadius: const .all(.circular(8)),
+                  ),
+                  child: child!,
                 ),
-                borderRadius: const .all(.circular(8)),
-              ),
-              child: child!,
-            ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                border: .all(color: Colors.bro),
-                borderRadius: const .all(.circular(8)),
-              ),
-              child: Padding(
-                padding: const .symmetric(horizontal: 16, vertical: 4),
-                child: Center(
-                  child: EditableText(
-                    key: _key,
-                    controller: widget.controller,
-                    onTapUpOutside: _handleTapOutside,
-                    onSubmitted: widget.onSubmit,
-                    focusNode: _focus,
-                    keyboardType: widget.type,
-                    inputFormatters: widget.formatters,
-                    obscureText: widget.obscure,
-                    style: DefaultTextStyle.of(context).style,
-                    cursorColor: Colors.fg0,
-                    backgroundCursorColor: Colors.fg0,
-                    selectionColor: Colors.bg2,
-                    contextMenuBuilder: _buildContextMenu,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: .all(color: Colors.bro),
+                    borderRadius: const .all(.circular(8)),
+                  ),
+                  child: Padding(
+                    padding: const .symmetric(horizontal: 16, vertical: 4),
+                    child: Center(
+                      child: EditableText(
+                        key: _key,
+                        controller: widget.controller,
+                        onTapUpOutside: _handleTapOutside,
+                        onSubmitted: widget.onSubmit,
+                        focusNode: _focus,
+                        keyboardType: widget.type,
+                        inputFormatters: widget.formatters,
+                        obscureText: widget.obscure,
+                        style: DefaultTextStyle.of(context).style,
+                        cursorColor: Colors.fg0,
+                        backgroundCursorColor: Colors.fg0,
+                        selectionColor: Colors.bg2,
+                        contextMenuBuilder: _buildContextMenu,
+                      ),
+                    ),
                   ),
                 ),
               ),
