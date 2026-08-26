@@ -160,11 +160,21 @@ impl Evaluator {
     }
 
     fn apply_bool_eq(left: &Value, right: &Value) -> Option<Value> {
-        Some(Value::Boolean(ValueBoolean(left == right)))
+        match (left, right) {
+            (Value::Object(_), Value::Object(_)) => Some(Value::Boolean(ValueBoolean(false))),
+            (Value::Object(_), _) => Some(Value::Boolean(ValueBoolean(false))),
+            (_, Value::Object(_)) => Some(Value::Boolean(ValueBoolean(false))),
+            (left, right) => Some(Value::Boolean(ValueBoolean(left == right))),
+        }
     }
 
     fn apply_bool_ne(left: &Value, right: &Value) -> Option<Value> {
-        Some(Value::Boolean(ValueBoolean(left != right)))
+        match (left, right) {
+            (Value::Object(_), Value::Object(_)) => Some(Value::Boolean(ValueBoolean(true))),
+            (Value::Object(_), _) => Some(Value::Boolean(ValueBoolean(true))),
+            (_, Value::Object(_)) => Some(Value::Boolean(ValueBoolean(true))),
+            (left, right) => Some(Value::Boolean(ValueBoolean(left != right))),
+        }
     }
 
     fn apply_bool_lt(left: &Value, right: &Value) -> Option<Value> {
