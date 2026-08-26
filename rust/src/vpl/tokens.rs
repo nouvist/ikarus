@@ -59,12 +59,12 @@ pub enum ValueComputedOperation {
     BoolAnd,
     BoolOr,
 
-    BoolEq,
-    BoolNe,
-    BoolLt,
-    BoolLe,
-    BoolGt,
-    BoolGe,
+    BoolEqual,
+    BoolNotEqual,
+    BoolLessThan,
+    BoolLessThanOrEqual,
+    BoolGreaterThan,
+    BoolGreatherThanOrEqual,
 }
 impl_frb_clone!(ValueComputedOperation);
 

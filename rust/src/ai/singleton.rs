@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use flutter_rust_bridge::{DartFnFuture, frb};
-use rig::{Agent, client::AgentClientExt, completion::Prompt, providers::openai};
+use rig::{client::AgentClientExt, providers::openai};
 use rmcp::{RoleClient, ServiceExt, model::Tool, service::RunningService};
 use tokio::{
     io,
@@ -14,7 +14,7 @@ use crate::{
         state::{AiState, AiStateAnswer, AiStatePlan, AiStateStart, AiStateStartDecision},
     },
     impl_frb_clone,
-    shared::{error::Error, error_helper::MapError, logger::log, settings::Settings},
+    shared::{error::Error, error_helper::MapError, settings::Settings},
     vpl::binding::RawScopeBinding,
 };
 

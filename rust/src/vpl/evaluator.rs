@@ -63,12 +63,12 @@ impl Evaluator {
             (ValueComputedOperation::BoolAnd, left, right) => Self::apply_bool_and(left, right),
             (ValueComputedOperation::BoolOr, left, right) => Self::apply_bool_or(left, right),
 
-            (ValueComputedOperation::BoolEq, left, right) => Self::apply_bool_eq(left, right),
-            (ValueComputedOperation::BoolNe, left, right) => Self::apply_bool_ne(left, right),
-            (ValueComputedOperation::BoolLt, left, right) => Self::apply_bool_lt(left, right),
-            (ValueComputedOperation::BoolLe, left, right) => Self::apply_bool_le(left, right),
-            (ValueComputedOperation::BoolGt, left, right) => Self::apply_bool_gt(left, right),
-            (ValueComputedOperation::BoolGe, left, right) => Self::apply_bool_ge(left, right),
+            (ValueComputedOperation::BoolEqual, left, right) => Self::apply_bool_eq(left, right),
+            (ValueComputedOperation::BoolNotEqual, left, right) => Self::apply_bool_ne(left, right),
+            (ValueComputedOperation::BoolLessThan, left, right) => Self::apply_bool_lt(left, right),
+            (ValueComputedOperation::BoolLessThanOrEqual, left, right) => Self::apply_bool_le(left, right),
+            (ValueComputedOperation::BoolGreaterThan, left, right) => Self::apply_bool_gt(left, right),
+            (ValueComputedOperation::BoolGreatherThanOrEqual, left, right) => Self::apply_bool_ge(left, right),
         }
     }
 

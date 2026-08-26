@@ -399,45 +399,55 @@ class _VplValueDialogState extends State<VplValueDialog> {
         children: [
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() => data.field0.operation = .boolEq),
-              active: data.field0.operation == .boolEq,
+              active: data.field0.operation == .boolEqual,
+              onTap: () => setState(() {
+                data.field0.operation = .boolEqual;
+              }),
               child: const Text('=='),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() => data.field0.operation = .boolNe),
-              active: data.field0.operation == .boolNe,
+              active: data.field0.operation == .boolNotEqual,
+              onTap: () => setState(() {
+                data.field0.operation = .boolNotEqual;
+              }),
               child: const Text('!='),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() => data.field0.operation = .boolLt),
-              active: data.field0.operation == .boolLt,
+              active: data.field0.operation == .boolLessThan,
+              onTap: () => setState(() {
+                data.field0.operation = .boolLessThan;
+              }),
               child: const Text('<'),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() => data.field0.operation = .boolLe),
-              active: data.field0.operation == .boolLe,
+              active: data.field0.operation == .boolLessThanOrEqual,
+              onTap: () => setState(() {
+                data.field0.operation = .boolLessThanOrEqual;
+              }),
               child: const Text('<='),
             ),
           ),
           Expanded(
             child: ToggleButton(
-              onTap: () => setState(() => data.field0.operation = .boolGt),
-              active: data.field0.operation == .boolGt,
+              active: data.field0.operation == .boolGreaterThan,
+              onTap: () => setState(() {
+                data.field0.operation = .boolGreaterThan;
+              }),
               child: const Text('>'),
             ),
           ),
           Expanded(
             child: ToggleButton(
+              active: data.field0.operation == .boolGreatherThanOrEqual,
               onTap: () => setState(() {
-                data.field0.operation = .boolGe;
+                data.field0.operation = .boolGreatherThanOrEqual;
               }),
-              active: data.field0.operation == .boolGe,
               child: const Text('>='),
             ),
           ),
