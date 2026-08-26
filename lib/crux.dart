@@ -2,6 +2,7 @@ export 'package:ikarus/crux/ai/singleton.dart';
 export 'package:ikarus/crux/browser/singleton.dart';
 export 'package:ikarus/crux/frb_generated.dart' show RustLib;
 export 'package:ikarus/crux/shared/abort_controller.dart';
+export 'package:ikarus/crux/shared/file_dialog.dart';
 export 'package:ikarus/crux/shared/logger.dart';
 export 'package:ikarus/crux/shared/settings.dart';
 export 'package:ikarus/crux/vpl/functions.dart';

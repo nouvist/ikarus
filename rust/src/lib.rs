@@ -33,6 +33,7 @@ pub mod shared {
     pub mod abort_controller;
     pub mod error;
     pub mod error_helper;
+    pub mod file_dialog;
     pub mod logger;
     pub mod settings;
     pub mod templates;

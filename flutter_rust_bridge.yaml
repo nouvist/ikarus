@@ -4,6 +4,7 @@ rust_input:
   crate::vpl,
   crate::shared::error,
   crate::shared::abort_controller,
+  crate::shared::file_dialog,
   crate::shared::logger,
   crate::shared::settings,
 rust_root: rust/

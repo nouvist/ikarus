@@ -59,6 +59,28 @@ class _VplValueDialogState extends State<VplValueDialog> {
     context.navigator().pop(_data);
   }
 
+  Future<void> _handleOpenFile() async {
+    final path = await open(
+      filters: const [
+        .new(name: 'Comma Seperated Values', extensions: ['csv']),
+      ],
+    );
+
+    if (path == null) return;
+    _string.text = path;
+  }
+
+  Future<void> _handleSaveFile() async {
+    final path = await save(
+      filters: const [
+        .new(name: 'Comma Seperated Values', extensions: ['csv']),
+      ],
+    );
+
+    if (path == null) return;
+    _string.text = path;
+  }
+
   VoidCallback _createTypeHandler(Value next) => () {
     setState(() {
       _data = next;
@@ -148,6 +170,25 @@ class _VplValueDialogState extends State<VplValueDialog> {
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai')),
                     Input(onSubmit: (_) => _handleSave(), controller: _string),
+                    const Gap(8),
+                    Row(
+                      spacing: 8,
+                      mainAxisAlignment: .end,
+                      children: [
+                        IntrinsicWidth(
+                          child: Button(
+                            onTap: _handleOpenFile,
+                            child: const Text('Buka Berkas'),
+                          ),
+                        ),
+                        IntrinsicWidth(
+                          child: Button(
+                            onTap: _handleSaveFile,
+                            child: const Text('Simpan Berkas'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ] else if (_data is Value_Number) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai')),
