@@ -103,19 +103,21 @@ impl AiSingleton {
         let mcp_tools = &inner.mcp_tools;
 
         let context = format!(
-            "#CurrentProgram:\n{}",
+            "<context>\n{}\n</context>",
             RawScopeBinding::current().await.to_json()?,
         );
 
         let agent = client
             .agent(model)
-            .preamble(include_str!("./prompts/preamble.md"))
             .context(&context)
+            .preamble(include_str!("./prompts/preamble.md"))
             .rmcp_tools(mcp_tools.to_vec(), mcp_client.peer().clone())
             .tool_choice(ToolChoice::Auto)
-            .default_max_turns(10)
+            .default_max_turns(100)
             .build();
 
+        // let result = agent.prompt(prompt).await?;
+        // (cb)(AiResponse::Response(result)).await;
         let mut stream = agent.stream_prompt(prompt).await;
         while let Some(next) = stream.next().await {
             let next = next?;
@@ -132,7 +134,6 @@ impl AiSingleton {
                 _ => continue,
             }
         }
-        // (cb)(result).await;
 
         Ok(())
     }

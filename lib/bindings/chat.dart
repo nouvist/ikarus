@@ -13,8 +13,8 @@ class ChatBinding extends StatefulWidget {
 
 class _ChatBindingState extends State<ChatBinding> {
   final _input = TextEditingController();
+  final _chat = <ChatData>[];
   var _enabled = true;
-  var _chat = <ChatData>[];
 
   Future<void> _handleSubmit() async {
     final ai = await AiSingleton.instance();

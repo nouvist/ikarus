@@ -8,3 +8,6 @@ Language (VPL), seperti:
 
 Ikarus belum mendukung format markdown dengan benar, jadi gunakan dua baris baru
 untuk paragraf, dan gunakan emoji jika diperlukan.
+
+Jangan lupa untuk mengambil algoritma saat ini dengan get_statements, jika
+dimintai untuk memodifikasi algoritma yang sudah ada.

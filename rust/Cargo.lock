@@ -4086,6 +4086,7 @@ dependencies = [
  "async-trait",
  "camino",
  "chromiumoxide",
+ "csv",
  "flutter_rust_bridge",
  "paste",
  "postcard",

@@ -63,6 +63,9 @@ impl_fn_call! {
 
     [CsvNew] "Csv::Baru"
         => csv: "out Csv";
+    [CsvLoad] "Csv::Buka"
+        => csv: "out Csv",
+        => file: "Berkas";
     [CsvGet] "Csv::Ambil"
         => csv: "ref Csv",
         => row: "Baris",

@@ -13,6 +13,8 @@ pub enum Error {
     CdpError(#[from] chromiumoxide::error::CdpError),
     #[error("data gagal diserialisasi ke json: {0}")]
     SerdeJsonError(#[from] serde_json::Error),
+    #[error("gagal membaca berkas csv: {0}")]
+    CsvError(#[from] csv::Error),
 
     #[error("data gagal diserialisasi")]
     SerializeError,
