@@ -170,7 +170,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         border: .all(color: Colors.bro),
         borderRadius: const .all(.circular(8)),
       ),
-      child: const Chat(),
+      child: const ChatBinding(),
     );
   }
 

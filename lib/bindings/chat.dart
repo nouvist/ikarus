@@ -1,75 +1,61 @@
-import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'dart:async';
+
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 
-class Chat extends StatefulWidget {
-  const Chat({super.key});
+class ChatBinding extends StatefulWidget {
+  const ChatBinding({super.key});
 
   @override
-  State<Chat> createState() => _ChatState();
+  State<ChatBinding> createState() => _ChatBindingState();
 }
 
-class _ChatState extends State<Chat> {
+class _ChatBindingState extends State<ChatBinding> {
   final _input = TextEditingController();
   var _enabled = true;
-  late var _chat = _buildInitialChat();
-
-  void _push(List<Widget> children, [int remove = 0]) {
-    if (!mounted) return;
-    setState(() => _chat = [...children.reversed, ..._chat.sublist(remove)]);
-  }
+  var _chat = <ChatData>[];
 
   Future<void> _handleSubmit() async {
     final ai = await AiSingleton.instance();
-    final prompt = _input.text.trim();
-    if (prompt.isEmpty) return;
+    final text = _input.text.trim();
+    if (text.isEmpty) return;
 
     setState(() {
       _enabled = false;
       _input.clear();
+      _chat.add(.user(text));
     });
 
-    _push([
-      const ChatName(type: .user),
-      ChatBubble(type: .user, child: Text(prompt)),
-    ]);
-
     try {
-      _push([const ChatName(type: .assistant)]);
-      var str = null as String?;
-      await ai.prompt(
-        prompt: prompt,
-        cb: (data) {
-          switch (data) {
-            case AiResponse_Tool it:
-              _push([
-                ChatBubble(
-                  type: .assistant,
-                  child: Text('Memanggil ${it.field0}...'),
-                ),
-              ]);
-              break;
-            case AiResponse_Response it:
-              if (str == null) {
-                str = it.field0;
-                _push([ChatBubble(type: .assistant, child: Text(str!))]);
-              } else {
-                str = str! + it.field0;
-                _push([ChatBubble(type: .assistant, child: Text(str!))], 1);
-              }
-              break;
-          }
-        },
-      );
+      await ai.prompt(prompt: text, cb: _handleData);
     } on AnyhowException catch (err) {
       Console.current().log(err.message);
     } finally {
-      setState(() => _enabled = true);
+      setState(() {
+        _enabled = true;
+      });
     }
   }
 
+  void _handleData(AiResponse response) => setState(() {
+    switch (response) {
+      case AiResponse_Tool it:
+        _chat.add(.tool(it.field0));
+        break;
+      case AiResponse_Response it:
+        final last = _chat.lastOrNull;
+        if (last case ChatDataAssistant last?) {
+          last.message += it.field0;
+        } else {
+          _chat.add(.assistant(it.field0));
+        }
+        break;
+    }
+  });
+
   void _handleClear() => setState(() {
-    _chat = _buildInitialChat();
+    _chat.clear();
   });
 
   @override
@@ -79,16 +65,9 @@ class _ChatState extends State<Chat> {
         Positioned.fill(
           child: Column(
             children: [
-              Expanded(
-                child: ListView(
-                  padding: const .all(8),
-                  reverse: true,
-                  children: _chat,
-                ),
-              ),
+              Expanded(child: Chat(data: _chat)),
               Padding(
-                // ignore: prefer_const_constructors
-                padding: .only(left: 8, bottom: 8, right: 8),
+                padding: const .only(left: 8, bottom: 8, right: 8),
                 child: Row(
                   spacing: 8,
                   children: [
@@ -119,6 +98,7 @@ class _ChatState extends State<Chat> {
             child: BackdropFilter(
               filter: .blur(sigmaX: 8, sigmaY: 8),
               child: Button(
+                enabled: _enabled,
                 onTap: _handleClear,
                 width: 48,
                 padding: .zero,
@@ -130,13 +110,4 @@ class _ChatState extends State<Chat> {
       ],
     );
   }
-
-  List<Widget> _buildInitialChat() => [
-    const Gap(16),
-    const Text(
-      textAlign: .center,
-      style: .new(color: Colors.fg2),
-      'Percakapan tidak bersifat kontinu, setiap pesan memiliki konteks baru.',
-    ),
-  ];
 }

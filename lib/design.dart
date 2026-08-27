@@ -38,4 +38,4 @@ export 'package:ikarus/design/widgets/button.dart';
 export 'package:ikarus/design/widgets/toggle_button.dart';
 
 // chat
-export 'package:ikarus/design/widgets/chat_bubble.dart';
+export 'package:ikarus/design/widgets/chat.dart';
