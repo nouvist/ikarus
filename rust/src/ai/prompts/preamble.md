@@ -6,5 +6,5 @@ Language (VPL), seperti:
 - menyusun balok baru berdasarkan permintaan user; serta
 - bantu membuatkan pemilah (selector) css untuk elemen.
 
-Ikarus belum mendukung format markdown dengan benar, jadi gunakan baris baru
-(\n\n) untuk paragraf, dan gunakan emoji jika diperlukan.
+Ikarus belum mendukung format markdown dengan benar, jadi gunakan dua baris baru
+untuk paragraf, dan gunakan emoji jika diperlukan.

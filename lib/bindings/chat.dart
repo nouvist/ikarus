@@ -14,9 +14,9 @@ class _ChatState extends State<Chat> {
   var _enabled = true;
   late var _chat = _buildInitialChat();
 
-  void _push(List<Widget> children) {
+  void _push(List<Widget> children, [int remove = 0]) {
     if (!mounted) return;
-    setState(() => _chat = [...children.reversed, ..._chat]);
+    setState(() => _chat = [...children.reversed, ..._chat.sublist(remove)]);
   }
 
   Future<void> _handleSubmit() async {
@@ -35,13 +35,31 @@ class _ChatState extends State<Chat> {
     ]);
 
     try {
-      _push([
-        const ChatName(type: .assistant),
-        const ChatBubble(type: .assistant, child: Text('Berpikir...')),
-      ]);
+      _push([const ChatName(type: .assistant)]);
+      var str = null as String?;
       await ai.prompt(
         prompt: prompt,
-        cb: (data) => _push([ChatBubble(type: .assistant, child: Text(data))]),
+        cb: (data) {
+          switch (data) {
+            case AiResponse_Tool it:
+              _push([
+                ChatBubble(
+                  type: .assistant,
+                  child: Text('Memanggil ${it.field0}...'),
+                ),
+              ]);
+              break;
+            case AiResponse_Response it:
+              if (str == null) {
+                str = it.field0;
+                _push([ChatBubble(type: .assistant, child: Text(str!))]);
+              } else {
+                str = str! + it.field0;
+                _push([ChatBubble(type: .assistant, child: Text(str!))], 1);
+              }
+              break;
+          }
+        },
       );
     } on AnyhowException catch (err) {
       Console.current().log(err.message);

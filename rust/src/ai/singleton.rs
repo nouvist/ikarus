@@ -1,12 +1,20 @@
 use std::sync::Arc;
 
 use flutter_rust_bridge::{DartFnFuture, frb};
-use rig::{client::AgentClientExt, completion::Prompt, message::ToolChoice, providers::openai};
+use rig::{
+    agent::MultiTurnStreamItem,
+    client::AgentClientExt,
+    completion::Prompt,
+    message::ToolChoice,
+    providers::openai,
+    streaming::{StreamedAssistantContent, StreamingPrompt},
+};
 use rmcp::{RoleClient, ServiceExt, model::Tool, service::RunningService};
 use tokio::{
     io,
     sync::{OnceCell, RwLock},
 };
+use tokio_stream::StreamExt;
 
 use crate::{
     ai::mcp::McpServer,
@@ -16,10 +24,11 @@ use crate::{
 };
 
 #[frb(ignore)]
-#[derive(Clone)]
 pub struct AiSingletonInner {
     settings: Settings,
     client: openai::Client,
+    mcp_client: RunningService<RoleClient, ()>,
+    mcp_tools: Vec<Tool>,
 }
 
 #[frb(opaque)]
@@ -42,9 +51,15 @@ impl AiSingleton {
     async fn initialize() -> Result<Self, Error> {
         let settings = Settings::current().await;
         let client = Self::initialize_client(&settings).await?;
+        let (mcp_client, mcp_tools) = Self::initialize_mcp().await?;
 
         Ok(Self {
-            inner: Arc::new(RwLock::new(AiSingletonInner { settings, client })),
+            inner: Arc::new(RwLock::new(AiSingletonInner {
+                settings,
+                client,
+                mcp_client,
+                mcp_tools,
+            })),
         })
     }
 
@@ -79,13 +94,14 @@ impl AiSingleton {
     pub async fn prompt(
         &self,
         prompt: String,
-        cb: impl Fn(String) -> DartFnFuture<()>,
+        cb: impl Fn(AiResponse) -> DartFnFuture<()>,
     ) -> Result<(), Error> {
         let inner = self.inner.read().await;
         let model = &inner.settings.text_generation_model;
         let client = &inner.client;
+        let mcp_client = &inner.mcp_client;
+        let mcp_tools = &inner.mcp_tools;
 
-        let (mcp_client, mcp_tools) = Self::initialize_mcp().await?;
         let context = format!(
             "#CurrentProgram:\n{}",
             RawScopeBinding::current().await.to_json()?,
@@ -95,14 +111,34 @@ impl AiSingleton {
             .agent(model)
             .preamble(include_str!("./prompts/preamble.md"))
             .context(&context)
-            .rmcp_tools(mcp_tools, mcp_client.peer().clone())
+            .rmcp_tools(mcp_tools.to_vec(), mcp_client.peer().clone())
             .tool_choice(ToolChoice::Auto)
             .default_max_turns(10)
             .build();
 
-        let result = agent.prompt(prompt).await?;
-        (cb)(result).await;
+        let mut stream = agent.stream_prompt(prompt).await;
+        while let Some(next) = stream.next().await {
+            let next = next?;
+            match next {
+                MultiTurnStreamItem::StreamAssistantItem(it) => match it {
+                    StreamedAssistantContent::Text(text) => {
+                        (cb)(AiResponse::Response(text.text)).await
+                    }
+                    _ => continue,
+                },
+                MultiTurnStreamItem::ToolExecutionCommitted { tool_call, .. } => {
+                    (cb)(AiResponse::Tool(tool_call.function.name)).await;
+                }
+                _ => continue,
+            }
+        }
+        // (cb)(result).await;
 
         Ok(())
     }
+}
+
+pub enum AiResponse {
+    Tool(String),
+    Response(String),
 }
