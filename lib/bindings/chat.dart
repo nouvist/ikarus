@@ -1,6 +1,5 @@
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:ikarus/crux.dart';
-import 'package:ikarus/crux/ai/state.dart';
 import 'package:ikarus/design.dart';
 
 class Chat extends StatefulWidget {
@@ -42,27 +41,7 @@ class _ChatState extends State<Chat> {
       ]);
       await ai.prompt(
         prompt: prompt,
-        cb: (data) => switch (data) {
-          AiState_Start it => _push([
-            switch (it.field0.decision) {
-              .answerImmediately => const ChatBubble(
-                type: .assistant,
-                child: Text('Merangkai jawaban...'),
-              ),
-              .planForAlgorithm => const ChatBubble(
-                type: .assistant,
-                child: Text('Merangkai rencana...'),
-              ),
-            },
-          ]),
-          AiState_Answer it => _push([
-            ChatBubble(type: .assistant, child: Text(it.field0.message)),
-          ]),
-          AiState_Plan it => _push([
-            for (final plan in it.field0.plans)
-              ChatBubble(type: .assistant, child: Text(plan)),
-          ]),
-        },
+        cb: (data) => _push([ChatBubble(type: .assistant, child: Text(data))]),
       );
     } on AnyhowException catch (err) {
       Console.current().log(err.message);

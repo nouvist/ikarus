@@ -97,7 +97,7 @@ class _InputState extends State<Input>
                         style: DefaultTextStyle.of(context).style,
                         cursorColor: Colors.fg0,
                         backgroundCursorColor: Colors.fg0,
-                        selectionColor: Colors.bg2,
+                        selectionColor: Colors.bg4,
                         contextMenuBuilder: _buildContextMenu,
                       ),
                     ),

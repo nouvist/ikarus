@@ -30,16 +30,30 @@ impl McpServer {
         Parameters(param): Parameters<McpAddStatement>,
     ) -> Result<String, ErrorData> {
         let mut current = RawScopeBinding::current().await.0;
-        current.insert(
-            param
-                .index
-                .unwrap_or_else(|| current.len())
-                .clamp(0, current.len()),
-            param.statement,
-        );
+        let index = param
+            .index
+            .unwrap_or_else(|| current.len())
+            .clamp(0, current.len());
+
+        current.insert(index, param.statement);
         RawScopeBinding::update(RawScope(current)).await;
 
         Ok("success".to_string())
+    }
+
+    #[tool(description = "Replace statement")]
+    async fn replace_statement(&self, Parameters(param): Parameters<McpReplaceStatement>) {
+        let mut current = RawScopeBinding::current().await.0;
+        current.remove(param.index);
+        current.insert(param.index, param.statement);
+        RawScopeBinding::update(RawScope(current)).await;
+    }
+
+    #[tool(description = "Remove statement")]
+    async fn remove_statement(&self, Parameters(param): Parameters<McpRemoveStatement>) {
+        let mut current = RawScopeBinding::current().await.0;
+        current.remove(param.index);
+        RawScopeBinding::update(RawScope(current)).await;
     }
 }
 
@@ -48,4 +62,17 @@ impl McpServer {
 pub struct McpAddStatement {
     pub statement: RawStatement,
     pub index: Option<usize>,
+}
+
+#[frb(ignore)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct McpReplaceStatement {
+    pub statement: RawStatement,
+    pub index: usize,
+}
+
+#[frb(ignore)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct McpRemoveStatement {
+    pub index: usize,
 }

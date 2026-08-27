@@ -23,7 +23,6 @@ pub mod browser {
 pub mod ai {
     pub mod mcp;
     pub mod singleton;
-    pub mod state;
 }
 
 pub mod win32 {

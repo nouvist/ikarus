@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use flutter_rust_bridge::{DartFnFuture, frb};
-use rig::{client::AgentClientExt, providers::openai};
+use rig::{client::AgentClientExt, completion::Prompt, message::ToolChoice, providers::openai};
 use rmcp::{RoleClient, ServiceExt, model::Tool, service::RunningService};
 use tokio::{
     io,
@@ -9,10 +9,7 @@ use tokio::{
 };
 
 use crate::{
-    ai::{
-        mcp::McpServer,
-        state::{AiState, AiStateAnswer, AiStatePlan, AiStateStart, AiStateStartDecision},
-    },
+    ai::mcp::McpServer,
     impl_frb_clone,
     shared::{error::Error, error_helper::MapError, settings::Settings},
     vpl::binding::RawScopeBinding,
@@ -82,46 +79,29 @@ impl AiSingleton {
     pub async fn prompt(
         &self,
         prompt: String,
-        cb: impl Fn(AiState) -> DartFnFuture<()>,
+        cb: impl Fn(String) -> DartFnFuture<()>,
     ) -> Result<(), Error> {
-        let context = format!("#Program:\n{}", RawScopeBinding::current().await.to_json()?,);
         let inner = self.inner.read().await;
         let model = &inner.settings.text_generation_model;
         let client = &inner.client;
-        let extractor_start = client
-            .extractor::<AiStateStart>(model.to_owned())
-            .preamble(concat!(
-                include_str!("./prompts/preamble.md"),
-                include_str!("./prompts/ai_state_start.md"),
-            ))
-            .build();
-        let extractor_answer = client
-            .extractor::<AiStateAnswer>(model.to_owned())
+
+        let (mcp_client, mcp_tools) = Self::initialize_mcp().await?;
+        let context = format!(
+            "#CurrentProgram:\n{}",
+            RawScopeBinding::current().await.to_json()?,
+        );
+
+        let agent = client
+            .agent(model)
             .preamble(include_str!("./prompts/preamble.md"))
             .context(&context)
-            .build();
-        let extractor_plan = client
-            .extractor::<AiStatePlan>(model.to_owned())
-            .preamble(concat!(
-                include_str!("./prompts/preamble.md"),
-                include_str!("./prompts/ai_state_plan.md"),
-            ))
-            .context(&context)
+            .rmcp_tools(mcp_tools, mcp_client.peer().clone())
+            .tool_choice(ToolChoice::Auto)
+            .default_max_turns(10)
             .build();
 
-        let start = extractor_start.extract(prompt.clone()).await?;
-        (cb)(AiState::Start(start.clone())).await;
-
-        if let AiStateStartDecision::AnswerImmediately = start.decision {
-            let answer = extractor_answer
-                .extract(format!("{}{}", prompt, prompt.clone()))
-                .await?;
-            (cb)(AiState::Answer(answer)).await;
-            return Ok(());
-        }
-
-        let plan = extractor_plan.extract(prompt.clone()).await?;
-        (cb)(AiState::Plan(plan.clone())).await;
+        let result = agent.prompt(prompt).await?;
+        (cb)(result).await;
 
         Ok(())
     }
