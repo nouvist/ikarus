@@ -66,11 +66,19 @@ impl_fn_call! {
     [CsvLoad] "Csv::Buka"
         => csv: "out Csv",
         => file: "Berkas";
+    [CsvSave] "Csv::Simpan"
+        => csv: "ref Csv",
+        => file: "Berkas";
     [CsvGet] "Csv::Ambil"
         => csv: "ref Csv",
         => row: "Baris",
         => col: "Kolom",
         => result: "out Hasil";
+    [CsvSet] "Csv::Tulis"
+        => csv: "ref Csv",
+        => row: "Baris",
+        => col: "Kolom",
+        => value: "Nilai";
 }
 
 #[frb(ignore)]
