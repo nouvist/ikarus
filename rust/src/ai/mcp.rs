@@ -4,8 +4,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    shared::error_helper::MapKnownError,
-    vpl::{
+    browser::singleton::BrowserSingleton, shared::{error::Error, error_helper::{MapKnownError, OkOrError}}, vpl::{
         binding::RawScopeBinding,
         raw_tokens::{RawScope, RawStatement},
     },
@@ -17,17 +16,17 @@ pub struct McpServer {}
 
 #[tool_router(server_handler)]
 impl McpServer {
-    #[tool(description = "Get current statements")]
-    async fn get_statements(&self) -> Result<String, ErrorData> {
+    #[tool(description = "[VPL] Get current statements")]
+    async fn vpl_get_statements(&self) -> Result<String, ErrorData> {
         let current = RawScopeBinding::current().await;
         let json = serde_json::to_string(&current).map_known_error()?;
         Ok(json)
     }
 
-    #[tool(description = "Add new statement")]
-    async fn add_statement(
+    #[tool(description = "[VPL] Add new statement")]
+    async fn vpl_add_statement(
         &self,
-        Parameters(param): Parameters<McpAddStatement>,
+        Parameters(param): Parameters<McpVplAddStatement>,
     ) -> Result<String, ErrorData> {
         let mut current = RawScopeBinding::current().await.0;
         let index = param
@@ -37,42 +36,99 @@ impl McpServer {
 
         current.insert(index, param.statement);
         RawScopeBinding::update(RawScope(current)).await;
-
         Ok("success".to_string())
     }
 
-    #[tool(description = "Replace statement")]
-    async fn replace_statement(&self, Parameters(param): Parameters<McpReplaceStatement>) {
+    #[tool(description = "[VPL] Replace statement")]
+    async fn vpl_replace_statement(
+        &self,
+        Parameters(param): Parameters<McpVplReplaceStatement>,
+    ) -> Result<String, ErrorData> {
         let mut current = RawScopeBinding::current().await.0;
         current.remove(param.index);
         current.insert(param.index, param.statement);
         RawScopeBinding::update(RawScope(current)).await;
+        Ok("success".to_string())
     }
 
-    #[tool(description = "Remove statement")]
-    async fn remove_statement(&self, Parameters(param): Parameters<McpRemoveStatement>) {
+    #[tool(description = "[VPL] Remove statement")]
+    async fn vpl_remove_statement(
+        &self,
+        Parameters(param): Parameters<McpVplRemoveStatement>,
+    ) -> Result<String, ErrorData> {
         let mut current = RawScopeBinding::current().await.0;
         current.remove(param.index);
         RawScopeBinding::update(RawScope(current)).await;
+        Ok("success".to_string())
+    }
+
+    #[tool(description = "[Browser] Get current opened tab urls")]
+    async fn browser_get_urls(&self) -> Result<String, ErrorData> {
+        let browser = BrowserSingleton::instance().lock().await;
+        let browser = browser.browser()?;
+        let pages = browser.pages().await.map_known_error()?;
+        let mut vec = Vec::<Option<String>>::with_capacity(pages.len());
+        for page in pages {
+            let url = page.url().await.map_known_error()?;
+            vec.push(url);
+        }
+        Ok(serde_json::to_string(&vec).map_known_error()?)
+    }
+
+    #[tool(description = "[Browser] Open new tab")]
+    async fn browser_new(
+        &self,
+        Parameters(param): Parameters<McpBrowserNew>,
+    ) -> Result<String, ErrorData> {
+        let browser = BrowserSingleton::instance().lock().await;
+        let browser = browser.browser()?;
+        browser.new_page(param.url).await.map_known_error()?;
+        Ok("success".to_string())
+    }
+
+    #[tool(description = "[Browser] Open new tab")]
+    async fn browser_get_html(
+        &self,
+        Parameters(param): Parameters<McpBrowserGetHtml>,
+    ) -> Result<String, ErrorData> {
+        let browser = BrowserSingleton::instance().lock().await;
+        let browser = browser.browser()?;
+        let pages = browser.pages().await.map_known_error()?;
+        let page = pages.get(param.tab).ok_or_browser_tab_not_found()?; 
+        let html = page.content().await.map_known_error()?;
+        Ok(html)
     }
 }
 
 #[frb(ignore)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-pub struct McpAddStatement {
+struct McpVplAddStatement {
     pub statement: RawStatement,
     pub index: Option<usize>,
 }
 
 #[frb(ignore)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-pub struct McpReplaceStatement {
+struct McpVplReplaceStatement {
     pub statement: RawStatement,
     pub index: usize,
 }
 
 #[frb(ignore)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
-pub struct McpRemoveStatement {
+pub struct McpVplRemoveStatement {
     pub index: usize,
+}
+
+#[frb(ignore)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+struct McpBrowserNew {
+    pub url: String,
+}
+
+
+#[frb(ignore)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+struct McpBrowserGetHtml {
+    pub tab: usize,
 }

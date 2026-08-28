@@ -11,6 +11,7 @@ impl_error_helper! {
         browser_failed_to_launch => BrowserFailedToLaunch,
         browser_not_running => BrowserNotRunning,
         browser_invalid_url => BrowserInvalidUrl,
+        browser_tab_not_found => BrowserTabNotFound,
         function_invalid_deserialize => FunctionInvalidDeserialize,
         function_invalid_argument => FunctionInvalidArgument(String),
         function_error => FunctionError(String),

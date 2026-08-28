@@ -44,6 +44,8 @@ pub enum Error {
     BrowserNotRunning,
     #[error("url yang dimasukkan tidak valid")]
     BrowserInvalidUrl,
+    #[error("tab yang dipilih tidak ditemukan")]
+    BrowserTabNotFound,
 
     #[error("fungsi gagal dideserialisasi")]
     FunctionInvalidDeserialize,
