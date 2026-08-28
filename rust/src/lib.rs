@@ -25,6 +25,7 @@ pub mod ai {
     pub mod singleton;
 }
 
+#[cfg(windows)]
 pub mod win32 {
     pub mod window;
 }

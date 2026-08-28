@@ -4,14 +4,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::{impl_frb_clone, shared::error::Error, vpl::functions::FnCall};
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct Identifier(#[frb(non_final)] pub String);
 impl_frb_clone!(Identifier);
 
 pub type ValueIdentifier = Identifier;
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct ValueString(#[frb(non_final)] pub String);
 impl_frb_clone!(ValueString);
@@ -23,7 +23,7 @@ impl From<String> for ValueString {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct ValueNumber(#[frb(non_final)] pub f64);
 impl_frb_clone!(ValueNumber);
@@ -35,7 +35,7 @@ impl From<f64> for ValueNumber {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct ValueBoolean(#[frb(non_final)] pub bool);
 impl_frb_clone!(ValueBoolean);
@@ -47,7 +47,7 @@ impl From<bool> for ValueBoolean {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub enum ValueComputedOperation {
     Add,
@@ -68,7 +68,7 @@ pub enum ValueComputedOperation {
 }
 impl_frb_clone!(ValueComputedOperation);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct ValueComputed {
     #[frb(non_final)]
@@ -80,14 +80,14 @@ pub struct ValueComputed {
 }
 impl_frb_clone!(ValueComputed);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct ValueObject {
     pub symbol: String,
 }
 impl_frb_clone!(ValueObject);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub enum Value {
     Null,
@@ -219,7 +219,7 @@ impl Default for Value {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct StatementVariable {
     #[frb(non_final)]
@@ -229,12 +229,12 @@ pub struct StatementVariable {
 }
 impl_frb_clone!(StatementVariable);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct StatementCall(#[frb(non_final)] pub FnCall);
 impl_frb_clone!(StatementCall);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct StatementIf {
     #[frb(non_final)]
@@ -244,7 +244,7 @@ pub struct StatementIf {
 }
 impl_frb_clone!(StatementIf);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct StatementFor {
     #[frb(non_final)]
@@ -254,12 +254,12 @@ pub struct StatementFor {
 }
 impl_frb_clone!(StatementFor);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Scope(#[frb(non_final)] pub Vec<Statement>);
 impl_frb_clone!(Scope);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub enum Statement {
     If(StatementIf),

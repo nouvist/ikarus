@@ -15,7 +15,7 @@ use crate::{
     },
 };
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawScope(#[frb(non_final)] pub Vec<RawStatement>);
 impl_frb_clone!(RawScope);
@@ -68,7 +68,7 @@ impl RawScope {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawIf {
     #[frb(non_final)]
@@ -76,7 +76,7 @@ pub struct RawIf {
 }
 impl_frb_clone!(RawIf);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawFor {
     #[frb(non_final)]
@@ -84,7 +84,7 @@ pub struct RawFor {
 }
 impl_frb_clone!(RawFor);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub enum RawStatement {
     End,
@@ -95,7 +95,7 @@ pub enum RawStatement {
 }
 impl_frb_clone!(RawStatement);
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub enum RawStatementVariant {
     End,

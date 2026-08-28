@@ -11,7 +11,7 @@ use crate::{
     vpl::{functions::Invoke, interpreter::Interpreter, tokens::Value},
 };
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemPrint {
     pub content: Value,
@@ -26,7 +26,7 @@ impl Invoke for FnCallSystemPrint {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemSleep {
     pub ms: Value,
@@ -46,7 +46,7 @@ impl Invoke for FnCallSystemSleep {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemStop {}
 

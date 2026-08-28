@@ -11,22 +11,24 @@ use tokio::{
 };
 use tokio_stream::StreamExt;
 
-use crate::{
-    shared::{
-        error::Error,
-        error_helper::{MapError, OkOrError},
-        logger::log,
-    },
-    win32::window::Window,
+use crate::shared::{
+    error::Error,
+    error_helper::{MapError, OkOrError},
+    logger::log,
 };
+
+#[cfg(windows)]
+use crate::win32::window::Window;
 
 const TEMPLATE: &'static str = include_str!("./templates/index.html");
 
 #[frb(ignore)]
 pub struct BrowserSingletonInner {
     browser: Option<Browser>,
-    window: Option<Window>,
     pid: Option<u32>,
+
+    #[cfg(windows)]
+    window: Option<Window>,
 }
 
 #[frb(opaque)]
@@ -65,8 +67,10 @@ impl BrowserSingleton {
             listener: Arc::new(RwLock::new(None)),
             inner: Arc::new(RwLock::new(BrowserSingletonInner {
                 browser: None,
-                window: None,
                 pid: None,
+
+                #[cfg(windows)]
+                window: None,
             })),
         })
     }
@@ -76,6 +80,7 @@ impl BrowserSingleton {
 
         if inner.browser.is_some() {
             log("[Sistem] Menarik Chrome ke depan...").await;
+            #[cfg(windows)]
             if let Some(window) = inner.window {
                 window.focus();
             }
@@ -96,11 +101,16 @@ impl BrowserSingleton {
             .map(|it| it.inner.id())
             .flatten()
             .ok_or_browser_failed_to_launch()?;
-        let window = Window::from_pid(pid);
 
         inner.browser = Some(browser);
         inner.pid = Some(pid);
-        inner.window = window;
+
+        #[cfg(windows)]
+        {
+            let window = Window::from_pid(pid);
+            inner.window = window;
+        }
+
         drop(inner);
 
         if let Some(listener) = &*self.listener.read().await {
@@ -120,7 +130,11 @@ impl BrowserSingleton {
             let mut lock = inner.write().await;
             lock.browser = None;
             lock.pid = None;
-            lock.window = None;
+            #[cfg(windows)]
+            {
+                lock.window = None;
+            }
+
             drop(lock);
             if let Some(listener) = &*listener.read().await {
                 (listener)().await;

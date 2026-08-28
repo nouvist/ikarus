@@ -15,7 +15,7 @@ use crate::{
     },
 };
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallBrowserNewPage {
     pub page: Value,
@@ -40,7 +40,7 @@ impl Invoke for FnCallBrowserNewPage {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallBrowserGetPageCount {
     pub result: Value,
@@ -60,7 +60,7 @@ impl Invoke for FnCallBrowserGetPageCount {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallBrowserGetPage {
     pub page: Value,

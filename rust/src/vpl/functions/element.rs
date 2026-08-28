@@ -19,7 +19,7 @@ pub fn symbol() -> Value {
     })
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetOuterHtml {
     pub element: Value,
@@ -45,7 +45,7 @@ impl Invoke for FnCallElementGetOuterHtml {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetInnerHtml {
     pub element: Value,
@@ -71,7 +71,7 @@ impl Invoke for FnCallElementGetInnerHtml {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetText {
     pub element: Value,
@@ -97,7 +97,7 @@ impl Invoke for FnCallElementGetText {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementType {
     pub element: Value,
@@ -117,7 +117,7 @@ impl Invoke for FnCallElementType {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementClick {
     pub element: Value,

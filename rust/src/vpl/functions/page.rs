@@ -21,7 +21,7 @@ pub fn symbol() -> Value {
     })
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageWaitForNavigation {
     pub page: Value,
@@ -39,7 +39,7 @@ impl Invoke for FnCallPageWaitForNavigation {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageFindElement {
     pub page: Value,

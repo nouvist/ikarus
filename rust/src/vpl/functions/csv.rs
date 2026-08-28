@@ -26,7 +26,7 @@ pub struct Csv {
     inner: Vec<Vec<String>>,
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvNew {
     pub csv: Value,
@@ -42,7 +42,7 @@ impl Invoke for FnCallCsvNew {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvLoad {
     pub csv: Value,
@@ -83,7 +83,7 @@ impl Invoke for FnCallCsvLoad {
     }
 }
 
-#[frb]
+#[frb(non_opaque)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvGet {
     pub csv: Value,

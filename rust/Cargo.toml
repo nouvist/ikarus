@@ -31,6 +31,8 @@ tokio = { version = "1.53.1", features = [
 ] }
 tokio-stream = "0.1.19"
 tokio-util = "0.7.19"
+
+[target.'cfg(windows)'.dependencies]
 windows = { version = "0.62.2", features = [
     "Win32_Foundation",
     "Win32_UI_WindowsAndMessaging",
