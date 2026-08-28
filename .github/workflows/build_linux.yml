@@ -39,7 +39,9 @@ jobs:
         run: flutter pub get
 
       - name: Build Linux app
-        run: flutter build linux --release
+        run: |
+          flutter config --no-enable-native-assets
+          flutter build linux --release
 
       - name: Tar build output
         run: |
