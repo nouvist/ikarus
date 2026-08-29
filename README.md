@@ -17,6 +17,6 @@ Informatika di Institut Sains dan Teknologi Nasional.
 Untuk membangun Ikarus, diasumsikan lingkungan yang memuat perangkat pembangun
 Flutter dan Rust.
 
-1. Gunakan FRB dengan `cargo install flutter_rust_bridge_codegen`.
+1. Gunakan FRB dengan `cargo install flutter_rust_bridge_codegen --version 2.12.0`.
 2. Bangun jembatan FFI dengan `flutter_rust_bridge_codegen generate`.
 3. Bangun Flutter dengan `flutter build windows --release`.
