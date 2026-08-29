@@ -53,6 +53,13 @@ impl Interpreter {
 
     #[inline]
     #[frb(ignore)]
+    pub fn get_variable(&mut self, ident: &str) -> Result<Value, Error> {
+        self.evaluator
+            .evaluate(&Value::Identifier(Identifier(ident.to_owned())))
+    }
+
+    #[inline]
+    #[frb(ignore)]
     pub fn get_pointer(&mut self, str: &str) -> Option<&InterpreterPointer> {
         self.pointer.get(str)
     }
@@ -103,7 +110,7 @@ impl Interpreter {
         }
     }
 
-    async fn run(&mut self, scope: Scope) -> Result<(), Error> {
+    pub async fn run(&mut self, scope: Scope) -> Result<(), Error> {
         for st in &scope.0 {
             yield_now().await;
             match st {

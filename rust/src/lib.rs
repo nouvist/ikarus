@@ -39,6 +39,12 @@ pub mod shared {
     pub mod settings;
 }
 
+#[cfg(test)]
+pub mod tests {
+    pub mod evaluator;
+    pub mod interpreter;
+}
+
 #[frb]
 pub fn home() -> &'static Utf8Path {
     static INSTANCE: OnceLock<Utf8PathBuf> = OnceLock::new();
