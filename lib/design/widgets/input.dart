@@ -3,8 +3,9 @@ import 'package:ikarus/design.dart';
 
 class Input extends StatefulWidget {
   final bool enabled;
-  final TextEditingController controller;
   final bool obscure;
+  final bool multiline;
+  final TextEditingController controller;
   final TextInputType? type;
   final List<TextInputFormatter>? formatters;
   final ValueChanged<String>? onSubmit;
@@ -12,8 +13,9 @@ class Input extends StatefulWidget {
   const Input({
     super.key,
     this.enabled = true,
-    required this.controller,
     this.obscure = false,
+    this.multiline = false,
+    required this.controller,
     this.type,
     this.formatters,
     this.onSubmit,
@@ -49,6 +51,16 @@ class _InputState extends State<Input>
 
   @override
   Widget build(BuildContext context) {
+    final style = DefaultTextStyle.of(context).style;
+    final lines = switch (widget.multiline) {
+      true => 4,
+      false => 1,
+    };
+    final height = switch (widget.multiline) {
+      true => (style.fontSize ?? 12) * (style.height ?? 1.5) * lines + 16,
+      false => 48.0,
+    };
+
     return IgnorePointer(
       ignoring: !widget.enabled,
       child: Opacity(
@@ -58,7 +70,7 @@ class _InputState extends State<Input>
         },
         child: SizedBox(
           key: ValueKey(_key),
-          height: 48,
+          height: height,
           child: _gesture.buildGestureDetector(
             child: MouseRegion(
               cursor: SystemMouseCursors.text,
@@ -87,6 +99,7 @@ class _InputState extends State<Input>
                     child: Center(
                       child: EditableText(
                         key: _key,
+                        maxLines: lines,
                         controller: widget.controller,
                         onTapUpOutside: _handleTapOutside,
                         onSubmitted: widget.onSubmit,
@@ -94,7 +107,7 @@ class _InputState extends State<Input>
                         keyboardType: widget.type,
                         inputFormatters: widget.formatters,
                         obscureText: widget.obscure,
-                        style: DefaultTextStyle.of(context).style,
+                        style: style,
                         cursorColor: Colors.fg0,
                         backgroundCursorColor: Colors.fg0,
                         selectionColor: Colors.bg4,

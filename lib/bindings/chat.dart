@@ -70,11 +70,13 @@ class _ChatBindingState extends State<ChatBinding> {
                 padding: const .only(left: 8, bottom: 8, right: 8),
                 child: Row(
                   spacing: 8,
+                  crossAxisAlignment: .start,
                   children: [
                     Expanded(
                       child: Input(
                         enabled: _enabled,
                         controller: _input,
+                        multiline: true,
                         onSubmit: (_) => _handleSubmit(),
                       ),
                     ),
