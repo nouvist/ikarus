@@ -153,14 +153,17 @@ class _ChromeState extends State<_Chrome> with WindowListener {
         child: child,
       ),
       child: Center(
-        child: SvgPicture.asset(switch (widget.type) {
-          .close => 'assets/chrome/close.svg',
-          .maximize => switch (_isMaximized) {
-            true => 'assets/chrome/restore.svg',
-            false => 'assets/chrome/maximize.svg',
+        child: SvgPicture.asset(
+          colorFilter: const .mode(Colors.fg0, .srcIn),
+          switch (widget.type) {
+            .close => 'assets/chrome/close.svg',
+            .maximize => switch (_isMaximized) {
+              true => 'assets/chrome/restore.svg',
+              false => 'assets/chrome/maximize.svg',
+            },
+            .minimize => 'assets/chrome/minimize.svg',
           },
-          .minimize => 'assets/chrome/minimize.svg',
-        }),
+        ),
       ),
     );
   }
