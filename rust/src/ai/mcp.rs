@@ -2,9 +2,15 @@ use flutter_rust_bridge::frb;
 use rmcp::{ErrorData, handler::server::wrapper::Parameters, tool, tool_router};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 use crate::{
-    browser::singleton::BrowserSingleton, shared::{error::Error, error_helper::{MapKnownError, OkOrError}}, vpl::{
+    browser::singleton::BrowserSingleton,
+    shared::{
+        error::Error,
+        error_helper::{MapKnownError, OkOrError},
+    },
+    vpl::{
         binding::RawScopeBinding,
         raw_tokens::{RawScope, RawStatement},
     },
@@ -82,8 +88,18 @@ impl McpServer {
     ) -> Result<String, ErrorData> {
         let browser = BrowserSingleton::instance().lock().await;
         let browser = browser.browser()?;
-        browser.new_page(param.url).await.map_known_error()?;
-        Ok("success".to_string())
+        let page = browser.new_page(param.url).await.map_known_error()?;
+        let mut index = 0usize;
+        for it in browser.pages().await.map_known_error()? {
+            match it.target_id() == page.target_id() {
+                true => break,
+                false => {
+                    index += 1;
+                }
+            }
+        }
+
+        Ok(json!({"index": index}).to_string())
     }
 
     #[tool(description = "[Browser] Open new tab")]
@@ -94,7 +110,7 @@ impl McpServer {
         let browser = BrowserSingleton::instance().lock().await;
         let browser = browser.browser()?;
         let pages = browser.pages().await.map_known_error()?;
-        let page = pages.get(param.tab).ok_or_browser_tab_not_found()?; 
+        let page = pages.get(param.tab).ok_or_browser_tab_not_found()?;
         let html = page.content().await.map_known_error()?;
         Ok(html)
     }
@@ -125,7 +141,6 @@ pub struct McpVplRemoveStatement {
 struct McpBrowserNew {
     pub url: String,
 }
-
 
 #[frb(ignore)]
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]

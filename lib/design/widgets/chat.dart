@@ -3,7 +3,7 @@ import 'package:ikarus/design.dart';
 sealed class ChatData {
   String get message;
   factory ChatData.user(String message) = ChatDataUser;
-  factory ChatData.tool(String message) = ChatDataTool;
+  factory ChatData.tool(List<String> tools) = ChatDataTool;
   factory ChatData.assistant(String message) = ChatDataAssistant;
 }
 
@@ -14,9 +14,25 @@ class ChatDataUser implements ChatData {
 }
 
 class ChatDataTool implements ChatData {
+  List<String> tools;
+  ChatDataTool(this.tools);
+
   @override
-  String message;
-  ChatDataTool(this.message);
+  String get message {
+    final map = <String, int>{};
+    for (final tool in tools) {
+      map[tool] = (map[tool] ?? 0) + 1;
+    }
+
+    return map.entries
+        .map((entry) {
+          return switch (entry.value == 1) {
+            true => entry.key,
+            false => '${entry.value}x ${entry.key}',
+          };
+        })
+        .join(', ');
+  }
 }
 
 class ChatDataAssistant implements ChatData {
@@ -68,16 +84,18 @@ class Chat extends StatelessWidget {
   }
 
   Widget _buildTool(BuildContext context, ChatDataTool data, int index) {
-    return _Container(
-      type: .left,
-      background: Colors.bg0,
-      child: Row(
-        spacing: 10,
-        mainAxisAlignment: .center,
-        children: [
-          const Icon(FluentIcons.toolbox_24_regular),
-          Text(data.message),
-        ],
+    return IntrinsicWidth(
+      child: _Container(
+        type: .left,
+        background: Colors.bg0,
+        child: Row(
+          spacing: 10,
+          mainAxisAlignment: .center,
+          children: [
+            const Icon(FluentIcons.toolbox_24_regular),
+            Expanded(child: Text(data.message)),
+          ],
+        ),
       ),
     );
   }

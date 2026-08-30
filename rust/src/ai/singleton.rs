@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{borrow::Cow, sync::Arc};
 
 use flutter_rust_bridge::{DartFnFuture, frb};
 use rig::{
@@ -129,13 +129,29 @@ impl AiSingleton {
                     _ => continue,
                 },
                 MultiTurnStreamItem::ToolExecutionCommitted { tool_call, .. } => {
-                    (cb)(AiResponse::Tool(tool_call.function.name)).await;
+                    (cb)(AiResponse::Tool(
+                        Self::map_tool(&tool_call.function.name).to_string(),
+                    ))
+                    .await;
                 }
                 _ => continue,
             }
         }
 
         Ok(())
+    }
+
+    fn map_tool(tool: &str) -> Cow<'static, str> {
+        match tool {
+            "vpl_get_statements" => Cow::Borrowed("Membaca program saat ini"),
+            "vpl_add_statement" => Cow::Borrowed("Menambahkan balok kode"),
+            "vpl_replace_statement" => Cow::Borrowed("Mengganti balok kode"),
+            "vpl_remove_statement" => Cow::Borrowed("Menghapus balok kode"),
+            "browser_get_urls" => Cow::Borrowed("Melihat tab pada peramban"),
+            "browser_new" => Cow::Borrowed("Membuat tab baru"),
+            "browser_get_html" => Cow::Borrowed("Melihat isi tab"),
+            it => Cow::Owned(it.to_owned()),
+        }
     }
 }
 

@@ -26,7 +26,7 @@ class _ChatBindingState extends State<ChatBinding> {
       _input.clear();
       _chat.add(.user(text));
     });
-
+    //
     try {
       await ai.prompt(prompt: text, cb: _handleData);
     } on AnyhowException catch (err) {
@@ -39,12 +39,16 @@ class _ChatBindingState extends State<ChatBinding> {
   }
 
   void _handleData(AiResponse response) => setState(() {
+    final last = _chat.lastOrNull;
     switch (response) {
       case AiResponse_Tool it:
-        _chat.add(.tool(it.field0));
+        if (last case ChatDataTool last?) {
+          last.tools.add(it.field0);
+        } else {
+          _chat.add(.tool([it.field0]));
+        }
         break;
       case AiResponse_Response it:
-        final last = _chat.lastOrNull;
         if (last case ChatDataAssistant last?) {
           last.message += it.field0;
         } else {
