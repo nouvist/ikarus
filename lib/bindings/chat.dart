@@ -26,9 +26,22 @@ class _ChatBindingState extends State<ChatBinding> {
       _input.clear();
       _chat.add(.user(text));
     });
-    //
+
     try {
-      await ai.prompt(prompt: text, cb: _handleData);
+      final history = _chat
+          .map((it) {
+            return switch (it) {
+              ChatDataUser it => AiHistory.user(it.message),
+              ChatDataAssistant it => AiHistory.assistant(it.message),
+              ChatDataTool it => AiHistory.assistant(
+                '<tool-logs>${it.message}</tool-logs>',
+              ),
+            };
+          })
+          .whereType<AiHistory>()
+          .toList();
+
+      await ai.prompt(prompt: text, history: history, cb: _handleData);
     } on AnyhowException catch (err) {
       Console.current().log(err.message);
     } finally {

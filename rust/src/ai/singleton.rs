@@ -4,9 +4,9 @@ use flutter_rust_bridge::{DartFnFuture, frb};
 use rig::{
     agent::MultiTurnStreamItem,
     client::AgentClientExt,
-    message::ToolChoice,
+    message::{Message, ToolChoice},
     providers::openai,
-    streaming::{StreamedAssistantContent, StreamingPrompt},
+    streaming::{StreamedAssistantContent, StreamingChat, StreamingPrompt},
 };
 use rmcp::{RoleClient, ServiceExt, model::Tool, service::RunningService};
 use tokio::{
@@ -93,6 +93,7 @@ impl AiSingleton {
     pub async fn prompt(
         &self,
         prompt: String,
+        history: Vec<AiHistory>,
         cb: impl Fn(AiResponse) -> DartFnFuture<()>,
     ) -> Result<(), Error> {
         let inner = self.inner.read().await;
@@ -109,7 +110,12 @@ impl AiSingleton {
             .default_max_turns(100)
             .build();
 
-        let mut stream = agent.stream_prompt(prompt).await;
+        let history = history.iter().map(|it| match it {
+            AiHistory::Assistant(it) => Message::assistant(it),
+            AiHistory::User(it) => Message::user(it),
+        });
+
+        let mut stream = agent.stream_chat(prompt, history).await;
         while let Some(next) = stream.next().await {
             let next = next?;
             match next {
@@ -146,6 +152,13 @@ impl AiSingleton {
     }
 }
 
+#[frb(non_opaque)]
+pub enum AiHistory {
+    Assistant(String),
+    User(String),
+}
+
+#[frb(non_opaque)]
 pub enum AiResponse {
     Tool(String),
     Response(String),
