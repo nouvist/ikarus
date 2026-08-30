@@ -101,14 +101,8 @@ impl AiSingleton {
         let mcp_client = &inner.mcp_client;
         let mcp_tools = &inner.mcp_tools;
 
-        let context = format!(
-            "<context>\n{}\n</context>",
-            RawScopeBinding::current().await.to_json()?,
-        );
-
         let agent = client
             .agent(model)
-            .context(&context)
             .preamble(include_str!("./prompts/preamble.md"))
             .rmcp_tools(mcp_tools.to_vec(), mcp_client.peer().clone())
             .tool_choice(ToolChoice::Auto)
