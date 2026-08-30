@@ -4,7 +4,6 @@ use flutter_rust_bridge::{DartFnFuture, frb};
 use rig::{
     agent::MultiTurnStreamItem,
     client::AgentClientExt,
-    completion::Prompt,
     message::ToolChoice,
     providers::openai,
     streaming::{StreamedAssistantContent, StreamingPrompt},
@@ -116,8 +115,6 @@ impl AiSingleton {
             .default_max_turns(100)
             .build();
 
-        // let result = agent.prompt(prompt).await?;
-        // (cb)(AiResponse::Response(result)).await;
         let mut stream = agent.stream_prompt(prompt).await;
         while let Some(next) = stream.next().await {
             let next = next?;

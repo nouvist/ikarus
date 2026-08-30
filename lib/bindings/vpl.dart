@@ -210,11 +210,22 @@ class _VplState extends State<Vpl> {
           Positioned(
             top: 8,
             right: 8,
-            child: Button(
-              onTap: _handleAdd,
+            child: SizedBox(
               width: 48,
-              padding: .zero,
-              child: const Icon(FluentIcons.add_24_filled),
+              height: 48,
+              child: ClipRRect(
+                clipBehavior: .antiAlias,
+                borderRadius: const .all(.circular(8)),
+                child: BackdropFilter(
+                  filter: .blur(sigmaX: 8, sigmaY: 8),
+                  child: Button(
+                    onTap: _handleAdd,
+                    width: 48,
+                    padding: .zero,
+                    child: const Icon(FluentIcons.add_24_filled),
+                  ),
+                ),
+              ),
             ),
           ),
         ],

@@ -6,10 +6,7 @@ use serde_json::json;
 
 use crate::{
     browser::singleton::BrowserSingleton,
-    shared::{
-        error::Error,
-        error_helper::{MapKnownError, OkOrError},
-    },
+    shared::error_helper::{MapKnownError, OkOrError},
     vpl::{
         binding::RawScopeBinding,
         raw_tokens::{RawScope, RawStatement},

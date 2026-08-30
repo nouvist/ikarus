@@ -99,16 +99,21 @@ class _ChatBindingState extends State<ChatBinding> {
         Positioned(
           top: 8,
           right: 8,
-          child: ClipRRect(
-            clipBehavior: .antiAlias,
-            child: BackdropFilter(
-              filter: .blur(sigmaX: 8, sigmaY: 8),
-              child: Button(
-                enabled: _enabled,
-                onTap: _handleClear,
-                width: 48,
-                padding: .zero,
-                child: const Icon(FluentIcons.delete_24_regular),
+          child: SizedBox(
+            width: 48,
+            height: 48,
+            child: ClipRRect(
+              clipBehavior: .antiAlias,
+              borderRadius: const .all(.circular(8)),
+              child: BackdropFilter(
+                filter: .blur(sigmaX: 8, sigmaY: 8),
+                child: Button(
+                  enabled: _enabled,
+                  onTap: _handleClear,
+                  width: 48,
+                  padding: .zero,
+                  child: const Icon(FluentIcons.delete_24_regular),
+                ),
               ),
             ),
           ),

@@ -81,11 +81,22 @@ class _ConsoleState extends State<Console> implements ConsoleState {
         Positioned(
           top: 8,
           right: 8,
-          child: Button(
-            onTap: clear,
+          child: SizedBox(
             width: 48,
-            padding: .zero,
-            child: const Icon(FluentIcons.delete_24_regular),
+            height: 48,
+            child: ClipRRect(
+              clipBehavior: .antiAlias,
+              borderRadius: const .all(.circular(8)),
+              child: BackdropFilter(
+                filter: .blur(sigmaX: 8, sigmaY: 8),
+                child: Button(
+                  onTap: clear,
+                  width: 48,
+                  padding: .zero,
+                  child: const Icon(FluentIcons.delete_24_regular),
+                ),
+              ),
+            ),
           ),
         ),
       ],
