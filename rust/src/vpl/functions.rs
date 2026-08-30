@@ -79,6 +79,9 @@ impl_fn_call! {
         => row: "Baris",
         => col: "Kolom",
         => value: "Nilai";
+    [CsvRowCount] "Csv::JumlahBaris"
+        => csv: "ref Csv",
+        => result: "out Hasil";
 }
 
 #[frb(ignore)]

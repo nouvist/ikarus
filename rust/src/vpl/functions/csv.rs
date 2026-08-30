@@ -10,7 +10,7 @@ use crate::{
     vpl::{
         functions::Invoke,
         interpreter::Interpreter,
-        tokens::{Value, ValueObject, ValueString},
+        tokens::{Value, ValueNumber, ValueObject, ValueString},
     },
 };
 
@@ -200,6 +200,28 @@ impl Invoke for FnCallCsvSet {
         interpreter.store_pointer(csv_write.0.clone(), Arc::new(Csv { inner }));
         interpreter.store_variable(csv_write, &symbol())?;
 
+        Ok(())
+    }
+}
+
+#[frb(non_opaque)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct FnCallCsvRowCount {
+    pub csv: Value,
+    pub result: Value,
+}
+
+#[async_trait]
+impl Invoke for FnCallCsvRowCount {
+    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
+        let csv_ptr = self.csv.unwrap_as_identifier("Csv")?;
+        let csv = interpreter.unwrap_pointer::<Csv>(csv_ptr)?;
+        let result_ptr = self.csv.unwrap_as_identifier("Hasil")?;
+
+        interpreter.store_variable(
+            result_ptr,
+            &Value::Number(ValueNumber(csv.inner.len() as f64)),
+        )?;
         Ok(())
     }
 }
