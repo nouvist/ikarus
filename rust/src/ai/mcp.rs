@@ -5,9 +5,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::{
-    browser::singleton::BrowserSingleton,
-    shared::error_helper::{MapKnownError, OkOrError},
-    vpl::{
+    browser::{singleton::BrowserSingleton, trimmed_content_ext::TrimmedContentExt}, shared::error_helper::{MapKnownError, OkOrError}, vpl::{
         binding::RawScopeBinding,
         raw_tokens::{RawScope, RawStatement},
     },
@@ -68,14 +66,18 @@ impl McpServer {
     #[tool(description = "[Browser] Get current opened tab urls")]
     async fn browser_get_urls(&self) -> Result<String, ErrorData> {
         let browser = BrowserSingleton::instance().lock().await;
-        let browser = browser.browser()?;
+        let Ok(browser) = browser.browser() else {
+            return Ok(json!({"is_active": false}).to_string());
+        };
+
         let pages = browser.pages().await.map_known_error()?;
         let mut vec = Vec::<Option<String>>::with_capacity(pages.len());
         for page in pages {
             let url = page.url().await.map_known_error()?;
             vec.push(url);
         }
-        Ok(serde_json::to_string(&vec).map_known_error()?)
+
+        Ok(json!({"is_active": true, "tabs": vec}).to_string())
     }
 
     #[tool(description = "[Browser] Open new tab")]
@@ -108,7 +110,7 @@ impl McpServer {
         let browser = browser.browser()?;
         let pages = browser.pages().await.map_known_error()?;
         let page = pages.get(param.tab).ok_or_browser_tab_not_found()?;
-        let html = page.content().await.map_known_error()?;
+        let html = page.trimmed_content().await?;
         Ok(html)
     }
 }

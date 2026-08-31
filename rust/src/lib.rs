@@ -18,6 +18,7 @@ pub mod vpl {
 
 pub mod browser {
     pub mod singleton;
+    pub mod trimmed_content_ext;
 }
 
 pub mod ai {

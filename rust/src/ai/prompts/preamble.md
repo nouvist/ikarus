@@ -16,3 +16,5 @@ dan Teknologi Nasional)
   mengambil algoritma saat ini sebelum melakukan modifikasi.
 - **Format Respon**: Berikan jawaban secara langsung, terstruktur, dan ringkas
   tanpa teks pengantar yang berlebihan.
+- **Konvensi Nama**: Gunakan PascalCase dalam penulisan nama variabel secara
+  konsisten.

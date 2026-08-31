@@ -216,7 +216,7 @@ impl Invoke for FnCallCsvRowCount {
     async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
         let csv_ptr = self.csv.unwrap_as_identifier("Csv")?;
         let csv = interpreter.unwrap_pointer::<Csv>(csv_ptr)?;
-        let result_ptr = self.csv.unwrap_as_identifier("Hasil")?;
+        let result_ptr = self.result.unwrap_as_identifier("Hasil")?;
 
         interpreter.store_variable(
             result_ptr,

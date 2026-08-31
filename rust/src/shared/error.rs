@@ -47,6 +47,9 @@ pub enum Error {
     #[error("tab yang dipilih tidak ditemukan")]
     BrowserTabNotFound,
 
+    #[error("gagal untuk memilih elemen")]
+    KuchikikiFailedToSelect,
+
     #[error("fungsi gagal dideserialisasi")]
     FunctionInvalidDeserialize,
     #[error("{0}")]

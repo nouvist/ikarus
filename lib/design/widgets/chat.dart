@@ -64,10 +64,12 @@ class Chat extends StatelessWidget {
   }
 
   Widget _buildUser(BuildContext context, ChatDataUser data, int index) {
+    final message = data.message.trim();
+    if (message.isEmpty) return const SizedBox();
     return _Container(
       type: .right,
       background: Colors.bg2,
-      child: Center(child: Text(data.message)),
+      child: Center(child: Text(message)),
     );
   }
 
@@ -76,14 +78,18 @@ class Chat extends StatelessWidget {
     ChatDataAssistant data,
     int index,
   ) {
+    final message = data.message.trim();
+    if (message.isEmpty) return const SizedBox();
     return _Container(
       type: .left,
       background: Colors.bg1,
-      child: Center(child: Text(data.message)),
+      child: Center(child: Text(message)),
     );
   }
 
   Widget _buildTool(BuildContext context, ChatDataTool data, int index) {
+    final message = data.message.trim();
+    if (message.isEmpty) return const SizedBox();
     return IntrinsicWidth(
       child: _Container(
         type: .left,
@@ -93,7 +99,7 @@ class Chat extends StatelessWidget {
           mainAxisAlignment: .center,
           children: [
             const Icon(FluentIcons.toolbox_24_regular),
-            Expanded(child: Text(data.message)),
+            Expanded(child: Text(message)),
           ],
         ),
       ),

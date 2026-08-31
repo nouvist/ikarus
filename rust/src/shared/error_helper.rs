@@ -1,4 +1,4 @@
-use crate::{shared::error::Error, impl_error_helper};
+use crate::{impl_error_helper, shared::error::Error};
 
 impl_error_helper! {
     Error where
@@ -12,6 +12,7 @@ impl_error_helper! {
         browser_not_running => BrowserNotRunning,
         browser_invalid_url => BrowserInvalidUrl,
         browser_tab_not_found => BrowserTabNotFound,
+        kuchikiki_failed_to_select => KuchikikiFailedToSelect,
         function_invalid_deserialize => FunctionInvalidDeserialize,
         function_invalid_argument => FunctionInvalidArgument(String),
         function_error => FunctionError(String),
