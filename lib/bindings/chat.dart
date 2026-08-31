@@ -52,9 +52,17 @@ class _ChatBindingState extends State<ChatBinding> {
   }
 
   void _handleData(AiResponse response) => setState(() {
-    final last = _chat.lastOrNull;
+    var last = _chat.lastOrNull;
     switch (response) {
       case AiResponse_Tool it:
+        while (true) {
+          if (last case ChatDataAssistant it when it.message.trim().isEmpty) {
+            _chat.removeLast();
+            last = _chat.lastOrNull;
+          } else {
+            break;
+          }
+        }
         if (last case ChatDataTool last?) {
           last.tools.add(it.field0);
         } else {
