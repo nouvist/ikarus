@@ -1,11 +1,13 @@
 use flutter_rust_bridge::frb;
 use rmcp::{ErrorData, handler::server::wrapper::Parameters, tool, tool_router};
-use schemars::{JsonSchema, schema_for};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::{
-    browser::{singleton::BrowserSingleton, trimmed_content_ext::TrimmedContentExt}, shared::error_helper::{MapKnownError, OkOrError}, vpl::{
+    browser::{singleton::BrowserSingleton, trimmed_content_ext::TrimmedContentExt},
+    shared::error_helper::{MapKnownError, OkOrError},
+    vpl::{
         binding::RawScopeBinding,
         raw_tokens::{RawScope, RawStatement},
     },

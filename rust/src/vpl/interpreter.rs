@@ -60,14 +60,20 @@ impl Interpreter {
 
     #[inline]
     #[frb(ignore)]
-    pub fn get_pointer(&mut self, str: &str) -> Option<&InterpreterPointer> {
-        self.pointer.get(str)
+    pub fn get_pointer(&mut self, ident: &str) -> Option<&InterpreterPointer> {
+        self.pointer.get(ident)
     }
 
     #[inline]
     #[frb(ignore)]
-    pub fn remove_pointer(&mut self, str: &str) {
-        self.pointer.remove_entry(str);
+    pub fn remove_pointer(&mut self, ident: &str) {
+        self.pointer.remove_entry(ident);
+    }
+
+    #[inline]
+    #[frb(ignore)]
+    pub fn remove_variable(&mut self, ident: &str) {
+        self.evaluator.remove(ident);
     }
 
     #[inline]

@@ -29,7 +29,6 @@ impl_fn_call! {
     [SystemSleep] "Sistem::Tidur"
         => ms: "Milidetik";
 
-
     [BrowserNewPage] "Peramban::BuatTab"
         => page: "out Halaman",
         => url: "Url";
@@ -40,6 +39,8 @@ impl_fn_call! {
         => result: "out Jumlah";
 
     [PageWaitForNavigation] "Halaman::TungguNavigasi"
+        => page: "ref Halaman";
+    [PageClose] "Halaman::Tutup"
         => page: "ref Halaman";
     [PageFindElement] "Halaman::CariElemen"
         => page: "ref Halaman",

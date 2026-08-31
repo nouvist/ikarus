@@ -7,6 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    browser::singleton::BrowserSingleton,
     shared::error::Error,
     vpl::{
         functions::{Invoke, element},
@@ -34,6 +35,35 @@ impl Invoke for FnCallPageWaitForNavigation {
         let page_ptr = self.page.unwrap_as_identifier("Halaman")?;
         let page = interpreter.unwrap_pointer::<Page>(page_ptr)?;
         page.wait_for_navigation().await?;
+
+        Ok(())
+    }
+}
+
+#[frb(non_opaque)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+pub struct FnCallPageClose {
+    pub page: Value,
+    pub url: Value,
+}
+
+#[async_trait]
+impl Invoke for FnCallPageClose {
+    async fn invoke(&self, interpreter: &mut Interpreter) -> Result<(), Error> {
+        let page_ptr = self.page.unwrap_as_identifier("Halaman")?;
+        let page = interpreter.unwrap_pointer::<Page>(page_ptr)?;
+        let singleton = BrowserSingleton::instance().lock().await;
+        let browser = singleton.browser()?;
+        let pages = browser.pages().await?;
+        let page = pages
+            .into_iter()
+            .find(|it| it.target_id() == page.target_id());
+        if let Some(page) = page {
+            page.close().await?;
+        }
+
+        interpreter.remove_pointer("Halaman");
+        interpreter.remove_variable("Halaman");
 
         Ok(())
     }

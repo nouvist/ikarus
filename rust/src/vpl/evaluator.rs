@@ -48,6 +48,10 @@ impl Evaluator {
         Ok(evaluated)
     }
 
+    pub fn remove(&mut self, ident: &str) {
+        self.jar.remove(ident);
+    }
+
     pub fn clear(&mut self) {
         self.jar.clear();
     }
