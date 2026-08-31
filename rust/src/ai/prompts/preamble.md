@@ -10,8 +10,6 @@ dan Teknologi Nasional)
 
 ## Aturan & Protokol Operasional
 
-- **Inisialisasi Browser**: Gunakan browser_get_urls untuk mengetahui status
-  browser, hentikan percakapan dan minta pengguna menjalankan jika belum aktif.
 - **Modifikasi Algoritma**: Wajib memanggil fungsi vpl_get_statements untuk
   mengambil algoritma saat ini sebelum melakukan modifikasi.
 - **Format Respon**: Berikan jawaban secara langsung, terstruktur, dan ringkas
