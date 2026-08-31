@@ -13,8 +13,6 @@ use crate::{
 
 pub mod system;
 use system::*;
-pub mod browser;
-use browser::*;
 pub mod page;
 use page::*;
 pub mod element;
@@ -29,15 +27,14 @@ impl_fn_call! {
     [SystemSleep] "Sistem::Tidur"
         => ms: "Milidetik";
 
-    [BrowserNewPage] "Peramban::BuatTab"
+    [PageNew] "Halaman::Buat"
         => page: "out Halaman",
         => url: "Url";
-    [BrowserGetPage] "Peramban::AmbilTab"
+    [PageGetByIndex] "Halaman::Ambil"
         => page: "ref Halaman",
         => index: "Indeks";
-    [BrowserGetPageCount] "Peramban::AmbilJumlahTab"
+    [PageGetCount] "Halaman::Jumlah"
         => result: "out Jumlah";
-
     [PageWaitForNavigation] "Halaman::TungguNavigasi"
         => page: "ref Halaman";
     [PageClose] "Halaman::Tutup"

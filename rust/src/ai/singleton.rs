@@ -6,7 +6,7 @@ use rig::{
     client::AgentClientExt,
     message::{Message, ToolChoice},
     providers::openai,
-    streaming::{StreamedAssistantContent, StreamingChat, StreamingPrompt},
+    streaming::{StreamedAssistantContent, StreamingChat},
 };
 use rmcp::{RoleClient, ServiceExt, model::Tool, service::RunningService};
 use tokio::{
@@ -19,7 +19,6 @@ use crate::{
     ai::mcp::McpServer,
     impl_frb_clone,
     shared::{error::Error, error_helper::MapError, settings::Settings},
-    vpl::binding::RawScopeBinding,
 };
 
 #[frb(ignore)]
