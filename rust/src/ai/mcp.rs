@@ -1,6 +1,6 @@
 use flutter_rust_bridge::frb;
 use rmcp::{ErrorData, handler::server::wrapper::Parameters, tool, tool_router};
-use schemars::JsonSchema;
+use schemars::{JsonSchema, schema_for};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 

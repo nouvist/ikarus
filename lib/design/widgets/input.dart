@@ -51,6 +51,7 @@ class _InputState extends State<Input>
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.enabled) _focus.unfocus();
     final style = DefaultTextStyle.of(context).style;
     final lines = switch (widget.multiline) {
       true => 4,
