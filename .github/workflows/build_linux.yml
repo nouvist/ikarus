@@ -45,8 +45,8 @@ jobs:
 
       - name: Tar build output
         run: |
-          cd build/linux/x64/release/bundle
-          tar -czf ../../../../../ikarus-linux-x64.tar.gz .
+          cd build/linux/x64/release
+          tar -czf ../../../../ikarus-linux-x64.tar.gz bundle
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
