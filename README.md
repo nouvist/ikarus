@@ -20,3 +20,18 @@ Flutter dan Rust.
 1. Gunakan FRB dengan `cargo install flutter_rust_bridge_codegen --version 2.12.0`.
 2. Bangun jembatan FFI dengan `flutter_rust_bridge_codegen generate`.
 3. Bangun Flutter dengan `flutter build windows --release`.
+
+## YouTube
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=ZfQu2x5ryV0">
+    <img src="./docs/YouTube.png" />
+  </a>
+</p>
+
+## Lisensi
+
+Kode sumber didistribusikan di bawah lisensi Mozilla Public License 2.0
+(MPL-2.0), yang mengizinkan penggunaan, modifikasi, dan distribusi ulang kode
+dengan ketentuan bahwa perubahan pada berkas yang berlisensi MPL-2.0 tetap
+harus dipublikasikan di bawah lisensi yang sama.
