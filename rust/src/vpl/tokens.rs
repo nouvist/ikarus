@@ -2,19 +2,19 @@ use flutter_rust_bridge::frb;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::{impl_frb_clone, shared::error::Error, vpl::functions::FnCall};
+use crate::{impl_frb_copy, shared::error::Error, vpl::functions::FnCall};
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct Identifier(#[frb(non_final)] pub String);
-impl_frb_clone!(Identifier);
+impl_frb_copy!(Identifier);
 
 pub type ValueIdentifier = Identifier;
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct ValueString(#[frb(non_final)] pub String);
-impl_frb_clone!(ValueString);
+impl_frb_copy!(ValueString);
 
 impl From<String> for ValueString {
     #[inline]
@@ -24,9 +24,9 @@ impl From<String> for ValueString {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct ValueNumber(#[frb(non_final)] pub f64);
-impl_frb_clone!(ValueNumber);
+impl_frb_copy!(ValueNumber);
 
 impl From<f64> for ValueNumber {
     #[inline]
@@ -36,9 +36,9 @@ impl From<f64> for ValueNumber {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub struct ValueBoolean(#[frb(non_final)] pub bool);
-impl_frb_clone!(ValueBoolean);
+impl_frb_copy!(ValueBoolean);
 
 impl From<bool> for ValueBoolean {
     #[inline]
@@ -48,7 +48,7 @@ impl From<bool> for ValueBoolean {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
 pub enum ValueComputedOperation {
     Add,
     Subtract,
@@ -66,30 +66,30 @@ pub enum ValueComputedOperation {
     BoolGreaterThan,
     BoolGreatherThanOrEqual,
 }
-impl_frb_clone!(ValueComputedOperation);
+impl_frb_copy!(ValueComputedOperation);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct ValueComputed {
     #[frb(non_final)]
     pub operation: ValueComputedOperation,
     #[frb(non_final)]
-    pub left: Box<Value>,
+    pub left: Box<Val>,
     #[frb(non_final)]
-    pub right: Box<Value>,
+    pub right: Box<Val>,
 }
-impl_frb_clone!(ValueComputed);
+impl_frb_copy!(ValueComputed);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct ValueObject {
     pub symbol: String,
 }
-impl_frb_clone!(ValueObject);
+impl_frb_copy!(ValueObject);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
-pub enum Value {
+#[derive(Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
+pub enum Val {
     Null,
     Identifier(ValueIdentifier),
     String(ValueString),
@@ -98,37 +98,37 @@ pub enum Value {
     Object(ValueObject),
     Computed(Box<ValueComputed>),
 }
-impl_frb_clone!(Value);
+impl_frb_copy!(Val);
 
-impl Value {
+impl Val {
     pub fn display(&self) -> String {
         match self {
-            Value::Null => "Null".to_string(),
-            Value::Identifier(it) => format!("[Penunjuk {}]", it.0),
-            Value::String(it) => it.0.clone(),
-            Value::Number(it) => it.0.to_string(),
-            Value::Boolean(it) => match it.0 {
+            Val::Null => "Null".to_string(),
+            Val::Identifier(it) => format!("[Penunjuk {}]", it.0),
+            Val::String(it) => it.0.clone(),
+            Val::Number(it) => it.0.to_string(),
+            Val::Boolean(it) => match it.0 {
                 true => "Benar".to_string(),
                 false => "Salah".to_string(),
             },
-            Value::Object(it) => it.symbol.clone(),
-            Value::Computed(_) => "[Komputasi]".to_string(),
+            Val::Object(it) => it.symbol.clone(),
+            Val::Computed(_) => "[Komputasi]".to_string(),
         }
     }
 
     pub fn boolean(&self) -> bool {
         match self {
-            Value::Null => false,
-            Value::Identifier(_) => true,
-            Value::String(it) => match it.0.to_lowercase() {
+            Val::Null => false,
+            Val::Identifier(_) => true,
+            Val::String(it) => match it.0.to_lowercase() {
                 it if it == "benar" => true,
                 it if it == "true" => true,
                 _ => false,
             },
-            Value::Number(it) => it.0 != 0.0,
-            Value::Boolean(it) => it.0,
-            Value::Object(_) => true,
-            Value::Computed(_) => true,
+            Val::Number(it) => it.0 != 0.0,
+            Val::Boolean(it) => it.0,
+            Val::Object(_) => true,
+            Val::Computed(_) => true,
         }
     }
 }
@@ -136,11 +136,11 @@ impl Value {
 macro_rules! impl_as_value {
     ($($identifier:ident => $type:ty),+$(,)?) => {
         #[frb(ignore)]
-        impl Value {
+        impl Val {
             paste::paste! {
                 $(pub fn [<as_ $identifier>](&self) -> Option<&[<Value $type>]> {
                     match self {
-                        Value::$type(it) => Some(&it),
+                        Val::$type(it) => Some(&it),
                         _ => None,
                     }
                 })+
@@ -152,11 +152,11 @@ macro_rules! impl_as_value {
 macro_rules! impl_is_value {
     ($($identifier:ident => $type:ty),+$(,)?) => {
         #[frb(ignore)]
-        impl Value {
+        impl Val {
             paste::paste! {
                 $(pub fn [<is_ $identifier>](&self) -> bool {
                     match self {
-                        Value::$type(_) => true,
+                        Val::$type(_) => true,
                         _ => false,
                     }
                 })+
@@ -168,14 +168,14 @@ macro_rules! impl_is_value {
 macro_rules! impl_unwrap_as_value {
     ($($identifier:ident => $type:ty [$name:expr]),+$(,)?) => {
         #[frb(ignore)]
-        impl Value {
+        impl Val {
             paste::paste! {
                 $(pub fn [<unwrap_as_ $identifier>](
                     &self,
                     name: &'static str
                 ) -> Result<&[<Value $type>], Error> {
                     match self {
-                        Value::$type(it) => Ok(&it),
+                        Val::$type(it) => Ok(&it),
                         _ => Err(Error::FunctionInvalidArgument(
                             format!("{} {} {}", name, "harus berupa", $name)
                         )),
@@ -213,58 +213,58 @@ impl_unwrap_as_value! {
     computed => Computed ["komputasi"],
 }
 
-impl Default for Value {
+impl Default for Val {
     fn default() -> Self {
         Self::Null
     }
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct StatementVariable {
     #[frb(non_final)]
     pub ident: Identifier,
     #[frb(non_final)]
-    pub value: Value,
+    pub value: Val,
 }
-impl_frb_clone!(StatementVariable);
+impl_frb_copy!(StatementVariable);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct StatementCall(#[frb(non_final)] pub FnCall);
-impl_frb_clone!(StatementCall);
+impl_frb_copy!(StatementCall);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct StatementIf {
     #[frb(non_final)]
-    pub condition: Value,
+    pub condition: Val,
     #[frb(non_final)]
     pub scope: Scope,
 }
-impl_frb_clone!(StatementIf);
+impl_frb_copy!(StatementIf);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct StatementFor {
     #[frb(non_final)]
-    pub condition: Value,
+    pub condition: Val,
     #[frb(non_final)]
     pub scope: Scope,
 }
-impl_frb_clone!(StatementFor);
+impl_frb_copy!(StatementFor);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct Scope(#[frb(non_final)] pub Vec<Statement>);
-impl_frb_clone!(Scope);
+impl_frb_copy!(Scope);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub enum Statement {
     If(StatementIf),
     For(StatementFor),
     Call(StatementCall),
     Variable(StatementVariable),
 }
-impl_frb_clone!(Statement);
+impl_frb_copy!(Statement);

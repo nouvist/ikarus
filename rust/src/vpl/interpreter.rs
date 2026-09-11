@@ -12,7 +12,7 @@ use crate::{
     vpl::{
         evaluator::Evaluator,
         functions::Invoke,
-        tokens::{Identifier, Scope, Value, ValueBoolean},
+        tokens::{Identifier, Scope, Val, ValueBoolean},
     },
 };
 
@@ -38,13 +38,13 @@ impl Interpreter {
 
     #[inline]
     #[frb(sync)]
-    pub fn evaluate_variable(&mut self, value: &Value) -> Result<Value, Error> {
+    pub fn evaluate_variable(&mut self, value: &Val) -> Result<Val, Error> {
         self.evaluator.evaluate(value)
     }
 
     #[inline]
     #[frb(sync)]
-    pub fn store_variable(&mut self, ident: &Identifier, value: &Value) -> Result<Value, Error> {
+    pub fn store_variable(&mut self, ident: &Identifier, value: &Val) -> Result<Val, Error> {
         if !value.is_object() {
             self.remove_pointer(&ident.0);
         }
@@ -53,9 +53,9 @@ impl Interpreter {
 
     #[inline]
     #[frb(ignore)]
-    pub fn get_variable(&mut self, ident: &str) -> Result<Value, Error> {
+    pub fn get_variable(&mut self, ident: &str) -> Result<Val, Error> {
         self.evaluator
-            .evaluate(&Value::Identifier(Identifier(ident.to_owned())))
+            .evaluate(&Val::Identifier(Identifier(ident.to_owned())))
     }
 
     #[inline]
@@ -131,7 +131,7 @@ impl Interpreter {
                 }
                 Statement::If(it) => {
                     let condition = self.evaluate_variable(&it.condition)?;
-                    let Value::Boolean(condition) = condition else {
+                    let Val::Boolean(condition) = condition else {
                         continue;
                     };
 
@@ -144,7 +144,7 @@ impl Interpreter {
                 }
                 Statement::For(it) => loop {
                     let condition = self.evaluate_variable(&it.condition)?;
-                    let Value::Boolean(condition) = condition else {
+                    let Val::Boolean(condition) = condition else {
                         break;
                     };
 

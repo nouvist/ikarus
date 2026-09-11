@@ -3,7 +3,7 @@ use std::sync::Arc;
 use flutter_rust_bridge::frb;
 use tokio_util::sync::CancellationToken;
 
-use crate::impl_frb_clone;
+use crate::impl_frb_copy;
 
 #[frb(opaque)]
 #[derive(Clone)]
@@ -30,4 +30,4 @@ impl AbortController {
     }
 }
 
-impl_frb_clone!(AbortController);
+impl_frb_copy!(AbortController);

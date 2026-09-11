@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     impl_fn_call,
     shared::error::Error,
-    vpl::{interpreter::Interpreter, tokens::Value},
+    vpl::{interpreter::Interpreter, tokens::Val},
 };
 
 pub mod system;

@@ -10,26 +10,26 @@ use crate::{
     vpl::{
         functions::Invoke,
         interpreter::Interpreter,
-        tokens::{Value, ValueNumber, ValueObject, ValueString},
+        tokens::{Val, ValueNumber, ValueObject, ValueString},
     },
 };
 
-pub fn symbol() -> Value {
-    Value::Object(ValueObject {
+pub fn symbol() -> Val {
+    Val::Object(ValueObject {
         symbol: "[Objek Csv]".to_owned(),
     })
 }
 
 #[frb(ignore)]
-#[derive(Debug, Default, Clone)]
+#[derive(Default, Clone)]
 pub struct Csv {
     inner: Vec<Vec<String>>,
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvNew {
-    pub csv: Value,
+    pub csv: Val,
 }
 
 #[async_trait]
@@ -43,10 +43,10 @@ impl Invoke for FnCallCsvNew {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvLoad {
-    pub csv: Value,
-    pub file: Value,
+    pub csv: Val,
+    pub file: Val,
 }
 
 #[async_trait]
@@ -84,10 +84,10 @@ impl Invoke for FnCallCsvLoad {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvSave {
-    pub csv: Value,
-    pub file: Value,
+    pub csv: Val,
+    pub file: Val,
 }
 
 #[async_trait]
@@ -112,12 +112,12 @@ impl Invoke for FnCallCsvSave {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvGet {
-    pub csv: Value,
-    pub result: Value,
-    pub row: Value,
-    pub col: Value,
+    pub csv: Val,
+    pub result: Val,
+    pub row: Val,
+    pub col: Val,
 }
 
 #[async_trait]
@@ -136,27 +136,27 @@ impl Invoke for FnCallCsvGet {
             .0 as usize;
 
         let Some(row) = csv.inner.get(row) else {
-            interpreter.store_variable(result, &Value::Null)?;
+            interpreter.store_variable(result, &Val::Null)?;
             return Ok(());
         };
 
         let Some(col) = row.get(col) else {
-            interpreter.store_variable(result, &Value::Null)?;
+            interpreter.store_variable(result, &Val::Null)?;
             return Ok(());
         };
 
-        interpreter.store_variable(result, &Value::String(ValueString(col.clone())))?;
+        interpreter.store_variable(result, &Val::String(ValueString(col.clone())))?;
         Ok(())
     }
 }
 
 #[frb]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvSet {
-    pub csv: Value,
-    pub row: Value,
-    pub col: Value,
-    pub value: Value,
+    pub csv: Val,
+    pub row: Val,
+    pub col: Val,
+    pub value: Val,
 }
 
 #[async_trait]
@@ -205,10 +205,10 @@ impl Invoke for FnCallCsvSet {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallCsvRowCount {
-    pub csv: Value,
-    pub result: Value,
+    pub csv: Val,
+    pub result: Val,
 }
 
 #[async_trait]
@@ -220,7 +220,7 @@ impl Invoke for FnCallCsvRowCount {
 
         interpreter.store_variable(
             result_ptr,
-            &Value::Number(ValueNumber(csv.inner.len() as f64)),
+            &Val::Number(ValueNumber(csv.inner.len() as f64)),
         )?;
         Ok(())
     }

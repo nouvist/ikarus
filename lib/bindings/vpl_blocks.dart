@@ -233,13 +233,13 @@ class _VplBindingCallState extends State<VplBindingCall> {
   late final _args = widget.data.field0.field0.toArgs();
 
   VoidCallback _createVariableHandler(String arg) => () async {
-    var value = null as Value?;
+    var value = null as Val?;
     if (arg.startsWith('ref ') || arg.startsWith('out ')) {
       final inherited = VplInheritedData.of(context);
       inherited.calculateIdents();
 
       final current = switch (_args[arg]) {
-        Value_Identifier it => it.field0.field0,
+        Val_Identifier it => it.field0.field0,
         _ => '',
       };
 

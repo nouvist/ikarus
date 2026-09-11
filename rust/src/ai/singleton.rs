@@ -17,7 +17,7 @@ use tokio_stream::StreamExt;
 
 use crate::{
     ai::mcp::McpServer,
-    impl_frb_clone,
+    impl_frb_copy,
     shared::{error::Error, error_helper::MapError, settings::Settings},
 };
 
@@ -34,7 +34,7 @@ pub struct AiSingletonInner {
 pub struct AiSingleton {
     inner: Arc<RwLock<AiSingletonInner>>,
 }
-impl_frb_clone!(AiSingleton);
+impl_frb_copy!(AiSingleton);
 
 impl AiSingleton {
     pub async fn frb_override_instance() -> Result<Self, Error> {

@@ -6,43 +6,28 @@ use helper::*;
 pub async fn evaluate_arithmetic_operations() {
     let mut evaluator = Evaluator::new();
 
-    assert_eq!(
-        evaluator.evaluate(&add(num(10.0), num(15.0))).unwrap(),
-        num(25.0),
-    );
-    assert_eq!(
-        evaluator.evaluate(&sub(num(10.0), num(15.0))).unwrap(),
-        num(-5.0),
-    );
-    assert_eq!(
-        evaluator.evaluate(&mul(num(4.0), num(5.5))).unwrap(),
-        num(22.0),
-    );
-    assert_eq!(
-        evaluator.evaluate(&div(num(11.0), num(2.0))).unwrap(),
-        num(5.5),
-    );
-    assert_eq!(
-        evaluator.evaluate(&modulo(num(10.0), num(3.0))).unwrap(),
-        num(1.0),
-    );
+    assert!(evaluator.evaluate(&add(num(10.0), num(15.0))).unwrap() == num(25.0));
+    assert!(evaluator.evaluate(&sub(num(10.0), num(15.0))).unwrap() == num(-5.0));
+    assert!(evaluator.evaluate(&mul(num(4.0), num(5.5))).unwrap() == num(22.0));
+    assert!(evaluator.evaluate(&div(num(11.0), num(2.0))).unwrap() == num(5.5));
+    assert!(evaluator.evaluate(&modulo(num(10.0), num(3.0))).unwrap() == num(1.0));
 }
 
 #[tokio::test]
 pub async fn evaluate_string_concatenation() {
     let mut evaluator = Evaluator::new();
 
-    assert_eq!(
+    assert!(
         evaluator
             .evaluate(&add(str("halo, "), num(1337f64)))
-            .unwrap(),
-        str("halo, 1337")
+            .unwrap()
+            == str("halo, 1337")
     );
-    assert_eq!(
+    assert!(
         evaluator
             .evaluate(&add(num(1337f64), str(", halo"),))
-            .unwrap(),
-        str("1337, halo")
+            .unwrap()
+            == str("1337, halo")
     );
 }
 
@@ -50,44 +35,20 @@ pub async fn evaluate_string_concatenation() {
 pub async fn evaluate_boolean_logic() {
     let mut evaluator = Evaluator::new();
 
-    assert_eq!(
-        evaluator.evaluate(&and(bool(true), bool(false))).unwrap(),
-        bool(false),
-    );
-    assert_eq!(
-        evaluator.evaluate(&or(bool(true), bool(false))).unwrap(),
-        bool(true),
-    );
+    assert!(evaluator.evaluate(&and(bool(true), bool(false))).unwrap() == bool(false));
+    assert!(evaluator.evaluate(&or(bool(true), bool(false))).unwrap() == bool(true));
 }
 
 #[tokio::test]
 pub async fn evaluate_comparisons() {
     let mut evaluator = Evaluator::new();
 
-    assert_eq!(
-        evaluator.evaluate(&lt(num(5f64), num(10f64))).unwrap(),
-        bool(true),
-    );
-    assert_eq!(
-        evaluator.evaluate(&le(num(10f64), num(10f64))).unwrap(),
-        bool(true),
-    );
-    assert_eq!(
-        evaluator.evaluate(&gt(num(15f64), num(10f64))).unwrap(),
-        bool(true),
-    );
-    assert_eq!(
-        evaluator.evaluate(&ge(num(10f64), num(5f64))).unwrap(),
-        bool(true),
-    );
-    assert_eq!(
-        evaluator.evaluate(&eq(num(42f64), num(42f64))).unwrap(),
-        bool(true),
-    );
-    assert_eq!(
-        evaluator.evaluate(&ne(num(42f64), num(99f64))).unwrap(),
-        bool(true),
-    );
+    assert!(evaluator.evaluate(&lt(num(5f64), num(10f64))).unwrap() == bool(true));
+    assert!(evaluator.evaluate(&le(num(10f64), num(10f64))).unwrap() == bool(true));
+    assert!(evaluator.evaluate(&gt(num(15f64), num(10f64))).unwrap() == bool(true));
+    assert!(evaluator.evaluate(&ge(num(10f64), num(5f64))).unwrap() == bool(true));
+    assert!(evaluator.evaluate(&eq(num(42f64), num(42f64))).unwrap() == bool(true));
+    assert!(evaluator.evaluate(&ne(num(42f64), num(99f64))).unwrap() == bool(true));
 }
 
 #[tokio::test]
@@ -102,82 +63,82 @@ pub mod helper {
     #![allow(unused)]
 
     use crate::vpl::tokens::{
-        Identifier, Value, ValueBoolean, ValueComputed, ValueComputedOperation, ValueNumber,
+        Identifier, Val, ValueBoolean, ValueComputed, ValueComputedOperation, ValueNumber,
         ValueString,
     };
 
-    pub fn str(value: &str) -> Value {
-        Value::String(ValueString(value.to_owned()))
+    pub fn str(value: &str) -> Val {
+        Val::String(ValueString(value.to_owned()))
     }
 
-    pub fn num(value: f64) -> Value {
-        Value::Number(ValueNumber(value))
+    pub fn num(value: f64) -> Val {
+        Val::Number(ValueNumber(value))
     }
 
-    pub fn bool(value: bool) -> Value {
-        Value::Boolean(ValueBoolean(value))
+    pub fn bool(value: bool) -> Val {
+        Val::Boolean(ValueBoolean(value))
     }
 
-    pub fn ident(value: &str) -> Value {
-        Value::Identifier(Identifier(value.to_owned()))
+    pub fn ident(value: &str) -> Val {
+        Val::Identifier(Identifier(value.to_owned()))
     }
 
-    pub fn computed(op: ValueComputedOperation, left: Value, right: Value) -> Value {
-        Value::Computed(Box::new(ValueComputed {
+    pub fn computed(op: ValueComputedOperation, left: Val, right: Val) -> Val {
+        Val::Computed(Box::new(ValueComputed {
             operation: op,
             left: Box::new(left),
             right: Box::new(right),
         }))
     }
-    pub fn add(left: Value, right: Value) -> Value {
+    pub fn add(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::Add, left, right)
     }
 
-    pub fn sub(left: Value, right: Value) -> Value {
+    pub fn sub(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::Subtract, left, right)
     }
 
-    pub fn mul(left: Value, right: Value) -> Value {
+    pub fn mul(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::Multiply, left, right)
     }
 
-    pub fn div(left: Value, right: Value) -> Value {
+    pub fn div(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::Divide, left, right)
     }
 
-    pub fn modulo(left: Value, right: Value) -> Value {
+    pub fn modulo(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::Modulo, left, right)
     }
 
-    pub fn and(left: Value, right: Value) -> Value {
+    pub fn and(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::BoolAnd, left, right)
     }
 
-    pub fn or(left: Value, right: Value) -> Value {
+    pub fn or(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::BoolOr, left, right)
     }
 
-    pub fn eq(left: Value, right: Value) -> Value {
+    pub fn eq(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::BoolEqual, left, right)
     }
 
-    pub fn ne(left: Value, right: Value) -> Value {
+    pub fn ne(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::BoolNotEqual, left, right)
     }
 
-    pub fn lt(left: Value, right: Value) -> Value {
+    pub fn lt(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::BoolLessThan, left, right)
     }
 
-    pub fn le(left: Value, right: Value) -> Value {
+    pub fn le(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::BoolLessThanOrEqual, left, right)
     }
 
-    pub fn gt(left: Value, right: Value) -> Value {
+    pub fn gt(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::BoolGreaterThan, left, right)
     }
 
-    pub fn ge(left: Value, right: Value) -> Value {
+    pub fn ge(left: Val, right: Val) -> Val {
         computed(ValueComputedOperation::BoolGreatherThanOrEqual, left, right)
     }
 }

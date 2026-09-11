@@ -5,13 +5,13 @@ use flutter_rust_bridge::frb;
 use crate::{
     shared::{error::Error, error_helper::OkOrError},
     vpl::tokens::{
-        Identifier, Value, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString,
+        Identifier, Val, ValueBoolean, ValueComputedOperation, ValueNumber, ValueString,
     },
 };
 
 #[frb(ignore)]
 pub struct Evaluator {
-    pub jar: HashMap<String, Value>,
+    pub jar: HashMap<String, Val>,
 }
 
 #[frb(ignore)]
@@ -22,9 +22,9 @@ impl Evaluator {
         }
     }
 
-    pub fn evaluate(&mut self, var: &Value) -> Result<Value, Error> {
+    pub fn evaluate(&mut self, var: &Val) -> Result<Val, Error> {
         match var {
-            Value::Identifier(ident) => {
+            Val::Identifier(ident) => {
                 let resolved = self
                     .jar
                     .get(&ident.0)
@@ -32,7 +32,7 @@ impl Evaluator {
                     .ok_or_evaluator_no_variable()?;
                 Ok(resolved)
             }
-            Value::Computed(it) => {
+            Val::Computed(it) => {
                 let left = self.evaluate(&it.left)?;
                 let right = self.evaluate(&it.right)?;
 
@@ -42,7 +42,7 @@ impl Evaluator {
         }
     }
 
-    pub fn store(&mut self, ident: &Identifier, var: &Value) -> Result<Value, Error> {
+    pub fn store(&mut self, ident: &Identifier, var: &Val) -> Result<Val, Error> {
         let evaluated = self.evaluate(var)?;
         self.jar.insert(ident.0.clone(), evaluated.clone());
         Ok(evaluated)
@@ -56,7 +56,7 @@ impl Evaluator {
         self.jar.clear();
     }
 
-    fn apply(operation: &ValueComputedOperation, left: &Value, right: &Value) -> Option<Value> {
+    fn apply(operation: &ValueComputedOperation, left: &Val, right: &Val) -> Option<Val> {
         match (operation, left, right) {
             (ValueComputedOperation::Add, left, right) => Self::apply_add(left, right),
             (ValueComputedOperation::Subtract, left, right) => Self::apply_subtract(left, right),
@@ -76,17 +76,17 @@ impl Evaluator {
         }
     }
 
-    fn apply_add(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_add(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Number(left), Value::Number(right)) => {
-                Some(Value::Number(ValueNumber(left.0 + right.0)))
+            (Val::Number(left), Val::Number(right)) => {
+                Some(Val::Number(ValueNumber(left.0 + right.0)))
             }
-            (Value::String(left), right) => Some(Value::String(ValueString(format!(
+            (Val::String(left), right) => Some(Val::String(ValueString(format!(
                 "{}{}",
                 left.0,
                 right.display()
             )))),
-            (left, Value::String(right)) => Some(Value::String(ValueString(format!(
+            (left, Val::String(right)) => Some(Val::String(ValueString(format!(
                 "{}{}",
                 left.display(),
                 right.0
@@ -95,123 +95,123 @@ impl Evaluator {
         }
     }
 
-    fn apply_subtract(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_subtract(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Number(left), Value::Number(right)) => {
-                Some(Value::Number(ValueNumber(left.0 - right.0)))
+            (Val::Number(left), Val::Number(right)) => {
+                Some(Val::Number(ValueNumber(left.0 - right.0)))
             }
             _ => None,
         }
     }
 
-    fn apply_multiply(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_multiply(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Number(left), Value::Number(right)) => {
-                Some(Value::Number(ValueNumber(left.0 * right.0)))
+            (Val::Number(left), Val::Number(right)) => {
+                Some(Val::Number(ValueNumber(left.0 * right.0)))
             }
             _ => None,
         }
     }
 
-    fn apply_divide(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_divide(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Number(left), Value::Number(right)) => match right.0 != 0.0 {
-                true => Some(Value::Number(ValueNumber(left.0 / right.0))),
+            (Val::Number(left), Val::Number(right)) => match right.0 != 0.0 {
+                true => Some(Val::Number(ValueNumber(left.0 / right.0))),
                 false => None,
             },
             _ => None,
         }
     }
 
-    fn apply_modulo(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_modulo(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Number(left), Value::Number(right)) => match right.0 != 0.0 {
-                true => Some(Value::Number(ValueNumber(left.0 % right.0))),
+            (Val::Number(left), Val::Number(right)) => match right.0 != 0.0 {
+                true => Some(Val::Number(ValueNumber(left.0 % right.0))),
                 false => None,
             },
             _ => None,
         }
     }
 
-    fn apply_bool_and(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_bool_and(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Boolean(left), Value::Boolean(right)) => {
-                Some(Value::Boolean(ValueBoolean(left.0 && right.0)))
+            (Val::Boolean(left), Val::Boolean(right)) => {
+                Some(Val::Boolean(ValueBoolean(left.0 && right.0)))
             }
-            (Value::Boolean(left), right) => {
-                Some(Value::Boolean(ValueBoolean(left.0 && right.boolean())))
+            (Val::Boolean(left), right) => {
+                Some(Val::Boolean(ValueBoolean(left.0 && right.boolean())))
             }
-            (left, Value::Boolean(right)) => {
-                Some(Value::Boolean(ValueBoolean(left.boolean() && right.0)))
+            (left, Val::Boolean(right)) => {
+                Some(Val::Boolean(ValueBoolean(left.boolean() && right.0)))
             }
             _ => None,
         }
     }
 
-    fn apply_bool_or(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_bool_or(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Boolean(left), Value::Boolean(right)) => {
-                Some(Value::Boolean(ValueBoolean(left.0 || right.0)))
+            (Val::Boolean(left), Val::Boolean(right)) => {
+                Some(Val::Boolean(ValueBoolean(left.0 || right.0)))
             }
-            (Value::Boolean(left), right) => {
-                Some(Value::Boolean(ValueBoolean(left.0 || right.boolean())))
+            (Val::Boolean(left), right) => {
+                Some(Val::Boolean(ValueBoolean(left.0 || right.boolean())))
             }
-            (left, Value::Boolean(right)) => {
-                Some(Value::Boolean(ValueBoolean(left.boolean() || right.0)))
-            }
-            _ => None,
-        }
-    }
-
-    fn apply_bool_eq(left: &Value, right: &Value) -> Option<Value> {
-        match (left, right) {
-            (Value::Object(_), Value::Object(_)) => Some(Value::Boolean(ValueBoolean(false))),
-            (Value::Object(_), _) => Some(Value::Boolean(ValueBoolean(false))),
-            (_, Value::Object(_)) => Some(Value::Boolean(ValueBoolean(false))),
-            (left, right) => Some(Value::Boolean(ValueBoolean(left == right))),
-        }
-    }
-
-    fn apply_bool_ne(left: &Value, right: &Value) -> Option<Value> {
-        match (left, right) {
-            (Value::Object(_), Value::Object(_)) => Some(Value::Boolean(ValueBoolean(true))),
-            (Value::Object(_), _) => Some(Value::Boolean(ValueBoolean(true))),
-            (_, Value::Object(_)) => Some(Value::Boolean(ValueBoolean(true))),
-            (left, right) => Some(Value::Boolean(ValueBoolean(left != right))),
-        }
-    }
-
-    fn apply_bool_lt(left: &Value, right: &Value) -> Option<Value> {
-        match (left, right) {
-            (Value::Number(left), Value::Number(right)) => {
-                Some(Value::Boolean(ValueBoolean(left.0 < right.0)))
+            (left, Val::Boolean(right)) => {
+                Some(Val::Boolean(ValueBoolean(left.boolean() || right.0)))
             }
             _ => None,
         }
     }
 
-    fn apply_bool_le(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_bool_eq(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Number(left), Value::Number(right)) => {
-                Some(Value::Boolean(ValueBoolean(left.0 <= right.0)))
+            (Val::Object(_), Val::Object(_)) => Some(Val::Boolean(ValueBoolean(false))),
+            (Val::Object(_), _) => Some(Val::Boolean(ValueBoolean(false))),
+            (_, Val::Object(_)) => Some(Val::Boolean(ValueBoolean(false))),
+            (left, right) => Some(Val::Boolean(ValueBoolean(left == right))),
+        }
+    }
+
+    fn apply_bool_ne(left: &Val, right: &Val) -> Option<Val> {
+        match (left, right) {
+            (Val::Object(_), Val::Object(_)) => Some(Val::Boolean(ValueBoolean(true))),
+            (Val::Object(_), _) => Some(Val::Boolean(ValueBoolean(true))),
+            (_, Val::Object(_)) => Some(Val::Boolean(ValueBoolean(true))),
+            (left, right) => Some(Val::Boolean(ValueBoolean(left != right))),
+        }
+    }
+
+    fn apply_bool_lt(left: &Val, right: &Val) -> Option<Val> {
+        match (left, right) {
+            (Val::Number(left), Val::Number(right)) => {
+                Some(Val::Boolean(ValueBoolean(left.0 < right.0)))
             }
             _ => None,
         }
     }
 
-    fn apply_bool_gt(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_bool_le(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Number(left), Value::Number(right)) => {
-                Some(Value::Boolean(ValueBoolean(left.0 > right.0)))
+            (Val::Number(left), Val::Number(right)) => {
+                Some(Val::Boolean(ValueBoolean(left.0 <= right.0)))
             }
             _ => None,
         }
     }
 
-    fn apply_bool_ge(left: &Value, right: &Value) -> Option<Value> {
+    fn apply_bool_gt(left: &Val, right: &Val) -> Option<Val> {
         match (left, right) {
-            (Value::Number(left), Value::Number(right)) => {
-                Some(Value::Boolean(ValueBoolean(left.0 >= right.0)))
+            (Val::Number(left), Val::Number(right)) => {
+                Some(Val::Boolean(ValueBoolean(left.0 > right.0)))
+            }
+            _ => None,
+        }
+    }
+
+    fn apply_bool_ge(left: &Val, right: &Val) -> Option<Val> {
+        match (left, right) {
+            (Val::Number(left), Val::Number(right)) => {
+                Some(Val::Boolean(ValueBoolean(left.0 >= right.0)))
             }
             _ => None,
         }

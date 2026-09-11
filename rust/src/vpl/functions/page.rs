@@ -12,21 +12,21 @@ use crate::{
     vpl::{
         functions::{Invoke, element},
         interpreter::Interpreter,
-        tokens::{Value, ValueNumber, ValueObject},
+        tokens::{Val, ValueNumber, ValueObject},
     },
 };
 
-pub fn symbol() -> Value {
-    Value::Object(ValueObject {
+pub fn symbol() -> Val {
+    Val::Object(ValueObject {
         symbol: "[Objek Halaman]".to_owned(),
     })
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageNew {
-    pub page: Value,
-    pub url: Value,
+    pub page: Val,
+    pub url: Val,
 }
 
 #[async_trait]
@@ -48,9 +48,9 @@ impl Invoke for FnCallPageNew {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageGetCount {
-    pub result: Value,
+    pub result: Val,
 }
 
 #[async_trait]
@@ -60,7 +60,7 @@ impl Invoke for FnCallPageGetCount {
         let singleton = BrowserSingleton::instance().lock().await;
         let browser = singleton.browser()?;
         let pages = browser.pages().await?;
-        let value = Value::Number(ValueNumber(pages.len() as f64));
+        let value = Val::Number(ValueNumber(pages.len() as f64));
 
         interpreter.store_variable(result_ptr, &value)?;
         Ok(())
@@ -68,10 +68,10 @@ impl Invoke for FnCallPageGetCount {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageGetByIndex {
-    pub page: Value,
-    pub index: Value,
+    pub page: Val,
+    pub index: Val,
 }
 
 #[async_trait]
@@ -86,7 +86,7 @@ impl Invoke for FnCallPageGetByIndex {
         let browser = singleton.browser()?;
         let pages = browser.pages().await?;
         let Some(page) = pages.get(index).map(|it| it.clone()) else {
-            interpreter.store_variable(page_ptr, &Value::Null)?;
+            interpreter.store_variable(page_ptr, &Val::Null)?;
             return Ok(());
         };
 
@@ -98,10 +98,10 @@ impl Invoke for FnCallPageGetByIndex {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageWaitForNavigation {
-    pub page: Value,
-    pub url: Value,
+    pub page: Val,
+    pub url: Val,
 }
 
 #[async_trait]
@@ -116,10 +116,10 @@ impl Invoke for FnCallPageWaitForNavigation {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageClose {
-    pub page: Value,
-    pub url: Value,
+    pub page: Val,
+    pub url: Val,
 }
 
 #[async_trait]
@@ -145,11 +145,11 @@ impl Invoke for FnCallPageClose {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallPageFindElement {
-    pub page: Value,
-    pub element: Value,
-    pub selector: Value,
+    pub page: Val,
+    pub element: Val,
+    pub selector: Val,
 }
 
 #[async_trait]
@@ -167,7 +167,7 @@ impl Invoke for FnCallPageFindElement {
                 interpreter.store_pointer(element_ptr.0.clone(), Arc::new(it));
             }
             None => {
-                interpreter.store_variable(element_ptr, &Value::Null)?;
+                interpreter.store_variable(element_ptr, &Val::Null)?;
             }
         }
 

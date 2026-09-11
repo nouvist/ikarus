@@ -5,20 +5,20 @@ use serde::{Deserialize, Serialize};
 use tokio::fs;
 
 use crate::{
-    impl_frb_clone,
+    impl_frb_copy,
     shared::{error::Error, error_helper::MapError, logger::log},
     vpl::{
         functions::FnName,
         tokens::{
-            Scope, Statement, StatementCall, StatementFor, StatementIf, StatementVariable, Value,
+            Scope, Statement, StatementCall, StatementFor, StatementIf, StatementVariable, Val,
         },
     },
 };
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawScope(#[frb(non_final)] pub Vec<RawStatement>);
-impl_frb_clone!(RawScope);
+impl_frb_copy!(RawScope);
 
 impl RawScope {
     #[frb(sync)]
@@ -69,23 +69,23 @@ impl RawScope {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawIf {
     #[frb(non_final)]
-    pub condition: Value,
+    pub condition: Val,
 }
-impl_frb_clone!(RawIf);
+impl_frb_copy!(RawIf);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct RawFor {
     #[frb(non_final)]
-    pub condition: Value,
+    pub condition: Val,
 }
-impl_frb_clone!(RawFor);
+impl_frb_copy!(RawFor);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub enum RawStatement {
     End,
     If(RawIf),
@@ -93,10 +93,10 @@ pub enum RawStatement {
     Call(StatementCall),
     Variable(StatementVariable),
 }
-impl_frb_clone!(RawStatement);
+impl_frb_copy!(RawStatement);
 
 #[frb(non_opaque)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub enum RawStatementVariant {
     End,
     If,
@@ -104,7 +104,7 @@ pub enum RawStatementVariant {
     Variable,
     Call(FnName),
 }
-impl_frb_clone!(RawStatementVariant);
+impl_frb_copy!(RawStatementVariant);
 
 impl RawStatement {
     pub fn variant(&self) -> RawStatementVariant {

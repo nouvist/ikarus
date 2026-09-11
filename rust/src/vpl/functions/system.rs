@@ -8,13 +8,13 @@ use tokio::time::sleep;
 
 use crate::{
     shared::{error::Error, logger::log},
-    vpl::{functions::Invoke, interpreter::Interpreter, tokens::Value},
+    vpl::{functions::Invoke, interpreter::Interpreter, tokens::Val},
 };
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemPrint {
-    pub content: Value,
+    pub content: Val,
 }
 
 #[async_trait]
@@ -27,9 +27,9 @@ impl Invoke for FnCallSystemPrint {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemSleep {
-    pub ms: Value,
+    pub ms: Val,
 }
 
 #[async_trait]
@@ -47,7 +47,7 @@ impl Invoke for FnCallSystemSleep {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallSystemStop {}
 
 #[async_trait]

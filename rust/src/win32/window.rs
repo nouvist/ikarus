@@ -11,7 +11,7 @@ use windows::{
 };
 
 #[frb(opaque)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct Window(usize);
 
 struct SearchData {

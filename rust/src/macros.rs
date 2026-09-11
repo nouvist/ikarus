@@ -1,9 +1,9 @@
 #[macro_export]
-macro_rules! impl_frb_clone {
+macro_rules! impl_frb_copy {
     ($type:ty) => {
         impl $type {
             #[frb(sync)]
-            pub fn frb_override_clone(&self) -> Self {
+            pub fn copy(&self) -> Self {
                 self.clone()
             }
         }
@@ -31,13 +31,13 @@ macro_rules! impl_enum_is {
 macro_rules! impl_fn_call {
     ($([$type:ident] $name:expr $( => $arg_type:ident : $arg_name:expr),* $(,)?);+ $(;)?) => {
         #[frb]
-        #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema)]
+        #[derive(Clone, Copy, Serialize, Deserialize, JsonSchema)]
         pub enum FnName {
             $($type,)+
         }
 
         #[frb]
-        #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+        #[derive(Clone, Serialize, Deserialize, JsonSchema)]
         pub enum FnCall {
             $($type(paste::paste!([<FnCall $type>])),)+
         }
@@ -60,7 +60,7 @@ macro_rules! impl_fn_call {
             }
 
             #[frb(sync)]
-            pub fn apply_args(&self, args: HashMap<String, Value>) -> Result<Self, Error> {
+            pub fn apply_args(&self, args: HashMap<String, Val>) -> Result<Self, Error> {
                 let mut this = self.clone();
                 match &mut this {
                     $(FnCall::$type(it) => {
@@ -76,7 +76,7 @@ macro_rules! impl_fn_call {
             }
 
             #[frb(sync)]
-            pub fn to_args(&self) -> HashMap<String, Value> {
+            pub fn to_args(&self) -> HashMap<String, Val> {
                 match self {
                     $(FnCall::$type(_it) => [$(($arg_name.to_owned(), _it.$arg_type.clone()),)*]
                         .into_iter()

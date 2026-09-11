@@ -50,7 +50,7 @@ class _VplState extends State<Vpl> {
 
   Future<void> _handleSet(RawScope scope) async => setState(() {
     widget.statements.clear();
-    widget.statements.addAll(scope.field0.map((it) => it.clone()));
+    widget.statements.addAll(scope.field0.map((it) => it.copy()));
   });
 
   void _calculateIdents([bool shouldUpdate = false]) {
@@ -68,7 +68,7 @@ class _VplState extends State<Vpl> {
               (it) => it.key.startsWith('ref ') || it.key.startsWith('out '),
             )
             .map((it) => it.value)
-            .whereType<Value_Identifier>();
+            .whereType<Val_Identifier>();
         for (final identifier in identifiers) {
           final next = identifier.field0.field0;
           if (_idents.contains(next)) continue;
@@ -123,7 +123,7 @@ class _VplState extends State<Vpl> {
   });
 
   void _handleDuplicate(int index) => setState(() {
-    widget.statements.insert(index + 1, widget.statements[index].clone());
+    widget.statements.insert(index + 1, widget.statements[index].copy());
   });
 
   void _handleReorderItem(int oldIndex, int newIndex) {

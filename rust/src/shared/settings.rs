@@ -8,7 +8,7 @@ use crate::{
     shared::{error::Error, error_helper::MapError},
 };
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, PartialEq)]
 pub struct Settings {
     pub text_generation_url: String,
     pub text_generation_key: String,

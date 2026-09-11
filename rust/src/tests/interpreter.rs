@@ -20,9 +20,9 @@ pub async fn interpret_if_properly() {
 
     let mut interpreter = Interpreter::new();
     interpreter.run(scope_true.build().unwrap()).await.unwrap();
-    assert_eq!(interpreter.get_variable("Result").unwrap(), str("Bar"));
+    assert!(interpreter.get_variable("Result").unwrap() == str("Bar"));
     interpreter.run(scope_false.build().unwrap()).await.unwrap();
-    assert_eq!(interpreter.get_variable("Result").unwrap(), str("Foo"));
+    assert!(interpreter.get_variable("Result").unwrap() == str("Foo"));
 }
 
 #[tokio::test]
@@ -36,7 +36,7 @@ pub async fn interpret_for_properly() {
 
     let mut interpreter = Interpreter::new();
     interpreter.run(scope.build().unwrap()).await.unwrap();
-    assert_eq!(interpreter.get_variable("Iteration").unwrap(), num(10.0));
+    assert!(interpreter.get_variable("Iteration").unwrap() == num(10.0));
 }
 
 mod helper {
@@ -45,16 +45,16 @@ mod helper {
     use crate::vpl::{
         functions::FnCall,
         raw_tokens::{RawFor, RawIf, RawStatement},
-        tokens::{Identifier, StatementCall, StatementVariable, Value, ValueComputedOperation},
+        tokens::{Identifier, StatementCall, StatementVariable, Val, ValueComputedOperation},
     };
 
     pub use crate::tests::evaluator::helper::*;
 
-    pub fn if_start(condition: Value) -> RawStatement {
+    pub fn if_start(condition: Val) -> RawStatement {
         RawStatement::If(RawIf { condition })
     }
 
-    pub fn for_start(condition: Value) -> RawStatement {
+    pub fn for_start(condition: Val) -> RawStatement {
         RawStatement::For(RawFor { condition })
     }
 
@@ -66,7 +66,7 @@ mod helper {
         RawStatement::Call(StatementCall(call))
     }
 
-    pub fn var(ident: &str, value: Value) -> RawStatement {
+    pub fn var(ident: &str, value: Val) -> RawStatement {
         RawStatement::Variable(StatementVariable {
             ident: Identifier(ident.to_owned()),
             value,

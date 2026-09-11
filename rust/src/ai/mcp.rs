@@ -118,33 +118,33 @@ impl McpServer {
 }
 
 #[frb(ignore)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 struct McpVplAddStatement {
     pub statement: RawStatement,
     pub index: Option<usize>,
 }
 
 #[frb(ignore)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 struct McpVplReplaceStatement {
     pub statement: RawStatement,
     pub index: usize,
 }
 
 #[frb(ignore)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 pub struct McpVplRemoveStatement {
     pub index: usize,
 }
 
 #[frb(ignore)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 struct McpBrowserNew {
     pub url: String,
 }
 
 #[frb(ignore)]
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Clone, Serialize, Deserialize, JsonSchema)]
 struct McpBrowserGetHtml {
     pub tab: usize,
 }

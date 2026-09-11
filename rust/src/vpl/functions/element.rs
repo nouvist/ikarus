@@ -9,21 +9,21 @@ use crate::{
     vpl::{
         functions::Invoke,
         interpreter::Interpreter,
-        tokens::{Value, ValueObject, ValueString},
+        tokens::{Val, ValueObject, ValueString},
     },
 };
 
-pub fn symbol() -> Value {
-    Value::Object(ValueObject {
+pub fn symbol() -> Val {
+    Val::Object(ValueObject {
         symbol: "[Objek Elemen]".to_owned(),
     })
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetOuterHtml {
-    pub element: Value,
-    pub result: Value,
+    pub element: Val,
+    pub result: Val,
 }
 
 #[async_trait]
@@ -37,8 +37,8 @@ impl Invoke for FnCallElementGetOuterHtml {
         interpreter.store_variable(
             result_ptr,
             &match result {
-                Some(it) => Value::String(ValueString(it)),
-                None => Value::Null,
+                Some(it) => Val::String(ValueString(it)),
+                None => Val::Null,
             },
         )?;
         Ok(())
@@ -46,10 +46,10 @@ impl Invoke for FnCallElementGetOuterHtml {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetInnerHtml {
-    pub element: Value,
-    pub result: Value,
+    pub element: Val,
+    pub result: Val,
 }
 
 #[async_trait]
@@ -63,8 +63,8 @@ impl Invoke for FnCallElementGetInnerHtml {
         interpreter.store_variable(
             result_ptr,
             &match result {
-                Some(it) => Value::String(ValueString(it)),
-                None => Value::Null,
+                Some(it) => Val::String(ValueString(it)),
+                None => Val::Null,
             },
         )?;
         Ok(())
@@ -72,10 +72,10 @@ impl Invoke for FnCallElementGetInnerHtml {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementGetText {
-    pub element: Value,
-    pub result: Value,
+    pub element: Val,
+    pub result: Val,
 }
 
 #[async_trait]
@@ -89,8 +89,8 @@ impl Invoke for FnCallElementGetText {
         interpreter.store_variable(
             result_ptr,
             &match result {
-                Some(it) => Value::String(ValueString(it)),
-                None => Value::Null,
+                Some(it) => Val::String(ValueString(it)),
+                None => Val::Null,
             },
         )?;
         Ok(())
@@ -98,10 +98,10 @@ impl Invoke for FnCallElementGetText {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementType {
-    pub element: Value,
-    pub text: Value,
+    pub element: Val,
+    pub text: Val,
 }
 
 #[async_trait]
@@ -118,9 +118,9 @@ impl Invoke for FnCallElementType {
 }
 
 #[frb(non_opaque)]
-#[derive(Debug, Default, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Default, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct FnCallElementClick {
-    pub element: Value,
+    pub element: Val,
 }
 
 #[async_trait]

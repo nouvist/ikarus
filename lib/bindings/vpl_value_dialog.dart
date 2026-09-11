@@ -2,13 +2,13 @@ part of 'vpl.dart';
 
 class VplValueDialog extends StatefulWidget {
   final int nested;
-  final Value data;
+  final Val data;
 
   const VplValueDialog({super.key, this.nested = 0, required this.data});
 
-  static PageRoute<Value?> route({
+  static PageRoute<Val?> route({
     int nested = 0,
-    required Value data,
+    required Val data,
     required VplInheritedData parent,
   }) {
     return DialogRoute(
@@ -24,16 +24,16 @@ class VplValueDialog extends StatefulWidget {
 }
 
 class _VplValueDialogState extends State<VplValueDialog> {
-  late var _data = widget.data.clone();
+  late var _data = widget.data.copy();
   final _string = TextEditingController();
   final _number = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    if (widget.data case Value_String it) {
+    if (widget.data case Val_String it) {
       _string.text = it.field0.field0;
-    } else if (widget.data case Value_Number it) {
+    } else if (widget.data case Val_Number it) {
       _number.text = it.field0.field0.toString();
     }
   }
@@ -50,9 +50,9 @@ class _VplValueDialogState extends State<VplValueDialog> {
   }
 
   void _handleSave() {
-    if (_data case Value_String it) {
+    if (_data case Val_String it) {
       it.field0.field0 = _string.text;
-    } else if (_data case Value_Number it) {
+    } else if (_data case Val_Number it) {
       it.field0.field0 = double.parse(_number.text);
     }
 
@@ -81,13 +81,13 @@ class _VplValueDialogState extends State<VplValueDialog> {
     _string.text = path;
   }
 
-  VoidCallback _createTypeHandler(Value next) => () {
+  VoidCallback _createTypeHandler(Val next) => () {
     setState(() {
       _data = next;
     });
   };
 
-  VoidCallback _handleIdent(Value_Identifier it) => () async {
+  VoidCallback _handleIdent(Val_Identifier it) => () async {
     final inherited = VplInheritedData.of(context);
     inherited.calculateIdents();
 
@@ -107,7 +107,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
     });
   };
 
-  VoidCallback _createComputedLeftHandler(Value_Computed data) => () async {
+  VoidCallback _createComputedLeftHandler(Val_Computed data) => () async {
     final next = await context.navigator().push(
       VplValueDialog.route(
         nested: widget.nested + 1,
@@ -123,7 +123,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
     });
   };
 
-  VoidCallback _createComputedRightHandler(Value_Computed data) => () async {
+  VoidCallback _createComputedRightHandler(Val_Computed data) => () async {
     final next = await context.navigator().push(
       VplValueDialog.route(
         nested: widget.nested + 1,
@@ -166,7 +166,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
                 children: [
                   _buildTitle(const Text('Jenis Data')),
                   ..._buildSelector(),
-                  if (_data is Value_String) ...[
+                  if (_data is Val_String) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai')),
                     Input(onSubmit: (_) => _handleSave(), controller: _string),
@@ -189,7 +189,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
                         ),
                       ],
                     ),
-                  ] else if (_data is Value_Number) ...[
+                  ] else if (_data is Val_Number) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai')),
                     Input(
@@ -198,15 +198,15 @@ class _VplValueDialogState extends State<VplValueDialog> {
                       type: .number,
                       formatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
-                  ] else if (_data case Value_Boolean it) ...[
+                  ] else if (_data case Val_Boolean it) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai')),
                     _buildBoolean(it),
-                  ] else if (_data case Value_Identifier it) ...[
+                  ] else if (_data case Val_Identifier it) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Nilai')),
                     VplBindingValue(onTap: _handleIdent(it), data: it),
-                  ] else if (_data case Value_Computed it) ...[
+                  ] else if (_data case Val_Computed it) ...[
                     _buildSeparator(),
                     _buildTitle(const Text('Operan Kiri')),
                     VplBindingValue(
@@ -273,28 +273,28 @@ class _VplValueDialogState extends State<VplValueDialog> {
           Expanded(
             child: ToggleButton(
               onTap: _createTypeHandler(const .null_()),
-              active: _data is Value_Null,
+              active: _data is Val_Null,
               child: const Text('Null'),
             ),
           ),
           Expanded(
             child: ToggleButton(
               onTap: _createTypeHandler(.string(.new(field0: _string.text))),
-              active: _data is Value_String,
+              active: _data is Val_String,
               child: const Text('String'),
             ),
           ),
           Expanded(
             child: ToggleButton(
               onTap: _createTypeHandler(.number(.new(field0: 0))),
-              active: _data is Value_Number,
+              active: _data is Val_Number,
               child: const Text('Angka'),
             ),
           ),
           Expanded(
             child: ToggleButton(
               onTap: _createTypeHandler(.boolean(.new(field0: true))),
-              active: _data is Value_Boolean,
+              active: _data is Val_Boolean,
               child: const Text('Boolean'),
             ),
           ),
@@ -307,7 +307,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
           Expanded(
             child: ToggleButton(
               onTap: _createTypeHandler(.identifier(.new(field0: 'NamaVar'))),
-              active: _data is Value_Identifier,
+              active: _data is Val_Identifier,
               child: const Text('Variabel'),
             ),
           ),
@@ -322,7 +322,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
                   ),
                 ),
               ),
-              active: _data is Value_Computed,
+              active: _data is Val_Computed,
               child: const Text('Komputasi'),
             ),
           ),
@@ -331,7 +331,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
     ];
   }
 
-  List<Widget> _buildComputedOperation(Value_Computed data) {
+  List<Widget> _buildComputedOperation(Val_Computed data) {
     return [
       Row(
         spacing: 8,
@@ -456,7 +456,7 @@ class _VplValueDialogState extends State<VplValueDialog> {
     ];
   }
 
-  Widget _buildBoolean(Value_Boolean data) {
+  Widget _buildBoolean(Val_Boolean data) {
     return Row(
       spacing: 8,
       children: [
