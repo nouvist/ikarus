@@ -1,3 +1,7 @@
+# FRB Generated
+lib/crux
+rust/src/frb_generated.rs
+
 # Miscellaneous
 *.class
 *.log
