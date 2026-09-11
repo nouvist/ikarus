@@ -4,7 +4,7 @@ import 'package:ikarus/design.dart';
 import 'package:ikarus/screens.dart';
 import 'package:window_manager/window_manager.dart';
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await WindowManager.instance.ensureInitialized();
   await WindowManager.instance.waitUntilReadyToShow(
@@ -20,8 +20,9 @@ Future<void> main() async {
   runApp(
     RestartProvider(
       child: App(
+        initial: args.firstOrNull,
         waitFor: Future.wait([
-          if (kReleaseMode) .delayed(const .new(seconds: 5)),
+          if (kReleaseMode) .delayed(const .new(seconds: 3)),
           RustLib.init(),
         ]),
       ),
@@ -29,18 +30,17 @@ Future<void> main() async {
   );
 }
 
-class App extends StatefulWidget {
+class App extends StatelessWidget {
+  final String? initial;
   final Future<void>? waitFor;
 
-  const App({super.key, this.waitFor});
+  const App({super.key, this.initial, this.waitFor});
 
-  @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
-    return Root(waitFor: widget.waitFor, home: const DocumentScreen());
+    return Root(
+      waitFor: waitFor,
+      home: DocumentScreen(initial: initial),
+    );
   }
 }

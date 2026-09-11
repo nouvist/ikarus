@@ -45,6 +45,11 @@ impl RawScope {
         Ok(result)
     }
 
+    pub async fn initial(path: String) -> Result<Option<Self>, Error> {
+        let buffer = fs::read(path).await?;
+        Ok(Some(Self::from_binary(buffer)?))
+    }
+
     pub async fn open() -> Result<Option<Self>, Error> {
         let path = FileDialog::new()
             .add_filter("Dokumen Ikarus", &["ikd"])

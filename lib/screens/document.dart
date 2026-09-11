@@ -4,10 +4,13 @@ import 'package:ikarus/bindings.dart';
 import 'package:ikarus/crux.dart';
 import 'package:ikarus/design.dart';
 import 'package:ikarus/extensions.dart';
+import 'package:ikarus/helpers.dart';
 import 'package:ikarus/screens.dart';
 
 class DocumentScreen extends StatefulWidget {
-  const DocumentScreen({super.key});
+  final String? initial;
+
+  const DocumentScreen({super.key, this.initial});
 
   @override
   State<DocumentScreen> createState() => _DocumentScreenState();
@@ -25,6 +28,17 @@ class _DocumentScreenState extends State<DocumentScreen> {
   void initState() {
     super.initState();
     _browser.registerListener(callback: _handleBrowserChange);
+    yieldNow(() async {
+      final path = widget.initial;
+      if (path == null) return;
+      final next = await RawScope.initial(path: path);
+      if (next == null) return;
+      if (!mounted) return;
+      setState(() {
+        _statements.clear();
+        _statements.addAll(next.field0);
+      });
+    });
   }
 
   Future<void> _handleStart() async {

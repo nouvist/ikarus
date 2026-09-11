@@ -69,6 +69,9 @@ class RawScope {
   static RawScope fromJson({required String json}) =>
       RustLib.instance.api.crateVplRawTokensRawScopeFromJson(json: json);
 
+  static Future<RawScope?> initial({required String path}) =>
+      RustLib.instance.api.crateVplRawTokensRawScopeInitial(path: path);
+
   static Future<RawScope?> open() =>
       RustLib.instance.api.crateVplRawTokensRawScopeOpen();
 
