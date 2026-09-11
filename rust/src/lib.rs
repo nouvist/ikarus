@@ -49,14 +49,21 @@ pub mod tests {
 #[frb]
 pub fn home() -> &'static Utf8Path {
     static INSTANCE: OnceLock<Utf8PathBuf> = OnceLock::new();
+    #[cfg(target_os = "windows")]
     let home = INSTANCE.get_or_init(|| {
         let appdata = env::var("APPDATA").expect("must be exists in Windows environment");
         let mut appdata = Utf8PathBuf::from(appdata);
         appdata.push("ProjectIkarus");
-        if !appdata.exists() {
-            std::fs::create_dir_all(&appdata).expect("must be user owned in Windows environment");
-        }
+        std::fs::create_dir_all(&appdata).expect("failed to create data directory");
         appdata
+    });
+    #[cfg(target_os = "linux")]
+    let home = INSTANCE.get_or_init(|| {
+        let data = env::var("HOME").expect("must be exists in Linux environment");
+        let mut data = Utf8PathBuf::from(data);
+        data.push(".local/share/ProjectIkarus");
+        std::fs::create_dir_all(&data).expect("failed to create data directory");
+        data
     });
 
     home.as_path()
