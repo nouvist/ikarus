@@ -24,7 +24,13 @@ class Vpl extends StatefulWidget {
   State<Vpl> createState() => _VplState();
 }
 
-class _VplState extends State<Vpl> {
+class _VplState extends State<Vpl> with SingleTickerProviderStateMixin {
+  late final _animation = AnimationController(
+    duration: const .new(seconds: 1),
+    vsync: this,
+    value: 1,
+  );
+
   final _xScroll = ScrollController();
   final _yScroll = ScrollController();
   final _idents = <String>[];
@@ -41,6 +47,7 @@ class _VplState extends State<Vpl> {
   void dispose() {
     _xScroll.dispose();
     _yScroll.dispose();
+    _animation.dispose();
     super.dispose();
   }
 
@@ -51,6 +58,9 @@ class _VplState extends State<Vpl> {
   Future<void> _handleSet(RawScope scope) async => setState(() {
     widget.statements.clear();
     widget.statements.addAll(scope.field0.map((it) => it.copy()));
+    _animation.stop();
+    _animation.value = 0;
+    _animation.animateTo(1);
   });
 
   void _calculateIdents([bool shouldUpdate = false]) {
@@ -189,46 +199,51 @@ class _VplState extends State<Vpl> {
     _calculateNesteds();
     _calculateIdents();
 
-    return VplInheritedData(
-      idents: _idents,
-      nesteds: _nesteds,
-      statements: widget.statements,
-      onCalculateIdents: _calculateIdents,
-      onCalculateNesteds: _calculateNesteds,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: ReorderableList(
-              controller: _yScroll,
-              onReorderItem: _handleReorderItem,
-              padding: const .all(8),
-              itemCount: widget.statements.length + 1,
-              itemBuilder: (context, index) =>
-                  _buildItem(context, index, _nesteds),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) =>
+          Opacity(opacity: _animation.value.lerp(0.5, 1), child: child!),
+      child: VplInheritedData(
+        idents: _idents,
+        nesteds: _nesteds,
+        statements: widget.statements,
+        onCalculateIdents: _calculateIdents,
+        onCalculateNesteds: _calculateNesteds,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: ReorderableList(
+                controller: _yScroll,
+                onReorderItem: _handleReorderItem,
+                padding: const .all(8),
+                itemCount: widget.statements.length + 1,
+                itemBuilder: (context, index) =>
+                    _buildItem(context, index, _nesteds),
+              ),
             ),
-          ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: SizedBox(
-              width: 48,
-              height: 48,
-              child: ClipRRect(
-                clipBehavior: .antiAlias,
-                borderRadius: const .all(.circular(8)),
-                child: BackdropFilter(
-                  filter: .blur(sigmaX: 8, sigmaY: 8),
-                  child: Button(
-                    onTap: _handleAdd,
-                    width: 48,
-                    padding: .zero,
-                    child: const Icon(FluentIcons.add_24_filled),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: ClipRRect(
+                  clipBehavior: .antiAlias,
+                  borderRadius: const .all(.circular(8)),
+                  child: BackdropFilter(
+                    filter: .blur(sigmaX: 8, sigmaY: 8),
+                    child: Button(
+                      onTap: _handleAdd,
+                      width: 48,
+                      padding: .zero,
+                      child: const Icon(FluentIcons.add_24_filled),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
