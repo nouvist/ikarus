@@ -21,14 +21,14 @@ Informatika di Institut Sains dan Teknologi Nasional.
 Untuk menggunakan Ikarus, harap gunakan:
 
 1. **Google Chrome** karena otomasi berbasis CDP (melalui Chromiumoxide).
-2. **DeepSeek V4 Flash 0731** disarankan karena memiliki dukungan skema JSON teruji.
+2. **DeepSeek V4 Flash 0731** karena memiliki dukungan skema JSON teruji.
 
 ## Membangun
 
 Untuk membangun Ikarus, diasumsikan lingkungan yang memuat perangkat pembangun
 Flutter dan Rust.
 
-1. Gunakan FRB dengan `cargo install flutter_rust_bridge_codegen --version 2.12.0`.
+1. Gunakan FRB dengan `cargo install flutter_rust_bridge_codegen --version 2.13.0`.
 2. Bangun jembatan FFI dengan `flutter_rust_bridge_codegen generate`.
 3. Bangun Flutter dengan `flutter build windows --release`.
 
