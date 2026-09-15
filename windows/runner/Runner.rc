@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "id.my.nouvist" "\0"
-            VALUE "FileDescription", "ikarus" "\0"
+            VALUE "CompanyName", "Nouvistiardi Azra" "\0"
+            VALUE "FileDescription", "Ikarus: Low-Code Browser Automation with VPL" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "ikarus" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 id.my.nouvist. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Nouvistiardi Azra. All rights reserved." "\0"
             VALUE "OriginalFilename", "ikarus.exe" "\0"
             VALUE "ProductName", "ikarus" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
