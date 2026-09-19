@@ -24,7 +24,7 @@ use crate::{
 #[frb(ignore)]
 pub struct AiSingletonInner {
     settings: Settings,
-    client: openai::Client,
+    client: openai::CompletionsClient,
     mcp_client: RunningService<RoleClient, ()>,
     mcp_tools: Vec<Tool>,
 }
@@ -48,7 +48,7 @@ impl AiSingleton {
 
     async fn initialize() -> Result<Self, Error> {
         let settings = Settings::current().await;
-        let client = Self::initialize_client(&settings).await?;
+        let client = Self::initialize_client(&settings).await?.completions_api();
         let (mcp_client, mcp_tools) = Self::initialize_mcp().await?;
 
         Ok(Self {
