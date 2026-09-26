@@ -6,9 +6,9 @@
   <img src="./docs/Logo.svg" height="96" />
 </p>
 
-[![Versi saat ini: v0.2.1](https://img.shields.io/badge/Versi-0.2.0-yellow)](https://github.com/nouvist/ikarus/releases/tag/v0.2.1)
-[![Unduh untuk Windows](https://img.shields.io/badge/Unduh%20untuk-Windows-green)](https://github.com/nouvist/ikarus/releases/download/v0.2.1/ikarus-windows-x64.tar.gz)
-[![Unduh untuk Linux](https://img.shields.io/badge/Unduh%20untuk-Linux-green)](https://github.com/nouvist/ikarus/releases/download/v0.2.1/ikarus-linux-x64.tar.gz)
+[![Versi saat ini](https://img.shields.io/github/v/release/nouvist/ikarus?label=Rilis)](https://github.com/nouvist/ikarus/releases/latest)
+[![Unduh untuk Windows](https://img.shields.io/badge/Unduh%20untuk-Windows-green)](https://github.com/nouvist/ikarus/releases/latest/download/ikarus-windows-x64.tar.gz)
+[![Unduh untuk Linux](https://img.shields.io/badge/Unduh%20untuk-Linux-green)](https://github.com/nouvist/ikarus/releases/latest/download/ikarus-linux-x64.tar.gz)
 
 Ikarus adalah perangkat lunak otomasi browser melalui bahasa pemrograman visual.
 Ditujukan untuk berusaha mereduksi kewajiban sintaksis dalam memanipulasi DOM.
